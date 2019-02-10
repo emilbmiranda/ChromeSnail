@@ -6,3 +6,4 @@ Chrome Snail is a two-dimensional side scrolling game that depicts a deployed so
 ## Creators
 + Victor Merino
 + Mason Pawsey
++ Emil Miranda
