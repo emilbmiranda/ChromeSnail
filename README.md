@@ -8,3 +8,4 @@ Chrome Snail is a two-dimensional side scrolling game that depicts a deployed so
 + Mason Pawsey
 + Emil Miranda
 + Fernando Herrera
++ Hasun Khan
