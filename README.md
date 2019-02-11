@@ -1,11 +1,14 @@
-# ChromeSnail
+# Chrome Snail
 
 ## Overview
 Chrome Snail is a two-dimensional side scrolling game that depicts a deployed soldier behind enemy line that must fight fantastic villains to clear the each level. Along the way the player gains new weapons and collect coins to increase their overall score.
 
-## Creators - The Olympians(Group #3)
+## Creators - The Olympians (Group #3)
 + Victor Merino
 + Mason Pawsey
 + Emil Miranda
 + Fernando Herrera
 + Hasun Khan
+
+## Starter Frameowrk
+The framework `walk2` is in the `frameworks` branch
