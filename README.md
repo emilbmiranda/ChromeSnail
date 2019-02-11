@@ -10,5 +10,5 @@ Chrome Snail is a two-dimensional side scrolling game that depicts a deployed so
 + Fernando Herrera
 + Hasun Khan
 
-## Starter Frameowrk
+## Starter Framework
 The framework `walk2` is in the `frameworks` branch
