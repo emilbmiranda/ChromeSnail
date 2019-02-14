@@ -18,7 +18,7 @@ void printHasunName(Rect x, int y) {
 
 
 //Displays an image to the screen
-void showHasunPicture(int x, int y, Gluint textid) {
+void showHasunPicture(int x, int y, GLuint textid) {
  
 	glColor3ub(1,1,1);
 	static float angle = 0.0f;
