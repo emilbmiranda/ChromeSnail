@@ -600,6 +600,9 @@ int checkKeys(XEvent *e)
 			break;
 		case XK_Right:
 			break;
+		case XK_c:
+			gl.showCredits ^= 1;
+			break;
 		case XK_Up:
 			break;
 		case XK_Down:
@@ -615,10 +618,6 @@ int checkKeys(XEvent *e)
 		case XK_Escape:
 			return 1;
 			break;
-		case XK_c:
-			gl.showCredits ^= 1;
-		case XK_l:
-			gl.showCredits = 0;
 	}
 	return 0;
 }
