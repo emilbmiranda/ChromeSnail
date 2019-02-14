@@ -6,7 +6,7 @@
 // Display my picture and write my name as a part of the credits 
 #include <iostream>
 #include <GL/glx.h>
-#include <fonts.h>
+#include "fonts.h"
 #include <math.h>
 
 
