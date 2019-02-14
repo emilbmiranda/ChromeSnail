@@ -13,7 +13,7 @@
 
 //Prints my name to the Screen
 void printHasunName(Rect x, int y) {
-	ggprint8b(8x, 16, 0x00ff0000, "Hasun Khan");
+	ggprint8b(&x, 16, 0x00ff0000, "Hasun Khan");
 }
 
 
