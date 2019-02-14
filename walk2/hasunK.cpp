@@ -4,10 +4,12 @@
 //date:    Spring 2019
 //
 // Display my picture and write my name as a part of the credits 
+#include <iostream>
 #include <GL/glx.h>
+#include <fonts.h>
 #include <math.h>
-#include <GL/glu.h>
-#include <GL/gl.h>
+
+
 
 //Prints my name to the Screen
 void printHasunName(Rect x, int y) {
