@@ -5,6 +5,9 @@
 //
 // Show
 
-void hasun() { 
+void hasun(int x, int y, Gluint textid) { 
+glColor3ub(1,1,1);
 
 } 
+
+
