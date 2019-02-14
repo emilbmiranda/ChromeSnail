@@ -738,23 +738,29 @@ void show_credits(Rect x, int y)
 	glClear(GL_COLOR_BUFFER_BIT);
 	extern void masonP(Rect x, int y);
 	extern void showMasonPicture(int x, int y, GLuint textid);
-	int imagex = gl.xres/3;
-    // Mason
-    masonP(x, 16);
-    showMasonPicture(imagex, x.bot-30, gl.masonPicTexture);
+	int imagex = gl.xres;
+    	// Mason
+	masonP(x, y);
+	showMasonPicture(500, 500, gl.masonPicTexture);
 }
 
 void render(void)
 {
 	Rect r;
+	r.bot = gl.yres - 20;
+	r.left = 10;
+	r.center = 0;
 	//Clear the screen
 	glClearColor(0.1, 0.1, 0.1, 1.0);
 	glClear(GL_COLOR_BUFFER_BIT);
 	float cx = gl.xres/2.0;
 	float cy = gl.yres/2.0;
 	if (gl.showCredits) {
-		show_credits(r, 16);
+		show_credits(r, cy);
+		return;
 	} else {
+	    	glClearColor(0.1,0.1,0.1,1.0);
+		glClear(GL_COLOR_BUFFER_BIT);
 		//
 		//show ground
 		glBegin(GL_QUADS);
