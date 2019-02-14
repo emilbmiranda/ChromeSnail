@@ -1,3 +1,9 @@
+//3350
+//program: masonP.cpp
+//author:  Mason Pawsey 
+//date:    Spring 2019
+//
+// Display my picture and write my name as a part of the credits 
 #include <iostream>
 #include "fonts.h"
 #include <GL/glx.h>

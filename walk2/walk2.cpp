@@ -423,12 +423,12 @@ void initOpengl(void)
 	//
 	//
 	glGenTextures(1, &gl.masonPicTexture);
-	w = img[4].width;
-	h = img[4].height;
+	w = img[3].width;
+	h = img[3].height;
 	glBindTexture(GL_TEXTURE_2D, gl.masonPicTexture);
 	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
-	glTexImage2D(GL_TEXTURE_2D, 0, 3, w, h, 0, GL_RGB, GL_UNSIGNED_BYTE, img[4].data);
+	glTexImage2D(GL_TEXTURE_2D, 0, 3, w, h, 0, GL_RGB, GL_UNSIGNED_BYTE, img[3].data);
 	//
 	//
 	//
