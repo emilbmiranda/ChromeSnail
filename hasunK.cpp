@@ -12,14 +12,15 @@
 
 
 //Prints my name to the Screen
-void printHasunName(Rect x, int y) {
+void printHasunName(Rect x, int y)
+{
 	ggprint8b(&x, 16, 0x00ff0000, "Hasun Khan");
 }
 
 
 //Displays an image to the screen
-void showHasunPicture(int x, int y, GLuint textid) {
- 
+void showHasunPicture(int x, int y, GLuint textid)
+{ 
 	glColor3ub(1,1,1);
 	static float angle = 0.0f;
 	static int w = 30; 
