@@ -6,7 +6,7 @@
 
 #include <iostream>
 #include <GL/glx.h>
-#include <fonts.h>
+#include "fonts.h"
 #include <math.h>
 
 
