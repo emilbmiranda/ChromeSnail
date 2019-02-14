@@ -34,3 +34,8 @@ void showFernandoPicture(int x, int y, GLuint textid)
 	glEnd();
 	glPopMatrix();
 }
+
+void showFHText()
+{
+	ggprint8b(&x, 16, 0x00ff0000, "Fernando Herrera");
+}
