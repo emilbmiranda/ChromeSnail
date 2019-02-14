@@ -1,3 +1,15 @@
+// Program: fernandoH.cpp
+// CMPS3350
+// Author: Fernando
+
+
+
+#include <iostream>
+#include <GL/glx.h>
+#include <fonts.h>
+#include <math.h>
+
+
 void showFernandoPicture(int x, int y, GLuint textid) 
 {
 	glColor3ub(255,255,255);
