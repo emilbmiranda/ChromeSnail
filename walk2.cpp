@@ -336,11 +336,15 @@ public:
 			unlink(ppmname);
 	}
 };
-Image img[4] = {
+Image img[8] = {
 "./images/walk.gif",
 "./images/exp.png",
 "./images/exp44.png",
-"./images/masonp.jpg" };
+"./images/masonp.jpg",
+"./images/fh.png",
+"./images/hasunK.jpg",
+"./images/VictorM.jpg",
+"./images/EmilM.jpeg" };
 
 void show_credits(Rect x, int y);
 
@@ -743,6 +747,30 @@ void show_credits(Rect x, int y)
     x.bot -= 100;
 	masonP(x, y);
 	showMasonPicture(500, x.bot, gl.masonPicTexture);
+    // Fern
+    extern void showFHText(Rect x);
+    void showFernandoPicture(int x, int y, GLuint textid);
+    x.bot -= 100; 
+    showFHText(x);
+    showFernandoPicture(500, x.bot, gl.exp44.tex);
+    // Hasun
+    void printHasunName(Rect x, int y);
+    void showHasunPicture(int x, int y, GLuint textid);
+    x.bot -= 100;
+    printHasunName(x, y);
+    showHasunPicture(500, x.bot, gl.exp44.tex);
+    // Victor
+    extern void showVictorPicture(int x, int y, GLuint textid);
+    extern void showVictorText(Rect r, int y);
+    x.bot -= 100;
+    showVictorText(x, y);
+    showVictorPicture(500, x.bot, gl.exp44.tex);
+    // Emil
+    void showEmil(Rect r, int y);
+    void showEmilPicture(int x, int y, GLuint textid);
+    x.bot -= 100;
+    showEmil(x, y);
+    showEmilPicture(500, x.bot, gl.exp44.tex);
 }
 
 void render(void)
@@ -758,7 +786,7 @@ void render(void)
 	float cy = gl.yres/2.0;
 	if (gl.showCredits) {
 		show_credits(r, cy);
-		return;
+        return;
 	} else {
 	    	glClearColor(0.1,0.1,0.1,1.0);
 		glClear(GL_COLOR_BUFFER_BIT);
