@@ -739,9 +739,10 @@ void show_credits(Rect x, int y)
 	extern void masonP(Rect x, int y);
 	extern void showMasonPicture(int x, int y, GLuint textid);
 	int imagex = gl.xres;
-    	// Mason
+    // Mason
+    x.bot -= 100;
 	masonP(x, y);
-	showMasonPicture(500, 500, gl.masonPicTexture);
+	showMasonPicture(500, x.bot, gl.masonPicTexture);
 }
 
 void render(void)
