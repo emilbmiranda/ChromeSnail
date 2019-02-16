@@ -24,13 +24,13 @@ void showFernandoPicture(int x, int y, GLuint textid)
 	angle += 0.2f;
 	glPushMatrix();
 	glTranslatef(fx,fy,0);
-	glRotatef(a, 0, 0, 1.0);
+	//glRotatef(a, 0, 0, 1.0);
 	glBindTexture(GL_TEXTURE_2D, textid);
 	glBegin(GL_QUADS);
 		glTexCoord2f(0.0f, 1.0f); glVertex2i(-wid,-wid);
-		glTexCoord2f(0.0f, 0.0f); glVertex2i(-wid,-wid);
-		glTexCoord2f(1.0f, 1.0f); glVertex2i(-wid,-wid);
-		glTexCoord2f(1.0f, 1.0f); glVertex2i(-wid,-wid);
+		glTexCoord2f(0.0f, 0.0f); glVertex2i(-wid,wid);
+		glTexCoord2f(1.0f, 1.0f); glVertex2i(wid,wid);
+		glTexCoord2f(1.0f, 1.0f); glVertex2i(wid,-wid);
 	glEnd();
 	glPopMatrix();
 }

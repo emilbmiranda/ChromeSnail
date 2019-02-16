@@ -110,6 +110,7 @@ public:
 	Image *walkImage;
 	GLuint walkTexture;
 	GLuint masonPicTexture;
+	GLuint fernandoPicTexture;
 	Vec box[20];
 	Sprite exp;
 	Sprite exp44;
@@ -341,7 +342,7 @@ Image img[8] = {
 "./images/exp.png",
 "./images/exp44.png",
 "./images/masonp.jpg",
-"./images/fh.png",
+"./images/fh.jpg",
 "./images/hasunK.jpg",
 "./images/VictorM.jpg",
 "./images/EmilM.jpeg" };
@@ -471,6 +472,7 @@ void initOpengl(void)
 	xData = buildAlphaData(&img[2]);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0,
 		GL_RGBA, GL_UNSIGNED_BYTE, xData);
+	free(xData);
 
 	glGenTextures(1, &gl.masonPicTexture);
 	w = img[3].width;
@@ -479,8 +481,16 @@ void initOpengl(void)
 	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
 	glTexImage2D(GL_TEXTURE_2D, 0, 3, w, h, 0, GL_RGB, GL_UNSIGNED_BYTE, img[3].data);
+
+	glGenTextures(1, &gl.fernandoPicTexture);
+	w = img[4].width;
+	h = img[4].height;
+	glBindTexture(GL_TEXTURE_2D, gl.fernandoPicTexture);
+	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
+	glTexImage2D(GL_TEXTURE_2D, 0, 3, w, h, 0, GL_RGB, GL_UNSIGNED_BYTE, img[4].data);
+
 	
-	free(xData);
 }
 
 void init() {
@@ -747,30 +757,30 @@ void show_credits(Rect x, int y)
     x.bot -= 100;
 	masonP(x, y);
 	showMasonPicture(500, x.bot, gl.masonPicTexture);
-    // Fern
-    extern void showFHText(Rect x);
-    void showFernandoPicture(int x, int y, GLuint textid);
-    x.bot -= 100; 
-    showFHText(x);
-    showFernandoPicture(500, x.bot, gl.exp44.tex);
-    // Hasun
-    void printHasunName(Rect x, int y);
-    void showHasunPicture(int x, int y, GLuint textid);
-    x.bot -= 100;
-    printHasunName(x, y);
-    showHasunPicture(500, x.bot, gl.exp44.tex);
-    // Victor
-    extern void showVictorPicture(int x, int y, GLuint textid);
-    extern void showVictorText(Rect r, int y);
-    x.bot -= 100;
-    showVictorText(x, y);
-    showVictorPicture(500, x.bot, gl.exp44.tex);
-    // Emil
-    void showEmil(Rect r, int y);
-    void showEmilPicture(int x, int y, GLuint textid);
-    x.bot -= 100;
-    showEmil(x, y);
-    showEmilPicture(500, x.bot, gl.exp44.tex);
+	// Fern
+	extern void showFHText(Rect x);
+	extern void showFernandoPicture(int x, int y, GLuint textid);
+	x.bot -= 100; 
+	showFHText(x);
+	showFernandoPicture(500, x.bot, gl.fernandoPicTexture);
+	// Hasun
+	extern void printHasunName(Rect x, int y);
+	extern void showHasunPicture(int x, int y, GLuint textid);
+	x.bot -= 100;
+	printHasunName(x, y);
+	showHasunPicture(500, x.bot, gl.exp44.tex);
+	// Victor
+	extern void showVictorPicture(int x, int y, GLuint textid);
+	extern void showVictorText(Rect r, int y);
+	x.bot -= 100;
+	showVictorText(x, y);
+	showVictorPicture(500, x.bot, gl.exp44.tex);
+	// Emil
+	extern void showEmil(Rect r, int y);
+	extern void showEmilPicture(int x, int y, GLuint textid);
+	x.bot -= 100;
+	showEmil(x, y);
+	showEmilPicture(500, x.bot, gl.exp44.tex);
 }
 
 void render(void)
