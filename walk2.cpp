@@ -4,7 +4,8 @@
 //date:    summer 2017
 //         spring 2018
 //
-//modified by: mason pawsey
+//modified by: mason pawsey, Victor Merino, Fernando Herrera, Emil Miranda, Hasun Khan
+//modified date: Spring 2019
 //
 //Walk cycle using a sprite sheet.
 //images courtesy: http://games.ucla.edu/resource/walk-cycles/
@@ -45,6 +46,11 @@ typedef Flt	Matrix[4][4];
 const float timeslice = 1.0f;
 const float gravity = -0.2f;
 #define ALPHA 1
+#define MASON 0
+#define FERNANDO 1
+#define HASUN 2
+#define VICTOR 3
+#define EMIL 4
 
 //function prototypes
 void initOpengl();
@@ -109,8 +115,7 @@ public:
 	double delay;
 	Image *walkImage;
 	GLuint walkTexture;
-	GLuint masonPicTexture;
-	GLuint fernandoPicTexture;
+    GLuint creditPicsTexture[5];
 	Vec box[20];
 	Sprite exp;
 	Sprite exp44;
@@ -474,23 +479,21 @@ void initOpengl(void)
 		GL_RGBA, GL_UNSIGNED_BYTE, xData);
 	free(xData);
 
-	glGenTextures(1, &gl.masonPicTexture);
-	w = img[3].width;
-	h = img[3].height;
-	glBindTexture(GL_TEXTURE_2D, gl.masonPicTexture);
-	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
-	glTexImage2D(GL_TEXTURE_2D, 0, 3, w, h, 0, GL_RGB, GL_UNSIGNED_BYTE, img[3].data);
-
-	glGenTextures(1, &gl.fernandoPicTexture);
-	w = img[4].width;
-	h = img[4].height;
-	glBindTexture(GL_TEXTURE_2D, gl.fernandoPicTexture);
-	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
-	glTexImage2D(GL_TEXTURE_2D, 0, 3, w, h, 0, GL_RGB, GL_UNSIGNED_BYTE, img[4].data);
-
-	
+	// Created picture image array
+	for(int i = 0; i < 5; i++){
+		glGenTextures(1, &gl.creditPicsTexture[i]);
+		w = img[i + 3].width;
+		h = img[i + 3].height;
+		glBindTexture(GL_TEXTURE_2D, gl.creditPicsTexture[i]);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+		glTexImage2D(GL_TEXTURE_2D, 0, 3, w, h, 0, GL_RGB, GL_UNSIGNED_BYTE, img[i + 3].data);
+		
+		xData = buildAlphaData(&img[i + 3]);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0,
+			GL_RGBA, GL_UNSIGNED_BYTE, xData);
+		free(xData);
+	}
 }
 
 void init() {
@@ -752,35 +755,34 @@ void show_credits(Rect x, int y)
 	glClear(GL_COLOR_BUFFER_BIT);
 	extern void masonP(Rect x, int y);
 	extern void showMasonPicture(int x, int y, GLuint textid);
-	int imagex = gl.xres;
     // Mason
     x.bot -= 100;
 	masonP(x, y);
-	showMasonPicture(500, x.bot, gl.masonPicTexture);
+	showMasonPicture(500, x.bot, gl.creditPicsTexture[MASON]);
 	// Fern
 	extern void showFHText(Rect x);
 	extern void showFernandoPicture(int x, int y, GLuint textid);
 	x.bot -= 100; 
 	showFHText(x);
-	showFernandoPicture(500, x.bot, gl.fernandoPicTexture);
+	showFernandoPicture(500, x.bot, gl.creditPicsTexture[FERNANDO]);
 	// Hasun
 	extern void printHasunName(Rect x, int y);
 	extern void showHasunPicture(int x, int y, GLuint textid);
 	x.bot -= 100;
 	printHasunName(x, y);
-	showHasunPicture(500, x.bot, gl.exp44.tex);
+	showHasunPicture(500, x.bot, gl.creditPicsTexture[HASUN]);
 	// Victor
 	extern void showVictorPicture(int x, int y, GLuint textid);
 	extern void showVictorText(Rect r, int y);
-	x.bot -= 100;
+    x.bot -= 100;
 	showVictorText(x, y);
-	showVictorPicture(500, x.bot, gl.exp44.tex);
+	showVictorPicture(500, x.bot, gl.creditPicsTexture[VICTOR]);
 	// Emil
 	extern void showEmil(Rect r, int y);
 	extern void showEmilPicture(int x, int y, GLuint textid);
 	x.bot -= 100;
 	showEmil(x, y);
-	showEmilPicture(500, x.bot, gl.exp44.tex);
+	showEmilPicture(500, x.bot, gl.creditPicsTexture[EMIL]);
 }
 
 void render(void)
