@@ -496,7 +496,8 @@ void initOpengl(void)
 	}
 }
 
-void init() {
+void init()
+{
 
 }
 
