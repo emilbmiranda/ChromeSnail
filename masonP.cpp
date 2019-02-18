@@ -11,7 +11,7 @@
 
 void masonP(Rect x, int y)
 {
-  ggprint8b(&x, y, 0x00ff0000, "Mason Pawsey");
+	ggprint8b(&x, y, 0x00ff0000, "Mason Pawsey");
 }
 
 void showMasonPicture(int x, int y, GLuint textid)
