@@ -14,7 +14,7 @@
 //Prints my name to the Screen
 void printHasunName(Rect x, int y)
 {
-	ggprint8b(&x, 16, 0x00ff0000, "Hasun Khan");
+	ggprint8b(&x, y, 0x00ff5900, "Hasun Khan");
 }
 
 
@@ -29,7 +29,7 @@ void showHasunPicture(int x, int y, GLuint textid)
 	float fy = (float)y;
 	float a = 0; 
 	a += sin(angle)*10.0f;
-	fx += a;
+	//fx += a;
 	angle += 0.2f;
 	glPushMatrix(); 
 	glTranslatef(fx,fy,0);
