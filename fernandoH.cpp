@@ -10,9 +10,18 @@
 void showFernandoPicture(int x, int y, GLuint textid) 
 {
 	glColor3ub(255,255,255);
-	static int wid = 30;
+	static float angle = 0.0f;
+	// wid determines thumbnail size.
+	static int wid = 40;
 	float fx = (float)x;
 	float fy = (float)y;
+	float a = 0;
+	float b = 0;
+	a += sin(angle) * 20.0f;
+	b += cos(angle) * 20.0f;
+	fx += a;
+	fy += b;
+	angle += 0.2f;
 	glPushMatrix();
 	glTranslatef(fx,fy,0);
 	glBindTexture(GL_TEXTURE_2D, textid);
@@ -27,5 +36,5 @@ void showFernandoPicture(int x, int y, GLuint textid)
 
 void showFHText(Rect x)
 {
-	ggprint8b(&x, 16, 0x00ff0000, "Fernando Herrera");
+	ggprint8b(&x, 16, 0xff3333, "Fernando Herrera");
 }
