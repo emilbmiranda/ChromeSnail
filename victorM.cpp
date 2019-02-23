@@ -5,11 +5,13 @@
 #include <math.h>
 #include "fonts.h"
 
-void showVictorText(Rect r, int y) {
+void showVictorText(Rect r, int y) 
+{
 	ggprint8b(&r, y, 0xff8866, "Victor Merino");
 }
 
-void showVictorPicture(int x, int y, GLuint textid) {
+void showVictorPicture(int x, int y, GLuint textid) 
+{
 	glColor3ub(255, 255, 255);
 	static float angle = 0.0f;
 	static int wid = 30;
