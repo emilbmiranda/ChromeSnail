@@ -5,9 +5,9 @@
 #include <math.h>
 #include "fonts.h"
 
-void showVictorText(Rect r, int y) 
+void showVictorText(Rect r) 
 {
-	ggprint8b(&r, y, 0xff8866, "Victor Merino");
+	ggprint8b(&r, 16, 0xff8866, "Victor Merino");
 }
 
 void showVictorPicture(int x, int y, GLuint textid) 

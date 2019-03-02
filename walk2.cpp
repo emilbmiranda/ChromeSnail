@@ -15,7 +15,7 @@
 //  a level tiling system
 //  parallax scrolling of backgrounds
 //
-#include <stdio.h>
+#include <iostream>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
@@ -27,6 +27,8 @@
 #include "log.h"
 //#include "ppm.h"
 #include "fonts.h"
+
+using namespace std;
 
 //defined types
 typedef double Flt;
@@ -115,7 +117,7 @@ public:
 	double delay;
 	Image *walkImage;
 	GLuint walkTexture;
-    GLuint creditPicsTexture[5];
+	GLuint creditPicsTexture[5];
 	Vec box[20];
 	Sprite exp;
 	Sprite exp44;
@@ -147,13 +149,16 @@ public:
 		exp44.frame=0;
 		exp44.image=NULL;
 		exp44.delay = 0.022;
+		showCredits = 0;
 		for (int i=0; i<20; i++) {
 			box[i][0] = rnd() * xres;
 			box[i][1] = rnd() * (yres-220) + 220.0;
 			box[i][2] = 0.0;
 		}
+		for (int i = 0; i < 5; i++) {
+			creditPicsTexture[i] = 0;
+		}
 		memset(keys, 0, 65536);
-		showCredits = 0;
 	}
 } gl;
 
@@ -480,16 +485,15 @@ void initOpengl(void)
 	free(xData);
 
 	// Created picture image array
-	for(int i = 0; i < 5; i++){
-		glGenTextures(1, &gl.creditPicsTexture[i]);
-		w = img[i + 3].width;
-		h = img[i + 3].height;
-		glBindTexture(GL_TEXTURE_2D, gl.creditPicsTexture[i]);
+	for(int i = 3; i < 8; i++){
+		glGenTextures(1, &gl.creditPicsTexture[i - 3]);
+		w = img[i].width;
+		h = img[i].height;
+		glBindTexture(GL_TEXTURE_2D, gl.creditPicsTexture[i - 3]);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-		glTexImage2D(GL_TEXTURE_2D, 0, 3, w, h, 0, GL_RGB, GL_UNSIGNED_BYTE, img[i + 3].data);
 		
-		xData = buildAlphaData(&img[i + 3]);
+		xData = buildAlphaData(&img[i]);
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0,
 			GL_RGBA, GL_UNSIGNED_BYTE, xData);
 		free(xData);
@@ -774,9 +778,9 @@ void show_credits(Rect x, int y)
 	showHasunPicture(500, x.bot, gl.creditPicsTexture[HASUN]);
 	// Victor
 	extern void showVictorPicture(int x, int y, GLuint textid);
-	extern void showVictorText(Rect r, int y);
+	extern void showVictorText(Rect r);
     x.bot -= 100;
-	showVictorText(x, y);
+	showVictorText(x);
 	showVictorPicture(500, x.bot, gl.creditPicsTexture[VICTOR]);
 	// Emil
 	extern void showEmil(Rect r, int y);
@@ -789,19 +793,18 @@ void show_credits(Rect x, int y)
 void render(void)
 {
 	Rect r;
-	r.bot = gl.yres - 20;
-	r.left = 10;
-	r.center = 0;
 	//Clear the screen
 	glClearColor(0.1, 0.1, 0.1, 1.0);
 	glClear(GL_COLOR_BUFFER_BIT);
 	float cx = gl.xres/2.0;
 	float cy = gl.yres/2.0;
 	if (gl.showCredits) {
+		r.bot = gl.yres - 20;
+		r.left = 10;
+		r.center = 0;
 		show_credits(r, cy);
-        return;
 	} else {
-	    	glClearColor(0.1,0.1,0.1,1.0);
+		glClearColor(0.1,0.1,0.1,1.0);
 		glClear(GL_COLOR_BUFFER_BIT);
 		//
 		//show ground
