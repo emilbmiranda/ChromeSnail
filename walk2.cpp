@@ -992,18 +992,22 @@ void render(void)
 			glBindTexture(GL_TEXTURE_2D, 0);
 			glDisable(GL_ALPHA_TEST);
 		}
-		unsigned int c = 0x00ffff44;
-		r.bot = gl.yres - 20;
-		r.left = 10;
-		r.center = 0;
-		ggprint8b(&r, 16, c, "W   Walk cycle");
-		ggprint8b(&r, 16, c, "E   Explosion");
-		ggprint8b(&r, 16, c, "+   faster");
-		ggprint8b(&r, 16, c, "-   slower");
-		ggprint8b(&r, 16, c, "right arrow -> walk right");
-		ggprint8b(&r, 16, c, "left arrow  <- walk left");
-		ggprint8b(&r, 16, c, "frame: %i", gl.walkFrame);
-		ggprint8b(&r, 16, c, "credits   c");
+		extern void create_menu_button(int gl_xres, int gl_yres);
+		create_menu_button(gl.xres, gl.yres);
+		
+		//will add to menu
+		// unsigned int c = 0x00ffff44;
+		// r.bot = gl.yres - 20;
+		// r.left = 10;
+		// r.center = 0;
+		// ggprint8b(&r, 16, c, "W   Walk cycle");
+		// ggprint8b(&r, 16, c, "E   Explosion");
+		// ggprint8b(&r, 16, c, "+   faster");
+		// ggprint8b(&r, 16, c, "-   slower");
+		// ggprint8b(&r, 16, c, "right arrow -> walk right");
+		// ggprint8b(&r, 16, c, "left arrow  <- walk left");
+		// ggprint8b(&r, 16, c, "frame: %i", gl.walkFrame);
+		// ggprint8b(&r, 16, c, "credits   c");
 		if (gl.movie) {
 			screenCapture();
 		}

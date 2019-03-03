@@ -2,8 +2,6 @@
 * Created on: February 14, 2019
  */
 
-//Text and font headers from fonts.h from asteroids framework
-#include <iostream>
 #include <GL/glx.h>
 #include <math.h>
 #include "fonts.h"
@@ -38,5 +36,16 @@ void showEmilPicture(int x, int y, GLuint textid)
 
     glEnd();
     glPopMatrix();
+}
+
+void create_menu_button(int gl_xres, int gl_yres)
+{
+    Rect r;
+    r.bot = gl_yres - 20;
+    r.left = gl_xres - 50;
+    r.center = 0;
+    r.height = 200;
+    r.width = 100;
+    ggprint12(&r, 100, 0xffffff, "Menu");
 }
 
