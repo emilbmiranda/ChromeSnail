@@ -28,6 +28,7 @@
 //#include "ppm.h"
 #include "fonts.h"
 #include "victorM.h"
+#include <dirent.h>
 
 using namespace std;
 
@@ -553,8 +554,13 @@ void screenCapture()
 	static int fnum = 0;
 	static int vid = 0;
 	if (!vid) {
-		system("mkdir ./vid");
-		vid = 1;
+        DIR* viddir = opendir("vid");
+        if (viddir) {
+            closedir(viddir);
+        } else {
+    		system("mkdir ./vid");
+	    	vid = 1;
+        }
 	}
 	unsigned char *data = (unsigned char *)malloc(gl.xres * gl.yres * 3);
 	glReadPixels(0, 0, gl.xres, gl.yres, GL_RGB, GL_UNSIGNED_BYTE, data);
