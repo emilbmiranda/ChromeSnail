@@ -61,6 +61,8 @@ void drawBullets(Bullets *bullets)
 		Bullet *b = &bullets->barr[i];
 		//Log("draw bullet...\n");
 		glColor3f(1.0, 1.0, 1.0);
+		glPushMatrix();
+		glTranslatef(400, 350, 0);
 		glBegin(GL_POINTS);
 		glVertex2f(b->pos[0],      b->pos[1]);
 		glVertex2f(b->pos[0]-1.0f, b->pos[1]);
@@ -73,6 +75,7 @@ void drawBullets(Bullets *bullets)
 		glVertex2f(b->pos[0]+1.0f, b->pos[1]-1.0f);
 		glVertex2f(b->pos[0]+1.0f, b->pos[1]+1.0f);
 		glEnd();
+		glPopMatrix();
 	}
 }
 
@@ -84,15 +87,15 @@ void shootBullet(Bullets *bullets, timespec *bt)
 		Bullet *b = &bullets->barr[bullets->nbullets];
 		timeCopy(&b->time, bt);
 		b->pos[0] = 30;
-		b->pos[1] = 30;
+		//b->pos[1] = 30;
 		b->vel[0] = 1;
-		b->vel[1] = 1;
+		//b->vel[1] = 1;
 		double xdir = .5;
 		double ydir = .5;
 		b->pos[0] += xdir*20.0f;
-		b->pos[1] += ydir*20.0f;
+		//b->pos[1] += ydir*20.0f;
 		b->vel[0] += xdir*6.0f + rnd()*0.1;
-		b->vel[1] += ydir*6.0f + rnd()*0.1;
+		//b->vel[1] += ydir*6.0f + rnd()*0.1;
 		b->color[0] = 1.0f;
 		b->color[1] = 1.0f;
 		b->color[2] = 1.0f;

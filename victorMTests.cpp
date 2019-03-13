@@ -27,6 +27,7 @@ void testBulletFunction()
 int main(void)
 {
 	testBulletFunction();
+	cout << "Tests completed!" << endl;
 	return 0;
 }
 
