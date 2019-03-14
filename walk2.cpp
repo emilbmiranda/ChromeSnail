@@ -521,7 +521,11 @@ void checkMouse(XEvent *e)
 	}
 	if (e->type == ButtonPress) {
 		if (e->xbutton.button==1) {
-			//Left button is down
+			cout << "Mouse press" << endl;
+			extern Rect create_menu_button(int gl_xres, int gl_yres);
+			Rect menu = create_menu_button(gl.xres, gl.yres);
+			extern void check_menu_press(XEvent *e, Rect r, int *global);
+			check_menu_press(e, menu, &gl.showCredits);
 		}
 		if (e->xbutton.button==3) {
 			//Right button is down
@@ -992,22 +996,20 @@ void render(void)
 			glBindTexture(GL_TEXTURE_2D, 0);
 			glDisable(GL_ALPHA_TEST);
 		}
-		extern void create_menu_button(int gl_xres, int gl_yres);
-		create_menu_button(gl.xres, gl.yres);
 		
 		//will add to menu
-		// unsigned int c = 0x00ffff44;
-		// r.bot = gl.yres - 20;
-		// r.left = 10;
-		// r.center = 0;
-		// ggprint8b(&r, 16, c, "W   Walk cycle");
-		// ggprint8b(&r, 16, c, "E   Explosion");
-		// ggprint8b(&r, 16, c, "+   faster");
-		// ggprint8b(&r, 16, c, "-   slower");
-		// ggprint8b(&r, 16, c, "right arrow -> walk right");
-		// ggprint8b(&r, 16, c, "left arrow  <- walk left");
-		// ggprint8b(&r, 16, c, "frame: %i", gl.walkFrame);
-		// ggprint8b(&r, 16, c, "credits   c");
+		 unsigned int c = 0x00ffff44;
+		 r.bot = gl.yres - 20;
+		 r.left = 10;
+		 r.center = 0;
+		 ggprint8b(&r, 16, c, "W   Walk cycle");
+		 ggprint8b(&r, 16, c, "E   Explosion");
+		 ggprint8b(&r, 16, c, "+   faster");
+		 ggprint8b(&r, 16, c, "-   slower");
+		 ggprint8b(&r, 16, c, "right arrow -> walk right");
+		 ggprint8b(&r, 16, c, "left arrow  <- walk left");
+		 ggprint8b(&r, 16, c, "frame: %i", gl.walkFrame);
+		 ggprint8b(&r, 16, c, "credits   c");
 		if (gl.movie) {
 			screenCapture();
 		}
