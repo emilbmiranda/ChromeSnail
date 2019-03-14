@@ -91,6 +91,12 @@ public:
 
 class Image;
 
+class Helicopter {
+public:
+	Vec pos;
+	Vec vel;
+} helicopter;
+
 class Sprite {
 public:
 	int onoff;
@@ -122,6 +128,7 @@ public:
 	Image *walkImage;
 	GLuint walkTexture;
 	GLuint creditPicsTexture[5];
+	GLuint helicopterTexture;
 	Vec box[20];
 	Sprite exp;
 	Sprite exp44;
@@ -361,6 +368,8 @@ Image img[8] = {
 "./images/VictorM.jpg",
 "./images/EmilM.jpeg" };
 
+Image helicopter_image = "./images/helicopter.gif";
+
 void show_credits(Rect x, int y);
 
 int main(void)
@@ -443,7 +452,6 @@ void initOpengl(void)
 	//
 	//create opengl texture elements
 	glGenTextures(1, &gl.walkTexture);
-	//-------------------------------------------------------------------------
 	//silhouette
 	//this is similar to a sprite graphic
 	//
@@ -502,6 +510,26 @@ void initOpengl(void)
 			GL_RGBA, GL_UNSIGNED_BYTE, xData);
 		free(xData);
 	}
+
+	// Helicopter texture
+	glGenTextures(1, &gl.helicopterTexture);
+	//-------------------------------------------------------------------------
+	//helicopter
+	
+	int w_helicopter = helicopter_image.width;
+	int h_helicopter = helicopter_image.height;
+	//
+	glBindTexture(GL_TEXTURE_2D, gl.helicopterTexture);
+	//
+	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
+	glTexImage2D(GL_TEXTURE_2D, 0, 3, w_helicopter, h_helicopter, 0,
+		GL_RGB, GL_UNSIGNED_BYTE, helicopter_image.data);
+	//-------------------------------------------------------------------------
+	unsigned char *heliData = buildAlphaData(&helicopter_image);	
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w_helicopter, h_helicopter, 0,
+		GL_RGBA, GL_UNSIGNED_BYTE, heliData);
+	free(heliData);
 }
 
 void init()
@@ -785,6 +813,18 @@ void physics(void)
 	}
 	//update bullet position
 	updateBulletPosition(&bullets, gl.xres, gl.yres);
+
+	// Helicopter
+	// helicopter.pos[0] += 10.0;
+	// if (helicopter.pos[0] > xres) {
+	// 	helicopter.pos[0] % xres;
+	// }
+}
+
+void showHelicopter(int x, int y)
+{
+	extern void renderHelicopter(int x, int y, GLuint helicopterID);
+	renderHelicopter(x, y, gl.helicopterTexture);
 }
 
 void show_credits(Rect x, int y)
@@ -826,6 +866,7 @@ void render(void)
 	//Clear the screen
 	glClearColor(0.1, 0.1, 0.1, 1.0);
 	glClear(GL_COLOR_BUFFER_BIT);
+
 	float cx = gl.xres/2.0;
 	float cy = gl.yres/2.0;
 	if (gl.showCredits) {
@@ -916,6 +957,7 @@ void render(void)
 		}
 		glColor3f(1.0, 1.0, 0.1);
 		glPushMatrix();
+
 		//put ball in its place
 		glTranslated(gl.ball_pos[0], lev.tile_base+gl.ball_pos[1], 0);
 		glBegin(GL_QUADS);
@@ -1024,6 +1066,7 @@ void render(void)
 		}
 		extern void create_menu_button(int gl_xres, int gl_yres);
 		create_menu_button(gl.xres, gl.yres);
+
 		
 		//will add to menu
 		// unsigned int c = 0x00ffff44;
@@ -1045,4 +1088,9 @@ void render(void)
 		//draw bullets
 		drawBullets(&bullets);
 	}
+
+	// render Helicopter
+	glPushMatrix();
+	showHelicopter(100.0, 550.0);
+	glPopMatrix();
 }
