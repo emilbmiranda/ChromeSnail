@@ -27,6 +27,8 @@
 #include "log.h"
 //#include "ppm.h"
 #include "fonts.h"
+#include "victorM.h"
+#include <dirent.h>
 
 using namespace std;
 
@@ -42,8 +44,8 @@ typedef Flt	Matrix[4][4];
 #define VecCopy(a,b) (b)[0]=(a)[0];(b)[1]=(a)[1];(b)[2]=(a)[2]
 #define VecDot(a,b)	((a)[0]*(b)[0]+(a)[1]*(b)[1]+(a)[2]*(b)[2])
 #define VecSub(a,b,c) (c)[0]=(a)[0]-(b)[0]; \
-                      (c)[1]=(a)[1]-(b)[1]; \
-                      (c)[2]=(a)[2]-(b)[2]
+					  (c)[1]=(a)[1]-(b)[1]; \
+					  (c)[2]=(a)[2]-(b)[2]
 //constants
 const float timeslice = 1.0f;
 const float gravity = -0.2f;
@@ -105,6 +107,8 @@ public:
 		delay = 0.1;
 	}
 };
+
+Bullets bullets;
 
 class Global {
 public:
@@ -248,7 +252,7 @@ public:
 		if (vi == NULL) {
 			printf("\n\tno appropriate visual found\n\n");
 			exit(EXIT_FAILURE);
-		} 
+		}
 		Colormap cmap = XCreateColormap(dpy, root, vi->visual, AllocNone);
 		swa.colormap = cmap;
 		swa.event_mask = ExposureMask | KeyPressMask | KeyReleaseMask |
@@ -334,8 +338,8 @@ public:
 			sscanf(line, "%i %i", &width, &height);
 			fgets(line, 200, fpi);
 			//get pixel data
-			int n = width * height * 3;			
-			data = new unsigned char[n];			
+			int n = width * height * 3;
+			data = new unsigned char[n];
 			for (int i=0; i<n; i++)
 				data[i] = fgetc(fpi);
 			fclose(fpi);
@@ -521,11 +525,24 @@ void checkMouse(XEvent *e)
 	}
 	if (e->type == ButtonPress) {
 		if (e->xbutton.button==1) {
+<<<<<<< HEAD
 			cout << "Mouse press" << endl;
 			extern Rect create_menu_button(int gl_xres, int gl_yres);
 			Rect menu = create_menu_button(gl.xres, gl.yres);
 			extern void check_menu_press(XEvent *e, Rect r, int *global);
 			check_menu_press(e, menu, &gl.showCredits);
+=======
+			//Left button is down
+			cout << "left mouse button press" << endl;
+			struct timespec bt;
+			clock_gettime(CLOCK_REALTIME, &bt);
+			double ts = timers.timeDiff(&bullets.bulletTimer, &bt);
+			if (ts > 0.1) {
+				cout << "about to shoot" << endl;
+				timers.timeCopy(&bullets.bulletTimer, &bt);
+				shootBullet(&bullets, &bt);
+			}
+>>>>>>> 432253eb73d8cda48c8a11f062a3681b762838a9
 		}
 		if (e->xbutton.button==3) {
 			//Right button is down
@@ -545,11 +562,16 @@ void screenCapture()
 	static int fnum = 0;
 	static int vid = 0;
 	if (!vid) {
-		system("mkdir ./vid");
-		vid = 1;
+		DIR* viddir = opendir("vid");
+		if (viddir) {
+			closedir(viddir);
+		} else {
+			system("mkdir ./vid");
+			vid = 1;
+		}
 	}
 	unsigned char *data = (unsigned char *)malloc(gl.xres * gl.yres * 3);
-    glReadPixels(0, 0, gl.xres, gl.yres, GL_RGB, GL_UNSIGNED_BYTE, data);
+	glReadPixels(0, 0, gl.xres, gl.yres, GL_RGB, GL_UNSIGNED_BYTE, data);
 	char ts[32];
 	sprintf(ts, "./vid/pic%03i.ppm", fnum);
 	FILE *fpo = fopen(ts,"w");	
@@ -598,7 +620,7 @@ int checkKeys(XEvent *e)
 	(void)shift;
 	switch (key) {
 		case XK_s:
-			screenCapture();
+			// screenCapture();
 			break;
 		case XK_m:
 			gl.movie ^= 1;
@@ -704,6 +726,7 @@ void physics(void)
 			gl.exp44.pos[0] -= 2.0 * (0.05 / gl.delay);
 		}
 	}
+
 	if (gl.exp.onoff) {
 		//explosion is happening
 		timers.recordTime(&timers.timeCurrent);
@@ -757,6 +780,19 @@ void physics(void)
 		gl.ball_vel[1] -= 0.9;
 	}
 	gl.ball_pos[1] += gl.ball_vel[1];
+
+	if (gl.keys[XK_space]) {
+		//a little time between each bullet
+		struct timespec bt;
+		clock_gettime(CLOCK_REALTIME, &bt);
+		double ts = timers.timeDiff(&bullets.bulletTimer, &bt);
+		if (ts > 0.1) {
+			timers.timeCopy(&bullets.bulletTimer, &bt);
+			shootBullet(&bullets, &bt);
+		}
+	}
+	//update bullet position
+	updateBulletPosition(&bullets, gl.xres, gl.yres);
 }
 
 void show_credits(Rect x, int y)
@@ -764,8 +800,8 @@ void show_credits(Rect x, int y)
 	glClear(GL_COLOR_BUFFER_BIT);
 	extern void masonP(Rect x, int y);
 	extern void showMasonPicture(int x, int y, GLuint textid);
-    // Mason
-    x.bot -= 100;
+	// Mason
+	x.bot -= 100;
 	masonP(x, y);
 	showMasonPicture(500, x.bot, gl.creditPicsTexture[MASON]);
 	// Fern
@@ -781,9 +817,7 @@ void show_credits(Rect x, int y)
 	printHasunName(x, y);
 	showHasunPicture(500, x.bot, gl.creditPicsTexture[HASUN]);
 	// Victor
-	extern void showVictorPicture(int x, int y, GLuint textid);
-	extern void showVictorText(Rect r);
-    x.bot -= 100;
+	x.bot -= 100;
 	showVictorText(x);
 	showVictorPicture(500, x.bot, gl.creditPicsTexture[VICTOR]);
 	// Emil
@@ -998,6 +1032,7 @@ void render(void)
 		}
 		
 		//will add to menu
+<<<<<<< HEAD
 		 unsigned int c = 0x00ffff44;
 		 r.bot = gl.yres - 20;
 		 r.left = 10;
@@ -1013,5 +1048,25 @@ void render(void)
 		if (gl.movie) {
 			screenCapture();
 		}
+=======
+		// unsigned int c = 0x00ffff44;
+		// r.bot = gl.yres - 20;
+		// r.left = 10;
+		// r.center = 0;
+		// ggprint8b(&r, 16, c, "W   Walk cycle");
+		// ggprint8b(&r, 16, c, "E   Explosion");
+		// ggprint8b(&r, 16, c, "+   faster");
+		// ggprint8b(&r, 16, c, "-   slower");
+		// ggprint8b(&r, 16, c, "right arrow -> walk right");
+		// ggprint8b(&r, 16, c, "left arrow  <- walk left");
+		// ggprint8b(&r, 16, c, "frame: %i", gl.walkFrame);
+		// ggprint8b(&r, 16, c, "credits   c");
+		// if (gl.movie) {
+		// 	screenCapture();
+		// }
+
+		//draw bullets
+		drawBullets(&bullets);
+>>>>>>> 432253eb73d8cda48c8a11f062a3681b762838a9
 	}
 }
