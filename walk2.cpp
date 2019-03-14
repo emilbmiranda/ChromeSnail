@@ -526,10 +526,10 @@ void checkMouse(XEvent *e)
 	if (e->type == ButtonPress) {
 		if (e->xbutton.button==1) {
 			cout << "Mouse press" << endl;
-			extern Rect create_menu_button(int gl_xres, int gl_yres);
-			Rect menu = create_menu_button(gl.xres, gl.yres);
-			extern void check_menu_press(XEvent *e, Rect r, int *global);
-			check_menu_press(e, menu, &gl.showCredits);
+			//extern Rect create_menu_button(int gl_xres, int gl_yres);
+			//Rect menu = create_menu_button(gl.xres, gl.yres);
+			//extern void check_menu_press(XEvent *e, Rect r, int *global);
+			//check_menu_press(e, menu, &gl.showCredits);
 		}
 		if (e->xbutton.button==3) {
 			//Right button is down
