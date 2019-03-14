@@ -44,8 +44,8 @@ typedef Flt	Matrix[4][4];
 #define VecCopy(a,b) (b)[0]=(a)[0];(b)[1]=(a)[1];(b)[2]=(a)[2]
 #define VecDot(a,b)	((a)[0]*(b)[0]+(a)[1]*(b)[1]+(a)[2]*(b)[2])
 #define VecSub(a,b,c) (c)[0]=(a)[0]-(b)[0]; \
-                      (c)[1]=(a)[1]-(b)[1]; \
-                      (c)[2]=(a)[2]-(b)[2]
+					  (c)[1]=(a)[1]-(b)[1]; \
+					  (c)[2]=(a)[2]-(b)[2]
 //constants
 const float timeslice = 1.0f;
 const float gravity = -0.2f;
@@ -554,13 +554,13 @@ void screenCapture()
 	static int fnum = 0;
 	static int vid = 0;
 	if (!vid) {
-        DIR* viddir = opendir("vid");
-        if (viddir) {
-            closedir(viddir);
-        } else {
-    		system("mkdir ./vid");
-	    	vid = 1;
-        }
+		DIR* viddir = opendir("vid");
+		if (viddir) {
+			closedir(viddir);
+		} else {
+			system("mkdir ./vid");
+			vid = 1;
+		}
 	}
 	unsigned char *data = (unsigned char *)malloc(gl.xres * gl.yres * 3);
 	glReadPixels(0, 0, gl.xres, gl.yres, GL_RGB, GL_UNSIGNED_BYTE, data);
@@ -612,7 +612,7 @@ int checkKeys(XEvent *e)
 	(void)shift;
 	switch (key) {
 		case XK_s:
-			screenCapture();
+			// screenCapture();
 			break;
 		case XK_m:
 			gl.movie ^= 1;
@@ -718,6 +718,7 @@ void physics(void)
 			gl.exp44.pos[0] -= 2.0 * (0.05 / gl.delay);
 		}
 	}
+
 	if (gl.exp.onoff) {
 		//explosion is happening
 		timers.recordTime(&timers.timeCurrent);
@@ -1037,9 +1038,9 @@ void render(void)
 		// ggprint8b(&r, 16, c, "left arrow  <- walk left");
 		// ggprint8b(&r, 16, c, "frame: %i", gl.walkFrame);
 		// ggprint8b(&r, 16, c, "credits   c");
-		if (gl.movie) {
-			screenCapture();
-		}
+		// if (gl.movie) {
+		// 	screenCapture();
+		// }
 
 		//draw bullets
 		drawBullets(&bullets);
