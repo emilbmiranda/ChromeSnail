@@ -92,6 +92,12 @@ public:
 
 class Image;
 
+class Helicopter {
+public:
+	Vec pos;
+	Vec vel;
+} helicopter;
+
 class Sprite {
 public:
 	int onoff;
@@ -123,6 +129,7 @@ public:
 	Image *walkImage;
 	GLuint walkTexture;
 	GLuint creditPicsTexture[5];
+	GLuint helicopterTexture;
 	Vec box[20];
 	Sprite exp;
 	Sprite exp44;
@@ -257,6 +264,7 @@ public:
 		Colormap cmap = XCreateColormap(dpy, root, vi->visual, AllocNone);
 		swa.colormap = cmap;
 		swa.event_mask = ExposureMask | KeyPressMask | KeyReleaseMask |
+			ButtonPressMask | ButtonReleaseMask |
 			StructureNotifyMask | SubstructureNotifyMask;
 		win = XCreateWindow(dpy, root, 0, 0, gl.xres, gl.yres, 0,
 			vi->depth, InputOutput, vi->visual,
@@ -362,6 +370,8 @@ Image img[8] = {
 "./images/VictorM.jpg",
 "./images/EmilM.jpeg" };
 
+Image helicopter_image = "./images/helicopter.gif";
+
 void show_credits(Rect x, int y);
 
 int main(void)
@@ -444,7 +454,6 @@ void initOpengl(void)
 	//
 	//create opengl texture elements
 	glGenTextures(1, &gl.walkTexture);
-	//-------------------------------------------------------------------------
 	//silhouette
 	//this is similar to a sprite graphic
 	//
@@ -503,6 +512,26 @@ void initOpengl(void)
 			GL_RGBA, GL_UNSIGNED_BYTE, xData);
 		free(xData);
 	}
+
+	// Helicopter texture
+	glGenTextures(1, &gl.helicopterTexture);
+	//-------------------------------------------------------------------------
+	//helicopter
+	
+	int w_helicopter = helicopter_image.width;
+	int h_helicopter = helicopter_image.height;
+	//
+	glBindTexture(GL_TEXTURE_2D, gl.helicopterTexture);
+	//
+	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
+	glTexImage2D(GL_TEXTURE_2D, 0, 3, w_helicopter, h_helicopter, 0,
+		GL_RGB, GL_UNSIGNED_BYTE, helicopter_image.data);
+	//-------------------------------------------------------------------------
+	unsigned char *heliData = buildAlphaData(&helicopter_image);	
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w_helicopter, h_helicopter, 0,
+		GL_RGBA, GL_UNSIGNED_BYTE, heliData);
+	free(heliData);
 }
 
 void init()
@@ -526,16 +555,11 @@ void checkMouse(XEvent *e)
 	}
 	if (e->type == ButtonPress) {
 		if (e->xbutton.button==1) {
-			//Left button is down
-			cout << "left mouse button press" << endl;
-			struct timespec bt;
-			clock_gettime(CLOCK_REALTIME, &bt);
-			double ts = timers.timeDiff(&bullets.bulletTimer, &bt);
-			if (ts > 0.1) {
-				cout << "about to shoot" << endl;
-				timers.timeCopy(&bullets.bulletTimer, &bt);
-				shootBullet(&bullets, &bt);
-			}
+			cout << "Mouse press" << endl;
+			//extern Rect create_menu_button(int gl_xres, int gl_yres);
+			//Rect menu = create_menu_button(gl.xres, gl.yres);
+			//extern void check_menu_press(XEvent *e, Rect r, int *global);
+			//check_menu_press(e, menu, &gl.showCredits);
 		}
 		if (e->xbutton.button==3) {
 			//Right button is down
@@ -785,6 +809,18 @@ void physics(void)
 	}
 	//update bullet position
 	updateBulletPosition(&bullets, gl.xres, gl.yres);
+
+	// Helicopter
+	// helicopter.pos[0] += 10.0;
+	// if (helicopter.pos[0] > xres) {
+	// 	helicopter.pos[0] % xres;
+	// }
+}
+
+void showHelicopter(int x, int y)
+{
+	extern void renderHelicopter(int x, int y, GLuint helicopterID);
+	renderHelicopter(x, y, gl.helicopterTexture);
 }
 
 void show_credits(Rect x, int y)
@@ -827,6 +863,7 @@ void render(void)
 	//Clear the screen
 	glClearColor(0.1, 0.1, 0.1, 1.0);
 	glClear(GL_COLOR_BUFFER_BIT);
+
 	float cx = gl.xres/2.0;
 	float cy = gl.yres/2.0;
 	if (gl.showCredits) {
@@ -866,7 +903,6 @@ void render(void)
 			glEnd();
 			glPopMatrix();
 		}
-		/*
 		//
 		//========================
 		//Render the tile system
@@ -923,6 +959,7 @@ void render(void)
 		}
 		glColor3f(1.0, 1.0, 0.1);
 		glPushMatrix();
+
 		//put ball in its place
 		glTranslated(gl.ball_pos[0], lev.tile_base+gl.ball_pos[1], 0);
 		glBegin(GL_QUADS);
@@ -934,7 +971,6 @@ void render(void)
 		glPopMatrix();
 		//--------------------------------------END TILE SYSTEM
 		//
-		*/
 		//#define SHOW_FAKE_SHADOW
 		#ifdef SHOW_FAKE_SHADOW
 		glColor3f(0.25, 0.25, 0.25);
@@ -1034,6 +1070,7 @@ void render(void)
 		create_menu_button(gl.xres, gl.yres);
 		
 		//will add to menu
+<<<<<<< HEAD
 		// unsigned int c = 0x00ffff44;
 		// r.bot = gl.yres - 20;
 		// r.left = 10;
@@ -1052,5 +1089,27 @@ void render(void)
 
 		//draw bullets
 		drawBullets(&bullets);
+=======
+		 unsigned int c = 0x00ffff44;
+		 r.bot = gl.yres - 20;
+		 r.left = 10;
+		 r.center = 0;
+		 ggprint8b(&r, 16, c, "W   Walk cycle");
+		 ggprint8b(&r, 16, c, "E   Explosion");
+		 ggprint8b(&r, 16, c, "+   faster");
+		 ggprint8b(&r, 16, c, "-   slower");
+		 ggprint8b(&r, 16, c, "right arrow -> walk right");
+		 ggprint8b(&r, 16, c, "left arrow  <- walk left");
+		 ggprint8b(&r, 16, c, "frame: %i", gl.walkFrame);
+		 ggprint8b(&r, 16, c, "credits   c");
+		if (gl.movie) {
+			screenCapture();
+		}
+>>>>>>> ddf9b3d25db4f2667ace7a653113b718aef65311
 	}
+
+	// render Helicopter
+	glPushMatrix();
+	showHelicopter(100.0, 550.0);
+	glPopMatrix();
 }

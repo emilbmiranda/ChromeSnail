@@ -9,6 +9,8 @@
 #include <GL/glx.h>
 #include <math.h>
 
+using namespace std;
+
 void masonP(Rect x, int y)
 {
 	ggprint8b(&x, y, 0x00ff0000, "Mason Pawsey");
@@ -34,9 +36,25 @@ void showMasonPicture(int x, int y, GLuint textid)
 	glBegin(GL_QUADS);
 	glTexCoord2f(0.0f, 1.0f); glVertex2i(-wid,-wid);
 	glTexCoord2f(0.0f, 0.0f); glVertex2i(-wid, wid);
-	glTexCoord2f(1.0f, 0.0f); glVertex2i( wid, wid);
-	glTexCoord2f(1.0f, 1.0f); glVertex2i( wid,-wid);
+	glTexCoord2f(1.0f, 0.0f); glVertex2i(wid, wid);
+	glTexCoord2f(1.0f, 1.0f); glVertex2i(wid, -wid);
 
 	glEnd();
 	glPopMatrix();
+}
+
+void renderHelicopter(int x, int y, GLuint helicopterID)
+{
+	float fx = (float)x;
+	float fy = (float)y;
+	static int wid = 100;
+	glTranslatef(fx, fy, 0);
+	glBindTexture(GL_TEXTURE_2D, helicopterID);
+	glBegin(GL_QUADS);
+		glTexCoord2f(0.0f, 1.0f); glVertex2i(-wid,-wid);
+		glTexCoord2f(0.0f, 0.0f); glVertex2i(-wid, wid);
+		glTexCoord2f(1.0f, 0.0f); glVertex2i(wid, wid);
+		glTexCoord2f(1.0f, 1.0f); glVertex2i(wid,-wid);
+	glEnd();
+	glBindTexture(GL_TEXTURE_2D, 0);
 }
