@@ -28,6 +28,7 @@
 //#include "ppm.h"
 #include "fonts.h"
 #include "victorM.h"
+#include "fernandoH.h"
 #include <dirent.h>
 
 using namespace std;
@@ -44,8 +45,8 @@ typedef Flt	Matrix[4][4];
 #define VecCopy(a,b) (b)[0]=(a)[0];(b)[1]=(a)[1];(b)[2]=(a)[2]
 #define VecDot(a,b)	((a)[0]*(b)[0]+(a)[1]*(b)[1]+(a)[2]*(b)[2])
 #define VecSub(a,b,c) (c)[0]=(a)[0]-(b)[0]; \
-					  (c)[1]=(a)[1]-(b)[1]; \
-					  (c)[2]=(a)[2]-(b)[2]
+                      (c)[1]=(a)[1]-(b)[1]; \
+                      (c)[2]=(a)[2]-(b)[2]
 //constants
 const float timeslice = 1.0f;
 const float gravity = -0.2f;
@@ -554,13 +555,13 @@ void screenCapture()
 	static int fnum = 0;
 	static int vid = 0;
 	if (!vid) {
-		DIR* viddir = opendir("vid");
-		if (viddir) {
-			closedir(viddir);
-		} else {
-			system("mkdir ./vid");
-			vid = 1;
-		}
+        DIR* viddir = opendir("vid");
+        if (viddir) {
+            closedir(viddir);
+        } else {
+    		system("mkdir ./vid");
+	    	vid = 1;
+        }
 	}
 	unsigned char *data = (unsigned char *)malloc(gl.xres * gl.yres * 3);
 	glReadPixels(0, 0, gl.xres, gl.yres, GL_RGB, GL_UNSIGNED_BYTE, data);
@@ -612,7 +613,7 @@ int checkKeys(XEvent *e)
 	(void)shift;
 	switch (key) {
 		case XK_s:
-			// screenCapture();
+			screenCapture();
 			break;
 		case XK_m:
 			gl.movie ^= 1;
@@ -718,7 +719,6 @@ void physics(void)
 			gl.exp44.pos[0] -= 2.0 * (0.05 / gl.delay);
 		}
 	}
-
 	if (gl.exp.onoff) {
 		//explosion is happening
 		timers.recordTime(&timers.timeCurrent);
@@ -823,6 +823,7 @@ void show_credits(Rect x, int y)
 void render(void)
 {
 	Rect r;
+	Platform plat;
 	//Clear the screen
 	glClearColor(0.1, 0.1, 0.1, 1.0);
 	glClear(GL_COLOR_BUFFER_BIT);
@@ -846,6 +847,11 @@ void render(void)
 			glVertex2i(gl.xres,   0);
 			glVertex2i(0,         0);
 		glEnd();
+		// Fernando: Adding a platform entity to the game.
+		glPushMatrix();
+		glTranslated(plat.pos[0],plat.pos[1],0);	
+		plat.drawPlatform();
+		glPopMatrix();
 		//
 		//show boxes as background
 		for (int i=0; i<20; i++) {
@@ -860,6 +866,7 @@ void render(void)
 			glEnd();
 			glPopMatrix();
 		}
+		/*
 		//
 		//========================
 		//Render the tile system
@@ -925,8 +932,9 @@ void render(void)
 			glVertex2i( 10, 0);
 		glEnd();
 		glPopMatrix();
-		//--------------------------------------
+		//--------------------------------------END TILE SYSTEM
 		//
+		*/
 		//#define SHOW_FAKE_SHADOW
 		#ifdef SHOW_FAKE_SHADOW
 		glColor3f(0.25, 0.25, 0.25);
@@ -938,7 +946,7 @@ void render(void)
 		glEnd();
 		#endif
 		//
-		//
+		// Commenting this out will make the man into a white box.
 		float h = 200.0;
 		float w = h * 0.5;
 		glPushMatrix();
@@ -1038,9 +1046,9 @@ void render(void)
 		// ggprint8b(&r, 16, c, "left arrow  <- walk left");
 		// ggprint8b(&r, 16, c, "frame: %i", gl.walkFrame);
 		// ggprint8b(&r, 16, c, "credits   c");
-		// if (gl.movie) {
-		// 	screenCapture();
-		// }
+		if (gl.movie) {
+			screenCapture();
+		}
 
 		//draw bullets
 		drawBullets(&bullets);

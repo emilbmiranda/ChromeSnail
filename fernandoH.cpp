@@ -1,10 +1,19 @@
 // Program: fernandoH.cpp
 // CMPS3350
 // Author: Fernando
+
 #include <iostream>
+#include <X11/Xlib.h>
 #include <GL/glx.h>
 #include "fonts.h"
 #include <math.h>
+#include "fernandoH.h"
+
+typedef double Flt;
+typedef double Vec[3];
+typedef Flt	Matrix[4][4];
+
+#define MakeVector(v, x, y, z) (v)[0]=(x),(v)[1]=(y),(v)[2]=(z)
 
 
 void showFernandoPicture(int x, int y, GLuint textid) 
@@ -37,4 +46,24 @@ void showFernandoPicture(int x, int y, GLuint textid)
 void showFHText(Rect x)
 {
 	ggprint8b(&x, 16, 0xff3333, "Fernando Herrera");
+}
+
+Platform::Platform()
+{
+	pos[0] = 540;
+	pos[1] = 140;
+}
+void Platform::drawPlatform()
+{
+	glBegin(GL_POLYGON);
+		glVertex2f(0.0f,40.0f);
+		glVertex2f(60.0f,40.0f);
+		glVertex2f(40.0f,0.0f);
+		glVertex2f(0.0f,0.0f);
+	glEnd();
+}
+
+void initializeFH()
+{
+
 }
