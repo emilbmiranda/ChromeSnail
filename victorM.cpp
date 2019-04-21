@@ -79,23 +79,38 @@ void drawBullets(Bullets *bullets)
 	}
 }
 
-void shootBullet(Bullets *bullets, timespec *bt)
+void shootBullet(Bullets *bullets, timespec *bt, BulletDirection dir)
 {
 	//a little time between each bullet
 	//shoot a bullet...
 	if (bullets->nbullets < MAX_BULLETS) {
 		Bullet *b = &bullets->barr[bullets->nbullets];
 		timeCopy(&b->time, bt);
-		b->pos[0] = -50;
-		b->pos[1] = 0;
-		b->vel[0] = 1;
-		//b->vel[1] = 1;
 		double xdir = .5;
 		double ydir = .5;
 		b->pos[0] += xdir*20.0f;
 		b->pos[1] += ydir*20.0f;
-		b->vel[0] += xdir*6.0f + rnd()*0.1;
-		b->vel[1] += ydir*6.0f + rnd()*0.1;
+
+		if (dir == Up) {
+			b->vel[1] = ydir*6.0f;
+		} else if (dir == Back) {
+			b->vel[0] = -1.0f * (xdir*6.0f);
+		} else if (dir == Down) {
+			b->vel[1] = -1.0f * (ydir*6.0f);
+		} else if (dir == FrontDiag) {
+			b->vel[0] = xdir*6.0f;
+			b->vel[1] = ydir*6.0f;
+		} else {
+			b->vel[0] = xdir*6.0f;
+		}
+
+		#ifdef PROFILE_VICTOR
+		cout << "bullet #: " << bullets->nbullets << endl;
+		cout << "bullet direction: x = " <<  b->vel[0]
+			<< " y = " << b->vel[1] << endl;
+		cout << "bullet position: x = " << b->pos[0]
+			<< " y = " << b->pos[1] << endl;
+		#endif
 		b->color[0] = 1.0f;
 		b->color[1] = 1.0f;
 		b->color[2] = 1.0f;
@@ -117,9 +132,27 @@ void updateBulletPosition(Bullets *bullets, int xres, int yres)
 			memcpy (&bullets->barr[i], &bullets->barr[bullets->nbullets-1],
 				sizeof(Bullet));
 			bullets->nbullets--;
+			bullets->barr[i].vel[0] = 0;
+			bullets->barr[i].vel[1] = 0;
+			bullets->barr[i].pos[0] = 0;
+			bullets->barr[i].pos[1] = 0;
 			//do not increment i.
 			continue;
 		}
+		// TODO: check for out of bound
+		if(bullets->barr[i].pos[1] >= (double)xres) {
+			// delete the bullet.
+			memcpy (&bullets->barr[i], &bullets->barr[bullets->nbullets-1],
+				sizeof(Bullet));
+			bullets->nbullets--;
+			bullets->barr[i].vel[0] = 0;
+			bullets->barr[i].vel[1] = 0;
+			bullets->barr[i].pos[0] = 0;
+			bullets->barr[i].pos[1] = 0;
+			//do not increment i.
+			continue;
+		}
+
 		//move the bullet
 		b->pos[0] += b->vel[0];
 		b->pos[1] += b->vel[1];

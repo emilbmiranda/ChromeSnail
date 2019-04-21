@@ -5,11 +5,26 @@
 
 typedef double Vec[3];
 
+typedef struct t_mouse {
+	int x,y;
+	int lastx,lasty;
+	int lbuttondown;
+} Mouse;
+
 #define rnd() (((double)rand())/(double)RAND_MAX)
 #define PI 3.141592653589793
 
 const int MAX_BULLETS = 11;
 const double oobillion = 1.0 / 1e9;
+
+enum BulletDirection{
+	Front = 0,
+	Up = 1,
+	Back = 2,
+	Down = 3,
+	FrontDiag = 4,
+	BackDiag = 5
+};
 
 class Bullet {
 public:
@@ -29,7 +44,7 @@ public:
 };
 
 void drawBullets(Bullets *bullets);
-void shootBullet(Bullets *bullets, timespec *t);
+void shootBullet(Bullets *bullets, timespec *t, BulletDirection dir);
 void updateBulletPosition(Bullets *bullets, int xres, int yres);
 void showVictorText(Rect r);
 void showVictorPicture(int x, int y, GLuint textid);
