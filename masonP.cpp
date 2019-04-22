@@ -76,10 +76,10 @@ This function renders the helicopter sprite in game
 
 */
 
-void renderHelicopter(int x, int y, GLuint helicopterID)
+void renderHelicopter(int x, int y, GLuint helicopterID, float velocity)
 {
 	// Handle sprite coordinates
-	float fx = (float)x;
+    float fx = (float)x;
 	float fy = (float)y;
 	static int wid = 100;
 	glTranslatef(fx, fy, 0);
@@ -94,7 +94,7 @@ void renderHelicopter(int x, int y, GLuint helicopterID)
 
 	// Add the sprite layer to the screen
 	glBegin(GL_QUADS);
-	glTexCoord2f(0.0f, 1.0f);
+	/*glTexCoord2f(0.0f, 1.0f);
 	glVertex2i(-wid, -wid);
 	glTexCoord2f(0.0f, 0.0f);
 	glVertex2i(-wid, wid);
@@ -102,7 +102,29 @@ void renderHelicopter(int x, int y, GLuint helicopterID)
 	glVertex2i(wid, wid);
 	glTexCoord2f(1.0f, 1.0f);
 	glVertex2i(wid, -wid);
-	
+	*/
+
+if (velocity > 0.0) {
+                glTexCoord2f(1.0f, 1.0f);
+                glVertex2i(-wid,-wid);
+                glTexCoord2f(1.0f, 0.0f);
+                glVertex2i(-wid, wid);
+                glTexCoord2f(0.0f, 0.0f);
+                glVertex2i( wid, wid);
+                glTexCoord2f(0.0f, 1.0f);
+                glVertex2i( wid,-wid);
+            } else {
+                glTexCoord2f(0.0f, 1.0f);
+                glVertex2i(-wid,-wid);
+                glTexCoord2f(0.0f, 0.0f);
+                glVertex2i(-wid, wid);
+                glTexCoord2f(1.0f, 0.0f);
+                glVertex2i( wid, wid);
+                glTexCoord2f(1.0f, 1.0f);
+                glVertex2i( wid,-wid);
+            }
+
+
 	glEnd();
 	// Remove focus from the helicopter sprite to 
 	// allow the screen to render the rest of the layers

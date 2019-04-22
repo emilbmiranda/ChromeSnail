@@ -95,7 +95,7 @@ class Image;
 class Helicopter {
 public:
 	Vec pos = {100.00, 550.00};
-	Vec vel = {2.00};
+	Vec vel = {4.00};
 } helicopter;
 
 class Sprite {
@@ -871,10 +871,10 @@ void physics(void)
 	// }
 }
 
-void showHelicopter(int x, int y)
+void showHelicopter(int x, int y, float velocity)
 {
-	extern void renderHelicopter(int x, int y, GLuint helicopterID);
-	renderHelicopter(x, y, Global::getInstance().helicopterTexture);
+	extern void renderHelicopter(int x, int y, GLuint helicopterID, float velocity);
+	renderHelicopter(x, y, Global::getInstance().helicopterTexture, velocity);
 }
 
 void show_credits(Rect x, int y)
@@ -1053,28 +1053,54 @@ void render(void)
 		float fx = (float)ix / 8.0;
 		float fy = (float)iy / 2.0;
 		glBegin(GL_QUADS);
-			if (Global::getInstance().keys[XK_Left]) {
-				glTexCoord2f(fx+.125, fy+.5);
-				glVertex2i(cx-w, cy-h);
-				glTexCoord2f(fx+.125, fy);
-				glVertex2i(cx-w, cy+h);
-				glTexCoord2f(fx, fy);
-				glVertex2i(cx+w, cy+h);
-				glTexCoord2f(fx, fy+.5);
-				glVertex2i(cx+w, cy-h);
+		if (Global::getInstance().keys[XK_Left]) {
+			glTexCoord2f(fx+.125, fy+.5);
+			glVertex2i(cx-w, cy-h);
+			glTexCoord2f(fx+.125, fy);
+			glVertex2i(cx-w, cy+h);
+			glTexCoord2f(fx, fy);
+			glVertex2i(cx+w, cy+h);
+			glTexCoord2f(fx, fy+.5);
+			glVertex2i(cx+w, cy-h);
+		} else {
+			glTexCoord2f(fx, fy+.5);
+			glVertex2i(cx-w, cy-h);
+			glTexCoord2f(fx, fy);
+			glVertex2i(cx-w, cy+h);
+			glTexCoord2f(fx+.125, fy);
+			glVertex2i(cx+w, cy+h);
+			glTexCoord2f(fx+.125, fy+.5);
+			glVertex2i(cx+w, cy-h);
+		}
+		glEnd();
+		glPopMatrix();
+		/*float wid = 120;
+		glPushMatrix();
+		glBindTexture(GL_TEXTURE_2D, Global::getInstance().helicopterTexture);
+		glBegin(GL_QUADS);
+			if (helicopter.vel[0] > 0.0) {
+				glTexCoord2f(1.0f, 1.0f);
+				glVertex2i(-wid,-wid);
+				glTexCoord2f(1.0f, 0.0f);
+				glVertex2i(-wid, wid);
+				glTexCoord2f(0.0f, 0.0f);
+				glVertex2i( wid, wid);
+				glTexCoord2f(0.0f, 1.0f);
+				glVertex2i( wid,-wid);
 			} else {
-				glTexCoord2f(fx, fy+.5);
-				glVertex2i(cx-w, cy-h);
-				glTexCoord2f(fx, fy);
-				glVertex2i(cx-w, cy+h);
-				glTexCoord2f(fx+.125, fy);
-				glVertex2i(cx+w, cy+h);
-				glTexCoord2f(fx+.125, fy+.5);
-				glVertex2i(cx+w, cy-h);
+				glTexCoord2f(0.0f, 1.0f);
+				glVertex2i(-wid,-wid);
+				glTexCoord2f(0.0f, 0.0f);
+				glVertex2i(-wid, wid);
+				glTexCoord2f(1.0f, 0.0f);
+				glVertex2i( wid, wid);
+				glTexCoord2f(1.0f, 1.0f);
+				glVertex2i( wid,-wid);
 			}
 		glEnd();
 		glPopMatrix();
-		glBindTexture(GL_TEXTURE_2D, 0);
+		*/
+        glBindTexture(GL_TEXTURE_2D, 0);
 		glDisable(GL_ALPHA_TEST);
 		//
 		//
@@ -1165,6 +1191,6 @@ void render(void)
 	// render Helicopter
 	glPushMatrix();
 	// showHelicopter(100.0, 550.0);
-	showHelicopter(helicopter.pos[0], helicopter.pos[1]);
+	showHelicopter(helicopter.pos[0], helicopter.pos[1], helicopter.vel[0]);
 	glPopMatrix();
 }
