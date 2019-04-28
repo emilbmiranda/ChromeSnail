@@ -573,15 +573,6 @@ void checkMouse(XEvent *e)
 	if (e->type == ButtonPress) {
 		if (e->xbutton.button==1) {
 			//Left button is down
-			cout << "left mouse button press" << endl;
-			struct timespec bt;
-			clock_gettime(CLOCK_REALTIME, &bt);
-			double ts = timers.timeDiff(&bullets.bulletTimer, &bt);
-			if (ts > 0.1) {
-				cout << "about to shoot" << endl;
-				timers.timeCopy(&bullets.bulletTimer, &bt);
-				shootBullet(&bullets, &bt, Front);
-			}
 		}
 		if (e->xbutton.button==3) {
 			//Right button is down
