@@ -141,5 +141,4 @@ void setLastKnownHelicopterPos(float pos)
 float getLastKnownHelicopterPos()
 {
 	return lastKnownHelicopterPos;
-	//printf("lastKnownHelicopterPos: %f\n", lastKnownHelicopterPos);
 }
