@@ -45,8 +45,8 @@ typedef Flt	Matrix[4][4];
 #define VecCopy(a,b) (b)[0]=(a)[0];(b)[1]=(a)[1];(b)[2]=(a)[2]
 #define VecDot(a,b)	((a)[0]*(b)[0]+(a)[1]*(b)[1]+(a)[2]*(b)[2])
 #define VecSub(a,b,c) (c)[0]=(a)[0]-(b)[0]; \
-                      (c)[1]=(a)[1]-(b)[1]; \
-                      (c)[2]=(a)[2]-(b)[2]
+					  (c)[1]=(a)[1]-(b)[1]; \
+					  (c)[2]=(a)[2]-(b)[2]
 //constants
 const float timeslice = 1.0f;
 const float gravity = -0.2f;
@@ -126,6 +126,7 @@ public:
 	int walk;
 	int walkFrame;
 	int showCredits;
+	int displayHelicopter;
 	double delay;
 	Image *walkImage;
 	GLuint walkTexture;
@@ -173,6 +174,7 @@ private:
 		exp44.image=NULL;
 		exp44.delay = 0.022;
 		showCredits = 0;
+		displayHelicopter = 1;
 		for (int i=0; i<20; i++) {
 			box[i][0] = rnd() * xres;
 			box[i][1] = rnd() * (yres-220) + 220.0;
@@ -592,13 +594,13 @@ void screenCapture()
 	static int fnum = 0;
 	static int vid = 0;
 	if (!vid) {
-        DIR* viddir = opendir("vid");
-        if (viddir) {
-            closedir(viddir);
-        } else {
-    		system("mkdir ./vid");
-	    	vid = 1;
-        }
+		DIR* viddir = opendir("vid");
+		if (viddir) {
+			closedir(viddir);
+		} else {
+			system("mkdir ./vid");
+			vid = 1;
+		}
 	}
 	unsigned char *data = (unsigned char *)malloc(Global::getInstance().xres * Global::getInstance().yres * 3);
 	glReadPixels(0, 0, Global::getInstance().xres, Global::getInstance().yres, GL_RGB, GL_UNSIGNED_BYTE, data);
@@ -698,6 +700,7 @@ int checkKeys(XEvent *e)
 			break;
 		case XK_c:
 			Global::getInstance().showCredits ^= 1;
+			Global::getInstance().displayHelicopter ^= 1;
 			break;
 		case XK_Up:
 			break;
@@ -919,15 +922,15 @@ void render(void)
 	} else {
 		glClearColor(0.1,0.1,0.1,1.0);
 		glClear(GL_COLOR_BUFFER_BIT);
-		//
+
 		//show ground
 		glBegin(GL_QUADS);
-			glColor3f(0.2, 0.2, 0.2);
-			glVertex2i(0,       220);
-			glVertex2i(Global::getInstance().xres, 220);
-			glColor3f(0.4, 0.4, 0.4);
-			glVertex2i(Global::getInstance().xres,   0);
-			glVertex2i(0,         0);
+		glColor3f(0.2, 0.2, 0.2);
+		glVertex2i(0, 220);
+		glVertex2i(Global::getInstance().xres, 220);
+		glColor3f(0.4, 0.4, 0.4);
+		glVertex2i(Global::getInstance().xres,   0);
+		glVertex2i(0, 0);
 		glEnd();
 		// Fernando: Adding a platform entity to the game.
 		glPushMatrix();
@@ -979,10 +982,10 @@ void render(void)
 					//put tile in its place
 					glTranslated((Flt)j*dd+offx, (Flt)i*lev.ftsz[1]+offy, 0);
 					glBegin(GL_QUADS);
-						glVertex2i( 0,  0);
-						glVertex2i( 0, ty);
+						glVertex2i(0, 0);
+						glVertex2i(0, ty);
 						glVertex2i(tx, ty);
-						glVertex2i(tx,  0);
+						glVertex2i(tx, 0);
 					glEnd();
 					glPopMatrix();
 				}
@@ -991,10 +994,10 @@ void render(void)
 					glPushMatrix();
 					glTranslated((Flt)j*dd+offx, (Flt)i*lev.ftsz[1]+offy, 0);
 					glBegin(GL_QUADS);
-						glVertex2i( 0,  0);
-						glVertex2i( 0, ty);
+						glVertex2i(0, 0);
+						glVertex2i(0, ty);
 						glVertex2i(tx, ty);
-						glVertex2i(tx,  0);
+						glVertex2i(tx, 0);
 					glEnd();
 					glPopMatrix();
 				}
@@ -1091,7 +1094,7 @@ void render(void)
 		glEnd();
 		glPopMatrix();
 		*/
-        glBindTexture(GL_TEXTURE_2D, 0);
+		glBindTexture(GL_TEXTURE_2D, 0);
 		glDisable(GL_ALPHA_TEST);
 		//
 		//
@@ -1179,9 +1182,13 @@ void render(void)
 	//draw bullets
 	drawBullets(&bullets);
 
-	// render Helicopter
+	// Render the helicopter
 	glPushMatrix();
-	// showHelicopter(100.0, 550.0);
+
+	// If the credits are shown, we should hide the helicopter by moving it off screen
+	if(Global::getInstance().displayHelicopter == 0) {
+		helicopter.pos[0] = -200;
+	}
 	showHelicopter(helicopter.pos[0], helicopter.pos[1], helicopter.vel[0]);
 	glPopMatrix();
 }
