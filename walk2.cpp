@@ -61,6 +61,8 @@ const float gravity = -0.2f;
 void initOpengl();
 void checkMouse(XEvent *e);
 int checkKeys(XEvent *e);
+void setHelicopterPos(float pos);
+float lastKnownHelicopterPos();
 void init();
 void physics();
 void render();
@@ -126,6 +128,7 @@ public:
 	int walk;
 	int walkFrame;
 	int showCredits;
+	int creditsReleased;
 	int displayHelicopter;
 	double delay;
 	Image *walkImage;
@@ -174,6 +177,7 @@ private:
 		exp44.image=NULL;
 		exp44.delay = 0.022;
 		showCredits = 0;
+		creditsReleased = 0;
 		displayHelicopter = 1;
 		for (int i=0; i<20; i++) {
 			box[i][0] = rnd() * xres;
@@ -699,6 +703,10 @@ int checkKeys(XEvent *e)
 		case XK_Right:
 			break;
 		case XK_c:
+			if(Global::getInstance().showCredits == 1) {
+				helicopter.pos[0] = lastKnownHelicopterPos();
+			}
+			setHelicopterPos(helicopter.pos[0]);
 			Global::getInstance().showCredits ^= 1;
 			Global::getInstance().displayHelicopter ^= 1;
 			break;
@@ -869,6 +877,18 @@ void showHelicopter(int x, int y, float velocity)
 {
 	extern void renderHelicopter(int x, int y, GLuint helicopterID, float velocity);
 	renderHelicopter(x, y, Global::getInstance().helicopterTexture, velocity);
+}
+
+void setHelicopterPos(float pos)
+{
+	extern void setLastKnownHelicopterPos(float pos);
+	setLastKnownHelicopterPos(pos);
+}
+
+float lastKnownHelicopterPos()
+{
+	extern float getLastKnownHelicopterPos();
+	return getLastKnownHelicopterPos();
 }
 
 void show_credits(Rect x, int y)
@@ -1189,6 +1209,10 @@ void render(void)
 	if(Global::getInstance().displayHelicopter == 0) {
 		helicopter.pos[0] = -200;
 	}
+
+	// Check to see if credits have just been switched off
+	// helicopter.pos[0] = lastKnownHelicopterPos();
+	printf("Last known pos:%f\n", lastKnownHelicopterPos());
 	showHelicopter(helicopter.pos[0], helicopter.pos[1], helicopter.vel[0]);
 	glPopMatrix();
 }

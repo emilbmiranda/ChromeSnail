@@ -13,6 +13,8 @@
 #include <GL/glx.h>
 #include <math.h>
 
+float lastKnownHelicopterPos = 0.0;
+
 using namespace std;
 
 /*
@@ -129,4 +131,15 @@ void renderHelicopter(int x, int y, GLuint helicopterID, float velocity)
 	// allow the screen to render the rest of the layers
 	glBindTexture(GL_TEXTURE_2D, 0);
 	glPopMatrix();
+}
+
+void setLastKnownHelicopterPos(float pos)
+{
+	lastKnownHelicopterPos = pos;
+}
+
+float getLastKnownHelicopterPos()
+{
+	return lastKnownHelicopterPos;
+	//printf("lastKnownHelicopterPos: %f\n", lastKnownHelicopterPos);
 }
