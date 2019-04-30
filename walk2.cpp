@@ -762,6 +762,7 @@ int checkKeys(XEvent *e)
 				helicopter.pos[0] = lastKnownHelicopterPos();
 			}
 			setHelicopterPos(helicopter.pos[0]);
+			Global::getInstance().showStartMenu ^=1;
 			Global::getInstance().showCredits ^= 1;
 			Global::getInstance().displayHelicopter ^= 1;
 			break;
