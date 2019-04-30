@@ -129,7 +129,6 @@ public:
 	int walk;
 	int walkFrame;
 	int showCredits;
-	int creditsReleased;
 	int displayHelicopter;
 	int showStartMenu;
 	double delay;
@@ -182,7 +181,6 @@ private:
 		exp44.image=NULL;
 		exp44.delay = 0.022;
 		showCredits = 0;
-		creditsReleased = 0;
 		displayHelicopter = 1;
 		showStartMenu = 1;
 		for (int i=0; i<20; i++) {
@@ -757,6 +755,9 @@ int checkKeys(XEvent *e)
 		case XK_Right:
 			break;
 		case XK_c:
+			// If the credits are currently being shown, we are about to hide them/
+			// We load the helicopter with the last known position so it will resume
+			// where it left off.
 			if(Global::getInstance().showCredits == 1) {
 				helicopter.pos[0] = lastKnownHelicopterPos();
 			}
@@ -1276,6 +1277,7 @@ void render(void)
 		helicopter.pos[0] = -200;
 	}
 
+<<<<<<< HEAD
 	// Check to see if credits have just been switched off
 	// helicopter.pos[0] = lastKnownHelicopterPos();
 	if (Global::getInstance().showStartMenu != 1) {
@@ -1283,4 +1285,8 @@ void render(void)
 		showHelicopter(helicopter.pos[0], helicopter.pos[1], helicopter.vel[0]);
 		glPopMatrix();
 	}
+=======
+	showHelicopter(helicopter.pos[0], helicopter.pos[1], helicopter.vel[0]);
+	glPopMatrix();
+>>>>>>> 99c54f73eeb9340fcb6b3ed4a794acb4c462df4b
 }
