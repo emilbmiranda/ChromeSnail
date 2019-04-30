@@ -1276,8 +1276,6 @@ void render(void)
 	if(Global::getInstance().displayHelicopter == 0) {
 		helicopter.pos[0] = -200;
 	}
-
-<<<<<<< HEAD
 	// Check to see if credits have just been switched off
 	// helicopter.pos[0] = lastKnownHelicopterPos();
 	if (Global::getInstance().showStartMenu != 1) {
@@ -1285,8 +1283,4 @@ void render(void)
 		showHelicopter(helicopter.pos[0], helicopter.pos[1], helicopter.vel[0]);
 		glPopMatrix();
 	}
-=======
-	showHelicopter(helicopter.pos[0], helicopter.pos[1], helicopter.vel[0]);
-	glPopMatrix();
->>>>>>> 99c54f73eeb9340fcb6b3ed4a794acb4c462df4b
 }
