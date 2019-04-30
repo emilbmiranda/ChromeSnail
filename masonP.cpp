@@ -1,5 +1,3 @@
-
-
 // Course:   CMPS 3350 Software Engineering
 // File: 	 masonP.cpp
 // Auhtour:  Mason Pawsey 
@@ -60,7 +58,7 @@ void showMasonPicture(int x, int y, GLuint textid)
 
 	glBegin(GL_QUADS);
 	glTexCoord2f(0.0f, 1.0f);
-	glVertex2i(-wid,-wid);
+	glVertex2i(-wid, -wid);
 	glTexCoord2f(0.0f, 0.0f);
 	glVertex2i(-wid, wid);
 	glTexCoord2f(1.0f, 0.0f);
@@ -108,22 +106,22 @@ void renderHelicopter(int x, int y, GLuint helicopterID, float velocity)
 
 	if (velocity > 0.0) {
 		glTexCoord2f(1.0f, 1.0f);
-		glVertex2i(-wid,-wid);
+		glVertex2i(-wid, -wid);
 		glTexCoord2f(1.0f, 0.0f);
 		glVertex2i(-wid, wid);
 		glTexCoord2f(0.0f, 0.0f);
-		glVertex2i( wid, wid);
+		glVertex2i(wid, wid);
 		glTexCoord2f(0.0f, 1.0f);
-		glVertex2i( wid,-wid);
+		glVertex2i(wid, -wid);
 	} else {
 		glTexCoord2f(0.0f, 1.0f);
-		glVertex2i(-wid,-wid);
+		glVertex2i(-wid, -wid);
 		glTexCoord2f(0.0f, 0.0f);
 		glVertex2i(-wid, wid);
 		glTexCoord2f(1.0f, 0.0f);
-		glVertex2i( wid, wid);
+		glVertex2i(wid, wid);
 		glTexCoord2f(1.0f, 1.0f);
-		glVertex2i( wid,-wid);
+		glVertex2i(wid, -wid);
 	}
 
 	glEnd();
