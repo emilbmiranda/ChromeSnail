@@ -762,7 +762,7 @@ int checkKeys(XEvent *e)
 				helicopter.pos[0] = lastKnownHelicopterPos();
 			}
 			setHelicopterPos(helicopter.pos[0]);
-			Global::getInstance().showStartMenu ^=1;
+			//Global::getInstance().showStartMenu ^=1;
 			Global::getInstance().showCredits ^= 1;
 			Global::getInstance().displayHelicopter ^= 1;
 			break;
@@ -1280,7 +1280,7 @@ void render(void)
 	// Check to see if credits have just been switched off
 	// helicopter.pos[0] = lastKnownHelicopterPos();
 	if (Global::getInstance().showStartMenu != 1) {
-		printf("Last known pos:%f\n", lastKnownHelicopterPos());
+		// printf("Last known pos:%f\n", lastKnownHelicopterPos());
 		showHelicopter(helicopter.pos[0], helicopter.pos[1], helicopter.vel[0]);
 		glPopMatrix();
 	}
