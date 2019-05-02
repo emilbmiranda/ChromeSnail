@@ -6,7 +6,8 @@
 #include "victorM.h"
 using namespace std;
 
-Bullets bullets;
+//Bullets bullets;
+BList bullets;
 
 void testBulletFunction()
 {
@@ -15,12 +16,12 @@ void testBulletFunction()
 	timeCopy(&bullets.bulletTimer, &bt);
 
 	Bullet b;
-	bullets.barr[0] = b;
+	bullets.Add();//.barr[0] = b;
 
-	shootBullet(&bullets, &bt);
+	shootBullet(&bullets, &bt, Front);
 
-	if (bullets.nbullets != 1) {
-		cout << "bullets: " << bullets.nbullets << endl;
+	if (bullets.Count() != 1) {
+		cout << "bullets: " << bullets.Count() << endl;
 	}
 }
 

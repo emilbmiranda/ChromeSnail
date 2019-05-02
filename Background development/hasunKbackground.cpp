@@ -122,7 +122,7 @@ public:
 } timers;
 
 
-Image img[2] = {"Mission_1.png","go.png"};
+Image img[2] = {"Mission_1.png","go.gif"};
 
 class Texture {
 public:
@@ -130,6 +130,8 @@ public:
 	GLuint backTexture;
 	float xc[2];
 	float yc[2];
+	Image *goImage;
+	GLuint goTexture; 
 };
 
 class Global {
@@ -256,6 +258,39 @@ int main()
 	return 0;
 }
 
+unsigned char *buildAlphaData(Image *img)
+{
+	//add 4th component to RGB stream...
+	int i;
+	unsigned char *newdata, *ptr;
+	unsigned char *data = (unsigned char *)img->data;
+	newdata = (unsigned char *)malloc(img->width * img->height * 4);
+	ptr = newdata;
+	unsigned char a,b,c;
+	//use the first pixel in the image as the transparent color.
+	unsigned char t0 = *(data+0);
+	unsigned char t1 = *(data+1);
+	unsigned char t2 = *(data+2);
+	for (i=0; i<img->width * img->height * 3; i+=3) {
+		a = *(data+0);
+		b = *(data+1);
+		c = *(data+2);
+		*(ptr+0) = a;
+		*(ptr+1) = b;
+		*(ptr+2) = c;
+		*(ptr+3) = 1;
+		if (a==t0 && b==t1 && c==t2)
+			*(ptr+3) = 0;
+		//-----------------------------------------------
+		ptr += 4;
+		data += 3;
+	}
+	return newdata;
+}
+
+
+
+
 void init_opengl(void)
 {
 	//OpenGL initialization
@@ -287,6 +322,28 @@ void init_opengl(void)
 	g.tex.xc[1] = 0.25;
 	g.tex.yc[0] = 0.0;
 	g.tex.yc[1] = 1.0;
+
+	//create opengl texture elements
+	w = img[1].width;
+	h = img[1].height;
+	glGenTextures(1, &g.exp.tex);
+	//-------------------------------------------------------------------------
+	
+	g.tex.goImage = &img[1];
+	//create opengl texture elements
+	glGenTextures(1, &g.tex.goTexture);
+	w = g.tex.goImage->width;
+	h = g.tex.goImage->height;
+	//this is similar to a sprite graphic
+	glBindTexture(GL_TEXTURE_2D, g.exp.tex);
+	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
+	//must build a new set of data...
+	unsigned char *xData = buildAlphaData(&img[1]);	
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0,
+		GL_RGBA, GL_UNSIGNED_BYTE, xData);
+	free(xData);
+
 }
 
 void check_mouse(XEvent *e)
@@ -351,9 +408,10 @@ void physics()
 		//explosion is happening 
 		timers.recordTime(&timers.timeCurrent); 
 		double timeSpan = timers.timeDiff(&g.exp.time, &timers.timeCurrent);
+		
 		if (timeSpan > g.exp.delay) {
 			++g.exp.frame;
-			if (g.exp.frame >= 23) {
+			if (g.exp.frame >= 14) {
 				g.exp.onoff = 0;
 				g.exp.frame = 0;
 			} 
@@ -377,7 +435,7 @@ void render()
 		glTexCoord2f(g.tex.xc[1], g.tex.yc[0]); glVertex2i(g.xres, g.yres);
 		glTexCoord2f(g.tex.xc[1], g.tex.yc[1]); glVertex2i(g.xres, 0);
 	glEnd();
-	if (g.exp.onoff) {
+	/*if (g.exp.onoff) {
 		float h = 80.0;
 		float w = 80.0;
 		glPushMatrix();
@@ -385,11 +443,11 @@ void render()
 		glBindTexture(GL_TEXTURE_2D, g.exp.tex);
 		glEnable(GL_ALPHA_TEST);
 		glAlphaFunc(GL_GREATER, 0.0f);
-		glColor4ub(255,255,255,255);
+		glColor4ub(255,255,255,255); //255 originally
 		glTranslated(g.exp.pos[0], g.exp.pos[1], g.exp.pos[2]);
-		int ix = g.exp.frame % 5;
-		int iy = g.exp.frame / 5;
-		float tx = (float)ix / 5.0;
+		int ix = g.exp.frame % 16;
+		int iy = g.exp.frame / 16;
+		float tx = (float)ix / 8.0;
 		float ty = (float)iy / 5.0;
 		glBegin(GL_QUADS);
 			glTexCoord2f(tx,     ty+0.2); glVertex2i(cx-w, cy-h);
@@ -400,7 +458,8 @@ void render()
 		glPopMatrix();
 		glBindTexture(GL_TEXTURE_2D, 0);
 		glDisable(GL_ALPHA_TEST);
-	}
+
+	}*/
 }
 
 
