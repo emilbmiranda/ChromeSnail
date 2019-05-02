@@ -131,6 +131,7 @@ public:
 	int showCredits;
 	int displayHelicopter;
 	int showStartMenu;
+	int showLeaderboard;
 	double delay;
 	Image *walkImage;
 	GLuint walkTexture;
@@ -139,6 +140,7 @@ public:
 	GLuint startMenuTexture;
 	GLuint logoTexture;
 	GLuint keysTexture;
+	GLuint leaderboardTexture;
 	Vec box[20];
 	Sprite exp;
 	Sprite exp44;
@@ -400,7 +402,8 @@ Image img[8] = {
 Image helicopter_image = "./images/helicopter.gif";
 Image start_menu_image = "./images/StartMenu.jpg";
 Image logo_image = "./images/Logo.gif";
-Image keys_image = "./images/Keys.gif"; 
+Image keys_image = "./images/Keys.gif";
+Image leaderboard_image = "./images/Leaderboard.gif"; 
 
 void show_credits(Rect x, int y);
 
@@ -593,7 +596,7 @@ void initOpengl(void)
 		GL_RGBA, GL_UNSIGNED_BYTE, logoData);
 	free(logoData);
 
-	// keys on start menu texture and binding
+	// start menu keys texture and binding
 	glGenTextures(1, &Global::getInstance().keysTexture);	
 	int kxres = keys_image.width;
 	int kyres = keys_image.height;
@@ -607,6 +610,21 @@ void initOpengl(void)
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, kxres, kyres, 0,
 		GL_RGBA, GL_UNSIGNED_BYTE, keysData);
 	free(keysData);
+
+	// leaderboard texture and binding
+	glGenTextures(1, &Global::getInstance().leaderboardTexture);	
+	int lexres = leaderboard_image.width;
+	int leyres = leaderboard_image.height;
+	glBindTexture(GL_TEXTURE_2D, Global::getInstance().leaderboardTexture);
+	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	unsigned char *leaderboardData = buildAlphaData(&leaderboard_image);	
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, lexres, leyres, 0,
+		GL_RGBA, GL_UNSIGNED_BYTE, leaderboardData);
+	free(leaderboardData);
 }
 
 void init()
@@ -779,7 +797,11 @@ int checkKeys(XEvent *e)
 			Global::getInstance().delay += 0.005;
 			break;
 		case XK_p:
+
 			Global::getInstance().showStartMenu ^= 1;
+			break;
+		case XK_l:
+			Global::getInstance().showLeaderboard ^= 1;
 			break;
 		case XK_Escape:
 			return 1;
@@ -1000,6 +1022,10 @@ void render(void)
 			Global::getInstance().logoTexture);
 		show_keys(Global::getInstance().xres, Global::getInstance().yres, 
 			Global::getInstance().keysTexture);
+		if (Global::getInstance().showLeaderboard) {
+			leaderboard(Global::getInstance().xres, Global::getInstance().yres, 
+				Global::getInstance().leaderboardTexture);
+		}
 	} else {
 		if (Global::getInstance().showCredits) {
 			r.bot = Global::getInstance().yres - 20;
