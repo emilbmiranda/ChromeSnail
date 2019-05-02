@@ -44,11 +44,8 @@ Bullet* BList::Get(int index)
 	return output;
 }
 
-void BList::Add()
+Bullet* BList::Add()
 {
-	if (nbullets >= MAX_BULLETS)
-		return;
-
 	Bullet *temp = new Bullet();
 	temp->next = NULL;
 
@@ -60,13 +57,12 @@ void BList::Add()
 		tail = temp;
 	}
 	nbullets++;
+	return temp;
 }
 
 void BList::Remove(int index)
 {
 	if(!head)
-		return;
-	if (index >= MAX_BULLETS || index < 0)
 		return;
 
 	Bullet *temp = head;
@@ -163,13 +159,12 @@ void shootBullet(BList *bullets, timespec *bt, BulletDirection dir)
 		cout << "create bullet..." << endl;
 		#endif
 
-		bullets->Add();
+		Bullet *b = bullets->Add();
 		
 		#ifdef PROFILE_VICTOR
 		cout << "get newly created bullet..." << endl;
 		#endif
 
-		Bullet *b = bullets->Get(bullets->Count()-1);
 		timeCopy(&b->time, bt);
 		double xdir = .5;
 		double ydir = .5;
@@ -211,23 +206,12 @@ void updateBulletPosition(BList *bullets, int xres, int yres)
 		Bullet *b = bullets->Get(i);
 		if (!b)
 			break;
-
-		//How long has bullet been alive?
-		double ts = timeDiff(&b->time, &bt);
-		#ifdef PROFILE_VICTOR
-		cout << "i# " << i << " timed difference: " << ts << endl;
-		#endif
-		if (ts > 2.5) {
-			#ifdef PROFILE_VICTOR
-			cout << "removing i# timed: " << i << endl;
-			#endif
-			//time to delete the bullet.
-			bullets->Remove(i);
-			//do not increment i.
-			continue;
-		}
-		// TODO: check for out of bound
-		if(b->pos[0] >= (double)xres) {
+		
+		// check for out of bound and remove bullet
+		if(b->pos[0] >= (double)xres 
+			|| b->pos[0] <= 0.0
+			|| b->pos[1] >= (double)yres
+			|| b->pos[1] <= 0.0) {
 			#ifdef PROFILE_VICTOR
 			cout << "removing i# bound: " << i << endl;
 			#endif
@@ -245,19 +229,6 @@ void updateBulletPosition(BList *bullets, int xres, int yres)
 		#ifdef PROFILE_VICTOR
 		cout << "new x pos: " << b->pos[0] << endl;
 		#endif
-		//Check for collision with window edges
-		if (b->pos[0] < 0.0) {
-			b->pos[0] += (float)xres;
-		}
-		else if (b->pos[0] > (float)xres) {
-			b->pos[0] -= (float)xres;
-		}
-		else if (b->pos[1] < 0.0) {
-			b->pos[1] += (float)yres;
-		}
-		else if (b->pos[1] > (float)yres) {
-			b->pos[1] -= (float)yres;
-		}
 		i++;
 	}
 }

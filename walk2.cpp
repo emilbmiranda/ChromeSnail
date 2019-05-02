@@ -127,6 +127,9 @@ public:
 //Bullets bullets;
 BList bullets;
 
+
+
+
 // Global is using the singleton pattern
 class Global {
 public:
@@ -139,6 +142,7 @@ public:
 	int displayHelicopter;
 	int showStartMenu;
 	int dropBomb = 0;
+	int showCrate;
 	double delay;
 	Image *walkImage;
 	GLuint walkTexture;
@@ -148,6 +152,8 @@ public:
 	GLuint startMenuTexture;
 	GLuint logoTexture;
 	GLuint keysTexture;
+	// Fernando: Need to create a GLuint object for the crate texture.
+	GLuint crateTexture;
 	Vec box[20];
 	Sprite exp;
 	Sprite exp44;
@@ -191,6 +197,7 @@ private:
 		showCredits = 0;
 		displayHelicopter = 1;
 		showStartMenu = 1;
+		showCrate = 1;
 		for (int i=0; i<20; i++) {
 			box[i][0] = rnd() * xres;
 			box[i][1] = rnd() * (yres-220) + 220.0;
@@ -412,6 +419,8 @@ Image bomb_image = "./images/bomb.gif";
 Image start_menu_image = "./images/StartMenu.jpg";
 Image logo_image = "./images/Logo.gif";
 Image keys_image = "./images/Keys.gif"; 
+// Fernando: Create Image object that references .jpg
+Image crate_image = "./images/wall.gif";
 
 void show_credits(Rect x, int y);
 
@@ -576,7 +585,6 @@ void initOpengl(void)
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w_helicopter, h_helicopter, 0,
 		GL_RGBA, GL_UNSIGNED_BYTE, heliData);
 	free(heliData);
-
 	// bomb texture
 	glGenTextures(1, &Global::getInstance().bombTexture);
 	//-------------------------------------------------------------------------
@@ -596,7 +604,27 @@ void initOpengl(void)
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w_bomb, h_bomb, 0,
 		GL_RGBA, GL_UNSIGNED_BYTE, bombData);
 	free(bombData);
+=======
+	// Fernando: Get a crate texture object for reasons.
+	glGenTextures(1, &Global::getInstance().crateTexture);
+	//-Crate texture----------------------------------------------------------
 
+	int crate_h = crate_image.height;
+	int crate_w = crate_image.width;
+	// Fernando: We call this object again because...
+	glBindTexture(GL_TEXTURE_2D, Global::getInstance().crateTexture);
+	// Fernando: We call this block because...
+	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
+	glTexImage2D(GL_TEXTURE_2D, 0, 3, crate_w, crate_h, 0, GL_RGB,
+		GL_UNSIGNED_BYTE, crate_image.data);
+
+	unsigned char *crateData = buildAlphaData(&crate_image);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, crate_w, crate_h, 0, GL_RGBA,
+		GL_UNSIGNED_BYTE, crateData);
+	free(crateData);
+	
+	//-Crate texture-END------------------------------------------------------
 	// Start Menu texture and binding
 	glGenTextures(1, &Global::getInstance().startMenuTexture);	
 	int xres = start_menu_image.width;
@@ -1107,7 +1135,7 @@ void show_credits(Rect x, int y)
 void render(void)
 {
 	Rect r;
-	Platform plat;
+	Platform plat1(540,140);
 	//Clear the screen
 	glClearColor(0.1, 0.1, 0.1, 1.0);
 	glClear(GL_COLOR_BUFFER_BIT);
@@ -1142,8 +1170,9 @@ void render(void)
 			glEnd();
 			// Fernando: Adding a platform entity to the game.
 			glPushMatrix();
-			glTranslated(plat.pos[0],plat.pos[1],0);	
-			plat.drawPlatform();
+			glTranslated(plat1.pos[0],plat1.pos[1],0);	
+			plat1.drawPlatform(plat1.getXpos(), plat1.getYpos(), 
+				Global::getInstance().crateTexture);
 			glPopMatrix();
 			//
 			//show boxes as background
@@ -1239,7 +1268,7 @@ void render(void)
 			#endif
 			//
 			// Commenting this out will make the man into a white box.
-			float h = 200.0;
+			float h = 50.0;
 			float w = h * 0.5;
 			glPushMatrix();
 			glColor3f(1.0, 1.0, 1.0);
@@ -1391,13 +1420,11 @@ void render(void)
 			glPushMatrix();
 			showBomb(bomb.pos[0], bomb.pos[1]-100, bomb.vel[0]);;
 			glPopMatrix();
+			//draw bullets
+			drawBullets(&bullets);
 		}
 
 	}
-
-	//draw bullets
-	drawBullets(&bullets);
-
 	// Render the helicopter
 	// glPushMatrix();
 	// showHelicopter(helicopter.pos[0], helicopter.pos[1], helicopter.vel[0]);

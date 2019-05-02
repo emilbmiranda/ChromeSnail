@@ -15,7 +15,7 @@ typedef struct t_mouse
 #define rnd() (((double)rand())/(double)RAND_MAX)
 #define PI 3.141592653589793
 
-const int MAX_BULLETS = 11;
+const int MAX_BULLETS = 100;
 const double oobillion = 1.0 / 1e9;
 
 enum BulletDirection 
@@ -46,7 +46,7 @@ private:
 	int nbullets;
 public:
 	struct timespec bulletTimer;
-	void Add();
+	Bullet* Add();
 	void Remove(int index);
 	Bullet* Get(int index);
 	int Count();
