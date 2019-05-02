@@ -141,7 +141,6 @@ public:
 	int showCredits;
 	int displayHelicopter;
 	int showStartMenu;
-	int showLeaderboard;
 	int dropBomb = 0;
 	int showCrate;
 	double delay;
@@ -153,8 +152,7 @@ public:
 	GLuint startMenuTexture;
 	GLuint logoTexture;
 	GLuint keysTexture;
-	GLuint leaderboardTexture;
-	GLuint leaderboardTitleTexture;
+	// Fernando: Need to create a GLuint object for the crate texture.
 	GLuint crateTexture;
 	Vec box[20];
 	Sprite exp;
@@ -420,9 +418,7 @@ Image helicopter_image = "./images/helicopter.gif";
 Image bomb_image = "./images/bomb.gif";
 Image start_menu_image = "./images/StartMenu.jpg";
 Image logo_image = "./images/Logo.gif";
-Image keys_image = "./images/Keys.gif";
-Image leaderboard_image = "./images/Leaderboard.gif";
-Image leaderboard_title_image = "./images/LeaderboardTitle.gif"; 
+Image keys_image = "./images/Keys.gif"; 
 // Fernando: Create Image object that references .jpg
 Image crate_image = "./images/wall.gif";
 
@@ -608,6 +604,7 @@ void initOpengl(void)
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w_bomb, h_bomb, 0,
 		GL_RGBA, GL_UNSIGNED_BYTE, bombData);
 	free(bombData);
+
 	// Fernando: Get a crate texture object for reasons.
 	glGenTextures(1, &Global::getInstance().crateTexture);
 	//-Crate texture----------------------------------------------------------
@@ -658,7 +655,7 @@ void initOpengl(void)
 		GL_RGBA, GL_UNSIGNED_BYTE, logoData);
 	free(logoData);
 
-	// start menu keys texture and binding
+	// keys on start menu texture and binding
 	glGenTextures(1, &Global::getInstance().keysTexture);	
 	int kxres = keys_image.width;
 	int kyres = keys_image.height;
@@ -672,36 +669,6 @@ void initOpengl(void)
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, kxres, kyres, 0,
 		GL_RGBA, GL_UNSIGNED_BYTE, keysData);
 	free(keysData);
-
-	// leaderboard texture and binding
-	glGenTextures(1, &Global::getInstance().leaderboardTexture);	
-	int lexres = leaderboard_image.width;
-	int leyres = leaderboard_image.height;
-	glBindTexture(GL_TEXTURE_2D, Global::getInstance().leaderboardTexture);
-	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-	unsigned char *leaderboardData = buildAlphaData(&leaderboard_image);	
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, lexres, leyres, 0,
-		GL_RGBA, GL_UNSIGNED_BYTE, leaderboardData);
-	free(leaderboardData);
-
-	//leaderboard title texture and binding
-	glGenTextures(1, &Global::getInstance().leaderboardTitleTexture);	
-	int ltxres = leaderboard_title_image.width;
-	int ltyres = leaderboard_title_image.height;
-	glBindTexture(GL_TEXTURE_2D, Global::getInstance().leaderboardTitleTexture);
-	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-	unsigned char *leaderboardTextureData = buildAlphaData(&leaderboard_title_image);	
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, ltxres, ltyres, 0,
-		GL_RGBA, GL_UNSIGNED_BYTE, leaderboardTextureData);
-	free(leaderboardTextureData);
 }
 
 void init()
@@ -808,7 +775,6 @@ void moveBomb()
 		bomb.vel[0] > 0.0))
 	{
 		bomb.vel[0] = -bomb.vel[0];
-		printf("Bomb change!\n");
 	}
 
 	bomb.pos[0] += bomb.vel[0];
@@ -819,7 +785,7 @@ void moveBomb()
 		bomb.pos[1] -= bomb.vel[1];
 	}
 
-	if(bomb.pos[1] < 315) {
+	if(bomb.pos[1] < 325) {
 		// printf("%f\n", bomb.pos[1]);
 		bomb.pos[1] = 575;
 		Global::getInstance().dropBomb = 0;
@@ -907,11 +873,7 @@ int checkKeys(XEvent *e)
 			Global::getInstance().delay += 0.005;
 			break;
 		case XK_p:
-
 			Global::getInstance().showStartMenu ^= 1;
-			break;
-		case XK_l:
-			Global::getInstance().showLeaderboard ^= 1;
 			break;
 		case XK_Escape:
 			return 1;
@@ -1186,12 +1148,6 @@ void render(void)
 			Global::getInstance().logoTexture);
 		show_keys(Global::getInstance().xres, Global::getInstance().yres, 
 			Global::getInstance().keysTexture);
-		if (Global::getInstance().showLeaderboard) {
-			leaderboard(Global::getInstance().xres, Global::getInstance().yres, 
-				Global::getInstance().leaderboardTexture);
-			leaderboard_title(Global::getInstance().xres, Global::getInstance().yres, 
-				Global::getInstance().leaderboardTitleTexture);
-		}
 	} else {
 		if (Global::getInstance().showCredits) {
 			r.bot = Global::getInstance().yres - 20;
