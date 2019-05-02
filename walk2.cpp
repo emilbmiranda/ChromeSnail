@@ -38,7 +38,7 @@ using namespace std;
 typedef double Flt;
 typedef double Vec[3];
 typedef Flt	Matrix[4][4];
-
+time_t start = time(0);
 //macros
 #define rnd() (((double)rand())/(double)RAND_MAX)
 #define random(a) (rand()%a)
@@ -97,9 +97,15 @@ class Image;
 
 class Helicopter {
 public:
-	Vec pos = {100.00, 550.00};
+	Vec pos = {100.00, 525.00};
 	Vec vel = {4.00};
 } helicopter;
+
+class Bomb {
+public:
+	Vec pos = {100.00, 570.00};
+	Vec vel = {4.00, 3.00};
+} bomb;
 
 class Sprite {
 public:
@@ -135,12 +141,14 @@ public:
 	int showCredits;
 	int displayHelicopter;
 	int showStartMenu;
+	int dropBomb = 0;
 	int showCrate;
 	double delay;
 	Image *walkImage;
 	GLuint walkTexture;
 	GLuint creditPicsTexture[5];
 	GLuint helicopterTexture;
+	GLuint bombTexture;
 	GLuint startMenuTexture;
 	GLuint logoTexture;
 	GLuint keysTexture;
@@ -407,6 +415,7 @@ Image img[8] = {
 "./images/EmilM.jpeg" };
 
 Image helicopter_image = "./images/helicopter.gif";
+Image bomb_image = "./images/bomb.gif";
 Image start_menu_image = "./images/StartMenu.jpg";
 Image logo_image = "./images/Logo.gif";
 Image keys_image = "./images/Keys.gif"; 
@@ -576,6 +585,25 @@ void initOpengl(void)
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w_helicopter, h_helicopter, 0,
 		GL_RGBA, GL_UNSIGNED_BYTE, heliData);
 	free(heliData);
+	// bomb texture
+	glGenTextures(1, &Global::getInstance().bombTexture);
+	//-------------------------------------------------------------------------
+	//bomb
+	
+	int w_bomb = bomb_image.width;
+	int h_bomb = bomb_image.height;
+	//
+	glBindTexture(GL_TEXTURE_2D, Global::getInstance().bombTexture);
+	//
+	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
+	glTexImage2D(GL_TEXTURE_2D, 0, 3, w_bomb, h_bomb, 0,
+		GL_RGB, GL_UNSIGNED_BYTE, bomb_image.data);
+	//-------------------------------------------------------------------------
+	unsigned char *bombData = buildAlphaData(&bomb_image);	
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w_bomb, h_bomb, 0,
+		GL_RGBA, GL_UNSIGNED_BYTE, bombData);
+	free(bombData);
 
 	// Fernando: Get a crate texture object for reasons.
 	glGenTextures(1, &Global::getInstance().crateTexture);
@@ -597,7 +625,6 @@ void initOpengl(void)
 	free(crateData);
 	
 	//-Crate texture-END------------------------------------------------------
-
 	// Start Menu texture and binding
 	glGenTextures(1, &Global::getInstance().startMenuTexture);	
 	int xres = start_menu_image.width;
@@ -738,6 +765,32 @@ void moveHelicopter()
 	}
 
 	helicopter.pos[0] += helicopter.vel[0];
+}
+
+void moveBomb()
+{
+	double seconds_since_start = difftime( time(0), start);
+	if ((bomb.pos[0] < -140.0 && bomb.vel[0] < 0.0) ||
+		(bomb.pos[0] >= (float)Global::getInstance().xres+140.0 &&
+		bomb.vel[0] > 0.0))
+	{
+		bomb.vel[0] = -bomb.vel[0];
+		printf("Bomb change!\n");
+	}
+
+	bomb.pos[0] += bomb.vel[0];
+	if(fmod(seconds_since_start, 3.0) == 1.0) {
+		Global::getInstance().dropBomb = 1;
+	}
+	if(Global::getInstance().dropBomb) {
+		bomb.pos[1] -= bomb.vel[1];
+	}
+
+	if(bomb.pos[1] < 315) {
+		// printf("%f\n", bomb.pos[1]);
+		bomb.pos[1] = 575;
+		Global::getInstance().dropBomb = 0;
+	}
 }
 
 int checkKeys(XEvent *e)
@@ -997,8 +1050,11 @@ void physics(void)
 		Global::getInstance().xres, 
 		Global::getInstance().yres);
 
-	// Animate the helicopter
-	moveHelicopter();
+	// Animate the helicopter, but only if the start menu isn't showing
+	if (Global::getInstance().showStartMenu != 1) {
+		moveHelicopter();
+		moveBomb();
+	}
 	// Helicopter
 	// helicopter.pos[0] += 10.0;
 	// if (helicopter.pos[0] > xres) {
@@ -1026,6 +1082,16 @@ float lastKnownHelicopterPos()
 {
 	extern float getLastKnownHelicopterPos();
 	return getLastKnownHelicopterPos();
+}
+
+void showBomb(int x, int y, float velocity)
+{
+	extern void renderBomb(int x, 
+		int y, 
+		GLuint bombID, 
+		float velocity);
+	renderBomb(x, y, 
+		Global::getInstance().bombTexture, velocity);
 }
 
 void show_credits(Rect x, int y)
@@ -1348,22 +1414,26 @@ void render(void)
 			if (Global::getInstance().movie) {
 				screenCapture();
 			}
+			glPushMatrix();
+			showHelicopter(helicopter.pos[0], helicopter.pos[1], helicopter.vel[0]);
+			glPopMatrix();
+			glPushMatrix();
+			showBomb(bomb.pos[0], bomb.pos[1]-100, bomb.vel[0]);;
+			glPopMatrix();
 			//draw bullets
 			drawBullets(&bullets);
 		}
+
 	}
 	// Render the helicopter
-	glPushMatrix();
+	// glPushMatrix();
+	// showHelicopter(helicopter.pos[0], helicopter.pos[1], helicopter.vel[0]);
+	// showBomb(bomb.pos[0], bomb.pos[1], bomb.vel[0]);
+	// printf("bomb.pos[0] %f, bomb.pos[1]: %f, bomb.vel[0]: %f\n", bomb.pos[0], bomb.pos[1], bomb.vel[0]);
+	// glPopMatrix();
 
 	// If the credits are shown, we should hide the helicopter by moving it off screen
 	if(Global::getInstance().displayHelicopter == 0) {
 		helicopter.pos[0] = -200;
-	}
-	// Check to see if credits have just been switched off
-	// helicopter.pos[0] = lastKnownHelicopterPos();
-	if (Global::getInstance().showStartMenu != 1) {
-		// printf("Last known pos:%f\n", lastKnownHelicopterPos());
-		showHelicopter(helicopter.pos[0], helicopter.pos[1], helicopter.vel[0]);
-		glPopMatrix();
 	}
 }
