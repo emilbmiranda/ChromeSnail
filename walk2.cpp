@@ -1202,7 +1202,7 @@ void render(void)
 			#endif
 			//
 			// Commenting this out will make the man into a white box.
-			float h = 200.0;
+			float h = 50.0;
 			float w = h * 0.5;
 			glPushMatrix();
 			glColor3f(1.0, 1.0, 1.0);
