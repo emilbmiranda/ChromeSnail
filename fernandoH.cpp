@@ -62,11 +62,12 @@ Platform::Platform(int x, int y)
 //void Platform::drawPlatform()
 void Platform::drawPlatform(int xpos, int ypos, GLuint crateID)
 {
+	// Change the size of the sprite.
 	static int wid = 50;
 	float fx = (float)xpos;
 	float fy = (float)ypos;
 
-	glClear(GL_COLOR_BUFFER_BIT);
+	//glClear(GL_COLOR_BUFFER_BIT);
 	//glPushMatrix();
 	glTranslatef(fx,fy,0);
 	glBindTexture(GL_TEXTURE_2D, crateID);
@@ -93,6 +94,7 @@ void Platform::drawPlatform(int xpos, int ypos, GLuint crateID)
 		glTexCoord2f(0.0f, 1.0f);
 		glVertex2i(wid, -wid);
 	glEnd();
+	// This is DEFINITELY needed.
 	glBindTexture(GL_TEXTURE_2D, 0);
 }
 
