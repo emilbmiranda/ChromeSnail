@@ -180,6 +180,9 @@ void shootBullet(BList *bullets, timespec *bt, BulletDirection dir)
 		} else if (dir == FrontDiag) {
 			b->vel[0] = xdir*6.0f;
 			b->vel[1] = ydir*6.0f;
+		} else if (dir == BackDiag) {
+			b->vel[0] = -1.0f * (xdir*6.0f);
+			b->vel[1] = ydir*6.0f;
 		} else {
 			b->vel[0] = xdir*6.0f;
 		}
