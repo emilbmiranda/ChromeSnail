@@ -1,5 +1,5 @@
 CFLAGS = -I ./include
-LFLAGS = -lrt -lX11 -lGLU -lGL -pthread -lm -lsqlite3#-lXrandr
+LFLAGS = -lrt -lX11 -lGLU -lGL -pthread -lm#-lXrandr
 
 all: walk2
 
