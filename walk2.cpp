@@ -155,7 +155,7 @@ public:
 	GLuint keysTexture;
 	GLuint leaderboardTexture;
 	GLuint leaderboardTitleTexture;
-	GLuint createTexture;
+	GLuint crateTexture;
 	Vec box[20];
 	Sprite exp;
 	Sprite exp44;
@@ -422,8 +422,7 @@ Image start_menu_image = "./images/StartMenu.jpg";
 Image logo_image = "./images/Logo.gif";
 Image keys_image = "./images/Keys.gif";
 Image leaderboard_image = "./images/Leaderboard.gif";
-Image leaderboard_title_image = "./images/LeaderboardTitle.gif";
-Image keys_image = "./images/Keys.gif"; 
+Image leaderboard_title_image = "./images/LeaderboardTitle.gif"; 
 // Fernando: Create Image object that references .jpg
 Image crate_image = "./images/wall.gif";
 
