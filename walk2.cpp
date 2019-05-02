@@ -1201,6 +1201,7 @@ void render(void)
 		} else {
 			glClearColor(0.1,0.1,0.1,1.0);
 			glClear(GL_COLOR_BUFFER_BIT);
+			
 
 			//show ground
 			glBegin(GL_QUADS);
@@ -1211,12 +1212,7 @@ void render(void)
 			glVertex2i(Global::getInstance().xres,   0);
 			glVertex2i(0, 0);
 			glEnd();
-			// Fernando: Adding a platform entity to the game.
-			glPushMatrix();
-			glTranslated(plat1.pos[0],plat1.pos[1],0);	
-			plat1.drawPlatform(plat1.getXpos(), plat1.getYpos(), 
-				Global::getInstance().crateTexture);
-			glPopMatrix();
+			
 			//
 			//show boxes as background
 			for (int i=0; i<20; i++) {
@@ -1299,6 +1295,9 @@ void render(void)
 			glPopMatrix();
 			//--------------------------------------END TILE SYSTEM
 			//
+
+		
+
 			//#define SHOW_FAKE_SHADOW
 			#ifdef SHOW_FAKE_SHADOW
 			glColor3f(0.25, 0.25, 0.25);
@@ -1465,6 +1464,15 @@ void render(void)
 			glPopMatrix();
 			//draw bullets
 			drawBullets(&bullets);
+
+			// Fernando: Adding a platform entity to the game.
+			glPushMatrix();
+			// This breaks the wall because I was translating it in the walk2
+			// file and in drawPlatform()
+			//glTranslated(plat1.pos[0],plat1.pos[1],0);	
+			plat1.drawPlatform(plat1.getXpos(), plat1.getYpos(), 
+				Global::getInstance().crateTexture);
+			glPopMatrix();
 		}
 
 	}
