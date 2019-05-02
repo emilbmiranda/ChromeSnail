@@ -1317,12 +1317,10 @@ void render(void)
 			if (Global::getInstance().movie) {
 				screenCapture();
 			}
+			//draw bullets
+			drawBullets(&bullets);
 		}
 	}
-
-	//draw bullets
-	drawBullets(&bullets);
-
 	// Render the helicopter
 	glPushMatrix();
 
