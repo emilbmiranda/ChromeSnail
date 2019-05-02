@@ -5,12 +5,12 @@
 #include <math.h>
 #include "fonts.h"
 #include "emilM.h"
-//#include <sqlite3.h>
+#include "sqlite3.h"
 #include <iostream>
 
 using namespace std;
 
-//sqlite3 *db;
+sqlite3 *db;
 int result;
 char *ErrMsg;
 bool sql_init_flag = 1;
@@ -190,49 +190,49 @@ void leaderboard_title(int xres, int yres, GLuint leaderboardTitleTexture)
 	glPopMatrix();
 }
 
-// int init_connection()
-// {
-// 	int connection = sqlite3_open("ChromeSnail.db",&db);
-// 	#ifdef SQL_UNIT_TEST
-// 	if (connection) {
-// 		cout << "Connection Unsuccessful:" <<  sqlite3_errmsg(db) << endl;
-// 		return 0;
-// 	} else {
-// 		cout << "Connection Successful" << endl;
-// 		return 1;
-// 	}
-// 	#endif
-// }
+int init_connection()
+{
+	int connection = sqlite3_open("ChromeSnail.db",&db);
+	#ifdef SQL_UNIT_TEST
+	if (connection) {
+		cout << "Connection Unsuccessful:" <<  sqlite3_errmsg(db) << endl;
+		return 0;
+	} else {
+		cout << "Connection Successful" << endl;
+		return 1;
+	}
+	#endif
+}
 
-// void create_table()
-// {
-// 	if (init_connection()) {
-// 		const char *query = "CREATE TABLE IF NOT EXISTS Leaderboard (" 
-// 			"GameId INTEGER PRIMARY KEY AUTOINCREMENT," 
-// 			"Name VARCHAR(50) NOT NULL," 
-// 			"Time VARCHAR(50) NOT NULL);";
-// 		result = sqlite3_exec(db, query, 0, 0, &ErrMsg);
-// 		if (result != SQLITE_OK) {
-// 			cout << "SQL Error:" << ErrMsg << endl;
-// 			sqlite3_free(ErrMsg);
-// 		} else {
-// 			cout << "Table created successfully" << endl;
-// 		}
-// 	}
-// }
+void create_table()
+{
+	if (init_connection()) {
+		const char *query = "CREATE TABLE IF NOT EXISTS Leaderboard (" 
+			"GameId INTEGER PRIMARY KEY AUTOINCREMENT," 
+			"Name VARCHAR(50) NOT NULL," 
+			"Time VARCHAR(50) NOT NULL);";
+		result = sqlite3_exec(db, query, 0, 0, &ErrMsg);
+		if (result != SQLITE_OK) {
+			cout << "SQL Error:" << ErrMsg << endl;
+			sqlite3_free(ErrMsg);
+		} else {
+			cout << "Table created successfully" << endl;
+		}
+	}
+}
 
-// void insert()
-// {
-// 	if (init_connection()) {
+void insert()
+{
+	if (init_connection()) {
 
-// 	}
-// 	sqlite3_close(db);
-// }
+	}
+	sqlite3_close(db);
+}
 
-// void show_leaderboard()
-// {
-//  	if (init_connection()) {
-//  		create_table();
-//  	}
-//  	sqlite3_close(db);
-// }
+void show_leaderboard()
+{
+ 	if (init_connection()) {
+ 		create_table();
+ 	}
+ 	sqlite3_close(db);
+}
