@@ -5,7 +5,8 @@
 
 typedef double Vec[3];
 
-typedef struct t_mouse {
+typedef struct t_mouse 
+{
 	int x,y;
 	int lastx,lasty;
 	int lbuttondown;
@@ -17,7 +18,8 @@ typedef struct t_mouse {
 const int MAX_BULLETS = 11;
 const double oobillion = 1.0 / 1e9;
 
-enum BulletDirection{
+enum BulletDirection 
+{
 	Front = 0,
 	Up = 1,
 	Back = 2,
@@ -26,26 +28,34 @@ enum BulletDirection{
 	BackDiag = 5
 };
 
-class Bullet {
+class Bullet 
+{
 public:
 	Vec pos;
 	Vec vel;
 	float color[3];
 	struct timespec time;
 	Bullet();
+	Bullet *next;
 };
 
-class Bullets {
-public:
-	Bullet *barr;
+class BList {
+private:
+	Bullet *head;
+	Bullet *tail;
 	int nbullets;
+public:
 	struct timespec bulletTimer;
-	Bullets();
+	void Add();
+	void Remove(int index);
+	Bullet* Get(int index);
+	int Count();
+	BList();
 };
 
-void drawBullets(Bullets *bullets);
-void shootBullet(Bullets *bullets, timespec *t, BulletDirection dir);
-void updateBulletPosition(Bullets *bullets, int xres, int yres);
+void drawBullets(BList *bullets);
+void shootBullet(BList *bullets, timespec *t, BulletDirection dir);
+void updateBulletPosition(BList *bullets, int xres, int yres);
 void showVictorText(Rect r);
 void showVictorPicture(int x, int y, GLuint textid);
 double timeDiff(struct timespec *start, struct timespec *end);

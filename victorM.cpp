@@ -20,10 +20,80 @@ Bullet::Bullet()
 	}
 }
 
-Bullets::Bullets()
+BList::BList()
 {
-	barr = new Bullet();
+	head = NULL;
+	tail = NULL;
 	nbullets = 0;
+}
+
+int BList::Count()
+{
+	return nbullets;
+}
+
+Bullet* BList::Get(int index)
+{
+	if (!head)
+		return NULL;
+
+	Bullet *output = head;
+	for (int i = 0; i < index && i < nbullets; i++) {
+		output = output->next;
+	}
+	return output;
+}
+
+void BList::Add()
+{
+	if (nbullets >= MAX_BULLETS)
+		return;
+
+	Bullet *temp = new Bullet();
+	temp->next = NULL;
+
+	if (head == NULL) {
+		tail = temp;
+		head = temp;
+	} else {
+		tail->next = temp;
+		tail = temp;
+	}
+	nbullets++;
+}
+
+void BList::Remove(int index)
+{
+	if(!head)
+		return;
+	if (index >= MAX_BULLETS || index < 0)
+		return;
+
+	Bullet *temp = head;
+	// if list is 1 item only
+	if (nbullets == 1) {
+		head = NULL;
+		tail = NULL;
+	} else if (index == 0) {
+		// if removing head
+		head = head->next;
+		temp = NULL;
+	} else {
+		// move to node right before the delete node
+		for (int i = 0; i < (index -1); i++) {
+			temp = temp->next;
+		}
+
+		if (temp->next == tail) {
+			tail = temp;
+			temp->next = NULL;
+		} else {
+			Bullet *removingNode = temp->next;
+			temp->next = temp->next->next;
+			removingNode->next = NULL;
+		}
+	}
+	nbullets--;
 }
 
 void showVictorText(Rect r) 
@@ -55,11 +125,16 @@ void showVictorPicture(int x, int y, GLuint textid)
 	glPopMatrix();
 }
 
-void drawBullets(Bullets *bullets)
+void drawBullets(BList *bullets)
 {
-	for (int i=0; i< bullets->nbullets; i++) {
-		Bullet *b = &bullets->barr[i];
-		//Log("draw bullet...\n");
+	for (int i = 0; i < bullets->Count(); i++) {
+		Bullet *b = bullets->Get(i);
+		if (!b)
+			break;
+		#ifdef PROFILE_VICTOR
+		cout << "# of bullets: " << bullets->Count() << endl;
+		cout << "drawing bullet i#: " << i << endl;
+		#endif
 		glColor3f(1.0, 1.0, 1.0);
 		glPushMatrix();
 		glTranslatef(400, 350, 0);
@@ -79,12 +154,22 @@ void drawBullets(Bullets *bullets)
 	}
 }
 
-void shootBullet(Bullets *bullets, timespec *bt, BulletDirection dir)
+void shootBullet(BList *bullets, timespec *bt, BulletDirection dir)
 {
 	//a little time between each bullet
 	//shoot a bullet...
-	if (bullets->nbullets < MAX_BULLETS) {
-		Bullet *b = &bullets->barr[bullets->nbullets];
+	if (bullets->Count() < MAX_BULLETS) {
+		#ifdef PROFILE_VICTOR
+		cout << "create bullet..." << endl;
+		#endif
+
+		bullets->Add();
+		
+		#ifdef PROFILE_VICTOR
+		cout << "get newly created bullet..." << endl;
+		#endif
+
+		Bullet *b = bullets->Get(bullets->Count()-1);
 		timeCopy(&b->time, bt);
 		double xdir = .5;
 		double ydir = .5;
@@ -105,7 +190,7 @@ void shootBullet(Bullets *bullets, timespec *bt, BulletDirection dir)
 		}
 
 		#ifdef PROFILE_VICTOR
-		cout << "bullet #: " << bullets->nbullets << endl;
+		cout << "bullet #: " << bullets->Count() << endl;
 		cout << "bullet direction: x = " <<  b->vel[0]
 			<< " y = " << b->vel[1] << endl;
 		cout << "bullet position: x = " << b->pos[0]
@@ -114,48 +199,52 @@ void shootBullet(Bullets *bullets, timespec *bt, BulletDirection dir)
 		b->color[0] = 1.0f;
 		b->color[1] = 1.0f;
 		b->color[2] = 1.0f;
-		++bullets->nbullets;
 	}
 }
 
-void updateBulletPosition(Bullets *bullets, int xres, int yres)
+void updateBulletPosition(BList *bullets, int xres, int yres)
 {
 	struct timespec bt;
 	clock_gettime(CLOCK_REALTIME, &bt);
 	int i=0;
-	while (i < bullets->nbullets) {
-		Bullet *b = &bullets->barr[i];
+	while (i < bullets->Count()) {
+		Bullet *b = bullets->Get(i);
+		if (!b)
+			break;
+
 		//How long has bullet been alive?
 		double ts = timeDiff(&b->time, &bt);
+		#ifdef PROFILE_VICTOR
+		cout << "i# " << i << " timed difference: " << ts << endl;
+		#endif
 		if (ts > 2.5) {
+			#ifdef PROFILE_VICTOR
+			cout << "removing i# timed: " << i << endl;
+			#endif
 			//time to delete the bullet.
-			memcpy (&bullets->barr[i], &bullets->barr[bullets->nbullets-1],
-				sizeof(Bullet));
-			bullets->nbullets--;
-			bullets->barr[i].vel[0] = 0;
-			bullets->barr[i].vel[1] = 0;
-			bullets->barr[i].pos[0] = 0;
-			bullets->barr[i].pos[1] = 0;
+			bullets->Remove(i);
 			//do not increment i.
 			continue;
 		}
 		// TODO: check for out of bound
-		if(bullets->barr[i].pos[1] >= (double)xres) {
+		if(b->pos[0] >= (double)xres) {
+			#ifdef PROFILE_VICTOR
+			cout << "removing i# bound: " << i << endl;
+			#endif
 			// delete the bullet.
-			memcpy (&bullets->barr[i], &bullets->barr[bullets->nbullets-1],
-				sizeof(Bullet));
-			bullets->nbullets--;
-			bullets->barr[i].vel[0] = 0;
-			bullets->barr[i].vel[1] = 0;
-			bullets->barr[i].pos[0] = 0;
-			bullets->barr[i].pos[1] = 0;
-			//do not increment i.
+			bullets->Remove(i);
 			continue;
 		}
 
 		//move the bullet
+		#ifdef PROFILE_VICTOR
+		cout << "previous x pos: " << b->pos[0] << endl;
+		#endif
 		b->pos[0] += b->vel[0];
 		b->pos[1] += b->vel[1];
+		#ifdef PROFILE_VICTOR
+		cout << "new x pos: " << b->pos[0] << endl;
+		#endif
 		//Check for collision with window edges
 		if (b->pos[0] < 0.0) {
 			b->pos[0] += (float)xres;
@@ -180,6 +269,7 @@ double timeDiff(struct timespec *start, struct timespec *end)
 		(double)(end->tv_nsec - start->tv_nsec) * oobillion;
 }
 
-void timeCopy(struct timespec *dest, struct timespec *source) {
+void timeCopy(struct timespec *dest, struct timespec *source) 
+{
 	memcpy(dest, source, sizeof(struct timespec));
 }
