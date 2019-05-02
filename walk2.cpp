@@ -118,7 +118,8 @@ public:
 	}
 };
 
-Bullets bullets;
+//Bullets bullets;
+BList bullets;
 
 // Global is using the singleton pattern
 class Global {
@@ -141,6 +142,7 @@ public:
 	GLuint logoTexture;
 	GLuint keysTexture;
 	GLuint leaderboardTexture;
+	GLuint leaderboardTitleTexture;
 	Vec box[20];
 	Sprite exp;
 	Sprite exp44;
@@ -155,7 +157,6 @@ public:
 	static Global& getInstance() 
 	{
 		static Global _gInstance;
-
 		return _gInstance;
 	}
 
@@ -195,10 +196,8 @@ private:
 		}
 		memset(keys, 0, 65536);
 	};
-
 	// copy constructor private
 	Global(Global const&){};
-
 	// assignment operator is private
 	Global& operator=(Global const&);
 };
@@ -295,7 +294,9 @@ public:
 		swa.event_mask = ExposureMask | KeyPressMask | KeyReleaseMask |
 			ButtonPressMask | ButtonReleaseMask |
 			StructureNotifyMask | SubstructureNotifyMask;
-		win = XCreateWindow(dpy, root, 0, 0, Global::getInstance().xres, Global::getInstance().yres, 0,
+		win = XCreateWindow(dpy, root, 0, 0, 
+			Global::getInstance().xres, 
+			Global::getInstance().yres, 0,
 			vi->depth, InputOutput, vi->visual,
 			CWColormap | CWEventMask, &swa);
 		GLXContext glc = glXCreateContext(dpy, vi, NULL, GL_TRUE);
@@ -308,7 +309,8 @@ public:
 		glViewport(0, 0, (GLint)width, (GLint)height);
 		glMatrixMode(GL_PROJECTION); glLoadIdentity();
 		glMatrixMode(GL_MODELVIEW); glLoadIdentity();
-		glOrtho(0, Global::getInstance().xres, 0, Global::getInstance().yres, -1, 1);
+		glOrtho(0, Global::getInstance().xres, 
+			0, Global::getInstance().yres, -1, 1);
 		setTitle();
 	}
 	void checkResize(XEvent *e) {
@@ -317,7 +319,8 @@ public:
 		if (e->type != ConfigureNotify)
 			return;
 		XConfigureEvent xce = e->xconfigure;
-		if (xce.width != Global::getInstance().xres || xce.height != Global::getInstance().yres) {
+		if (xce.width != Global::getInstance().xres 
+			|| xce.height != Global::getInstance().yres) {
 			//Window size did change.
 			reshapeWindow(xce.width, xce.height);
 		}
@@ -403,7 +406,8 @@ Image helicopter_image = "./images/helicopter.gif";
 Image start_menu_image = "./images/StartMenu.jpg";
 Image logo_image = "./images/Logo.gif";
 Image keys_image = "./images/Keys.gif";
-Image leaderboard_image = "./images/Leaderboard.gif"; 
+Image leaderboard_image = "./images/Leaderboard.gif";
+Image leaderboard_title_image = "./images/LeaderboardTitle.gif";
 
 void show_credits(Rect x, int y);
 
@@ -460,12 +464,14 @@ unsigned char *buildAlphaData(Image *img)
 void initOpengl(void)
 {
 	//OpenGL initialization
-	glViewport(0, 0, Global::getInstance().xres, Global::getInstance().yres);
+	glViewport(0, 0, 
+		Global::getInstance().xres, Global::getInstance().yres);
 	//Initialize matrices
 	glMatrixMode(GL_PROJECTION); glLoadIdentity();
 	glMatrixMode(GL_MODELVIEW); glLoadIdentity();
 	//This sets 2D mode (no perspective)
-	glOrtho(0, Global::getInstance().xres, 0, Global::getInstance().yres, -1, 1);
+	glOrtho(0, Global::getInstance().xres, 
+		0, Global::getInstance().yres, -1, 1);
 	//
 	glDisable(GL_LIGHTING);
 	glDisable(GL_DEPTH_TEST);
@@ -536,7 +542,8 @@ void initOpengl(void)
 		glGenTextures(1, &Global::getInstance().creditPicsTexture[i - 3]);
 		w = img[i].width;
 		h = img[i].height;
-		glBindTexture(GL_TEXTURE_2D, Global::getInstance().creditPicsTexture[i - 3]);
+		glBindTexture(GL_TEXTURE_2D, 
+			Global::getInstance().creditPicsTexture[i - 3]);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 		
@@ -625,6 +632,21 @@ void initOpengl(void)
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, lexres, leyres, 0,
 		GL_RGBA, GL_UNSIGNED_BYTE, leaderboardData);
 	free(leaderboardData);
+
+	//leaderboard title texture and binding
+	glGenTextures(1, &Global::getInstance().leaderboardTitleTexture);	
+	int ltxres = leaderboard_title_image.width;
+	int ltyres = leaderboard_title_image.height;
+	glBindTexture(GL_TEXTURE_2D, Global::getInstance().leaderboardTitleTexture);
+	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	unsigned char *leaderboardTextureData = buildAlphaData(&leaderboard_title_image);	
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, ltxres, ltyres, 0,
+		GL_RGBA, GL_UNSIGNED_BYTE, leaderboardTextureData);
+	free(leaderboardTextureData);
 }
 
 void init()
@@ -676,16 +698,23 @@ void screenCapture()
 			vid = 1;
 		}
 	}
-	unsigned char *data = (unsigned char *)malloc(Global::getInstance().xres * Global::getInstance().yres * 3);
-	glReadPixels(0, 0, Global::getInstance().xres, Global::getInstance().yres, GL_RGB, GL_UNSIGNED_BYTE, data);
+	unsigned char *data = (unsigned char *)malloc(Global::getInstance().xres 
+		* Global::getInstance().yres * 3);
+	glReadPixels(0, 0, 
+		Global::getInstance().xres, 
+		Global::getInstance().yres, 
+		GL_RGB, GL_UNSIGNED_BYTE, data);
 	char ts[32];
 	sprintf(ts, "./vid/pic%03i.ppm", fnum);
 	FILE *fpo = fopen(ts,"w");	
 	if (fpo) {
-		fprintf(fpo, "P6\n%i %i\n255\n", Global::getInstance().xres, Global::getInstance().yres);
+		fprintf(fpo, "P6\n%i %i\n255\n", 
+			Global::getInstance().xres, 
+			Global::getInstance().yres);
 		unsigned char *p = data;
 		//go backwards a row at a time...
-		p = p + ((Global::getInstance().yres-1) * Global::getInstance().xres * 3);
+		p = p + ((Global::getInstance().yres-1) 
+			* Global::getInstance().xres * 3);
 		unsigned char *start = p;
 		for (int i=0; i<Global::getInstance().yres; i++) {
 			for (int j=0; j<Global::getInstance().xres*3; j++) {
@@ -831,11 +860,14 @@ Flt VecNormalize(Vec vec)
 
 void physics(void)
 {
-	if (Global::getInstance().walk || Global::getInstance().keys[XK_Right] || Global::getInstance().keys[XK_Left]) {
+	if (Global::getInstance().walk 
+		|| Global::getInstance().keys[XK_Right] 
+		|| Global::getInstance().keys[XK_Left]) {
 		//man is walking...
 		//when time is up, advance the frame.
 		timers.recordTime(&timers.timeCurrent);
-		double timeSpan = timers.timeDiff(&timers.walkTime, &timers.timeCurrent);
+		double timeSpan = timers.timeDiff(&timers.walkTime, 
+			&timers.timeCurrent);
 		if (timeSpan > Global::getInstance().delay) {
 			//advance
 			++Global::getInstance().walkFrame;
@@ -845,32 +877,42 @@ void physics(void)
 		}
 		for (int i=0; i<20; i++) {
 			if (Global::getInstance().keys[XK_Left]) {
-				Global::getInstance().box[i][0] += 1.0 * (0.05 / Global::getInstance().delay);
-				if (Global::getInstance().box[i][0] > Global::getInstance().xres + 10.0)
-					Global::getInstance().box[i][0] -= Global::getInstance().xres + 10.0;
-				Global::getInstance().camera[0] -= 2.0/lev.tilesize[0] * (0.05 / Global::getInstance().delay);
+				Global::getInstance().box[i][0] += 1.0 
+					* (0.05 / Global::getInstance().delay);
+				if (Global::getInstance().box[i][0] > 
+					Global::getInstance().xres + 10.0)
+					Global::getInstance().box[i][0] -= 
+						Global::getInstance().xres + 10.0;
+				Global::getInstance().camera[0] -= 2.0/lev.tilesize[0] 
+					* (0.05 / Global::getInstance().delay);
 				if (Global::getInstance().camera[0] < 0.0)
 					Global::getInstance().camera[0] = 0.0;
 			} else {
-				Global::getInstance().box[i][0] -= 1.0 * (0.05 / Global::getInstance().delay);
+				Global::getInstance().box[i][0] -= 1.0 
+					* (0.05 / Global::getInstance().delay);
 				if (Global::getInstance().box[i][0] < -10.0)
-					Global::getInstance().box[i][0] += Global::getInstance().xres + 10.0;
-				Global::getInstance().camera[0] += 2.0/lev.tilesize[0] * (0.05 / Global::getInstance().delay);
+					Global::getInstance().box[i][0] += 
+						Global::getInstance().xres + 10.0;
+				Global::getInstance().camera[0] += 2.0/lev.tilesize[0] 
+					* (0.05 / Global::getInstance().delay);
 				if (Global::getInstance().camera[0] < 0.0)
 					Global::getInstance().camera[0] = 0.0;
 			}
 		}
 		if (Global::getInstance().exp.onoff) {
-			Global::getInstance().exp.pos[0] -= 2.0 * (0.05 / Global::getInstance().delay);
+			Global::getInstance().exp.pos[0] -= 2.0 
+				* (0.05 / Global::getInstance().delay);
 		}
 		if (Global::getInstance().exp44.onoff) {
-			Global::getInstance().exp44.pos[0] -= 2.0 * (0.05 / Global::getInstance().delay);
+			Global::getInstance().exp44.pos[0] -= 2.0 
+				* (0.05 / Global::getInstance().delay);
 		}
 	}
 	if (Global::getInstance().exp.onoff) {
 		//explosion is happening
 		timers.recordTime(&timers.timeCurrent);
-		double timeSpan = timers.timeDiff(&Global::getInstance().exp.time, &timers.timeCurrent);
+		double timeSpan = timers.timeDiff(&Global::getInstance().exp.time, 
+			&timers.timeCurrent);
 		if (timeSpan > Global::getInstance().exp.delay) {
 			//advance explosion frame
 			++Global::getInstance().exp.frame;
@@ -886,7 +928,8 @@ void physics(void)
 	if (Global::getInstance().exp44.onoff) {
 		//explosion is happening
 		timers.recordTime(&timers.timeCurrent);
-		double timeSpan = timers.timeDiff(&Global::getInstance().exp44.time, &timers.timeCurrent);
+		double timeSpan = timers.timeDiff(&Global::getInstance().exp44.time, 
+			&timers.timeCurrent);
 		if (timeSpan > Global::getInstance().exp44.delay) {
 			//advance explosion frame
 			++Global::getInstance().exp44.frame;
@@ -904,7 +947,8 @@ void physics(void)
 	//Height of highest tile when ball is?
 	//====================================
 	Flt dd = lev.ftsz[0];
-	int col = (int)((Global::getInstance().camera[0]+Global::getInstance().ball_pos[0]) / dd);
+	int col = (int)((Global::getInstance().camera[0]
+		+Global::getInstance().ball_pos[0]) / dd);
 	col = col % lev.ncols;
 	int hgt = 0;
 	for (int i=0; i<lev.nrows; i++) {
@@ -925,12 +969,24 @@ void physics(void)
 		//a little time between each bullet
 		struct timespec bt;
 		clock_gettime(CLOCK_REALTIME, &bt);
+
+		#ifdef PROFILE_VICTOR
+		cout << "getting clock time " << bt.tv_sec << endl;
+		#endif
+
 		double ts = timers.timeDiff(&bullets.bulletTimer, &bt);
 		if (ts > 0.1) {
 			timers.timeCopy(&bullets.bulletTimer, &bt);
-			if (Global::getInstance().keys[XK_Up] && Global::getInstance().keys[XK_Right])
+			
+			#ifdef PROFILE_VICTOR
+			cout << "getting ready to shoot..." << endl;
+			#endif
+
+			if (Global::getInstance().keys[XK_Up] 
+				&& Global::getInstance().keys[XK_Right])
 				shootBullet(&bullets, &bt, FrontDiag);
-			else if (Global::getInstance().keys[XK_Up] && Global::getInstance().keys[XK_Left])
+			else if (Global::getInstance().keys[XK_Up] 
+				&& Global::getInstance().keys[XK_Left])
 				shootBullet(&bullets, &bt, BackDiag);
 			else if (Global::getInstance().keys[XK_Up])
 				shootBullet(&bullets, &bt, Up);
@@ -941,9 +997,14 @@ void physics(void)
 			else 
 				shootBullet(&bullets, &bt, Front);
 		}
+		#ifdef PROFILE_VICTOR
+		cout << "shoot completed..." << endl;
+		#endif
 	}
 	//update bullet position
-	updateBulletPosition(&bullets, Global::getInstance().xres, Global::getInstance().yres);
+	updateBulletPosition(&bullets, 
+		Global::getInstance().xres, 
+		Global::getInstance().yres);
 
 	// Animate the helicopter
 	moveHelicopter();
@@ -956,8 +1017,12 @@ void physics(void)
 
 void showHelicopter(int x, int y, float velocity)
 {
-	extern void renderHelicopter(int x, int y, GLuint helicopterID, float velocity);
-	renderHelicopter(x, y, Global::getInstance().helicopterTexture, velocity);
+	extern void renderHelicopter(int x, 
+		int y, 
+		GLuint helicopterID, 
+		float velocity);
+	renderHelicopter(x, y, 
+		Global::getInstance().helicopterTexture, velocity);
 }
 
 void setHelicopterPos(float pos)
@@ -980,29 +1045,34 @@ void show_credits(Rect x, int y)
 	// Mason
 	x.bot -= 100;
 	masonP(x, y);
-	showMasonPicture(500, x.bot, Global::getInstance().creditPicsTexture[MASON]);
+	showMasonPicture(500, x.bot, 
+		Global::getInstance().creditPicsTexture[MASON]);
 	// Fern
 	extern void showFHText(Rect x);
 	extern void showFernandoPicture(int x, int y, GLuint textid);
 	x.bot -= 100; 
 	showFHText(x);
-	showFernandoPicture(500, x.bot, Global::getInstance().creditPicsTexture[FERNANDO]);
+	showFernandoPicture(500, x.bot, 
+		Global::getInstance().creditPicsTexture[FERNANDO]);
 	// Hasun
 	extern void printHasunName(Rect x, int y);
 	extern void showHasunPicture(int x, int y, GLuint textid);
 	x.bot -= 100;
 	printHasunName(x, y);
-	showHasunPicture(500, x.bot, Global::getInstance().creditPicsTexture[HASUN]);
+	showHasunPicture(500, x.bot, 
+		Global::getInstance().creditPicsTexture[HASUN]);
 	// Victor
 	x.bot -= 100;
 	showVictorText(x);
-	showVictorPicture(500, x.bot, Global::getInstance().creditPicsTexture[VICTOR]);
+	showVictorPicture(500, x.bot, 
+		Global::getInstance().creditPicsTexture[VICTOR]);
 	// Emil
 	extern void showEmil(Rect r, int y);
 	extern void showEmilPicture(int x, int y, GLuint textid);
 	x.bot -= 100;
 	showEmil(x, y);
-	showEmilPicture(500, x.bot, Global::getInstance().creditPicsTexture[EMIL]);
+	showEmilPicture(500, x.bot, 
+		Global::getInstance().creditPicsTexture[EMIL]);
 }
 
 void render(void)
@@ -1025,6 +1095,8 @@ void render(void)
 		if (Global::getInstance().showLeaderboard) {
 			leaderboard(Global::getInstance().xres, Global::getInstance().yres, 
 				Global::getInstance().leaderboardTexture);
+			leaderboard_title(Global::getInstance().xres, Global::getInstance().yres, 
+				Global::getInstance().leaderboardTitleTexture);
 		}
 	} else {
 		if (Global::getInstance().showCredits) {
@@ -1290,12 +1362,10 @@ void render(void)
 			if (Global::getInstance().movie) {
 				screenCapture();
 			}
+			//draw bullets
+			drawBullets(&bullets);
 		}
 	}
-
-	//draw bullets
-	drawBullets(&bullets);
-
 	// Render the helicopter
 	glPushMatrix();
 

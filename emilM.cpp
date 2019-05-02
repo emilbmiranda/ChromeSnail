@@ -165,6 +165,31 @@ void leaderboard(int xres, int yres, GLuint leaderboardTexture)
 	}
 }
 
+void leaderboard_title(int xres, int yres, GLuint leaderboardTitleTexture)
+{
+	static int wid = xres/3.5;
+	float fx = (float)xres;
+	float fy = (float)yres+400;
+	glPushMatrix();
+	glTranslatef(fx/2,fy/2,0);
+	glBindTexture(GL_TEXTURE_2D, leaderboardTitleTexture);
+	glEnable(GL_ALPHA_TEST);
+	glAlphaFunc(GL_GREATER, 0.0f);
+	glColor4ub(255,255,255,255);
+	glBegin(GL_QUADS);
+	glTexCoord2f(0.0f, 1.0f);
+	glVertex2i(-wid,-wid);
+	glTexCoord2f(0.0f, 0.0f);
+	glVertex2i(-wid, wid);
+	glTexCoord2f(1.0f, 0.0f);
+	glVertex2i( wid, wid);
+	glTexCoord2f(1.0f, 1.0f);
+	glVertex2i( wid,-wid);
+	glEnd();
+	glBindTexture(GL_TEXTURE_2D, 0);
+	glPopMatrix();
+}
+
 int init_connection()
 {
 	int connection = sqlite3_open("ChromeSnail.db",&db);
@@ -199,7 +224,7 @@ void create_table()
 void insert()
 {
 	if (init_connection()) {
-		
+
 	}
 	sqlite3_close(db);
 }
