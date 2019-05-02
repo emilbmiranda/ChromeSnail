@@ -604,7 +604,7 @@ void initOpengl(void)
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w_bomb, h_bomb, 0,
 		GL_RGBA, GL_UNSIGNED_BYTE, bombData);
 	free(bombData);
-=======
+
 	// Fernando: Get a crate texture object for reasons.
 	glGenTextures(1, &Global::getInstance().crateTexture);
 	//-Crate texture----------------------------------------------------------
