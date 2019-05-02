@@ -46,7 +46,7 @@ private:
 	int nbullets;
 public:
 	struct timespec bulletTimer;
-	void Add();
+	Bullet* Add();
 	void Remove(int index);
 	Bullet* Get(int index);
 	int Count();

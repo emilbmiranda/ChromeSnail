@@ -44,11 +44,8 @@ Bullet* BList::Get(int index)
 	return output;
 }
 
-void BList::Add()
+Bullet* BList::Add()
 {
-	if (nbullets >= MAX_BULLETS)
-		return;
-
 	Bullet *temp = new Bullet();
 	temp->next = NULL;
 
@@ -60,13 +57,12 @@ void BList::Add()
 		tail = temp;
 	}
 	nbullets++;
+	return temp;
 }
 
 void BList::Remove(int index)
 {
 	if(!head)
-		return;
-	if (index >= MAX_BULLETS || index < 0)
 		return;
 
 	Bullet *temp = head;
@@ -163,13 +159,12 @@ void shootBullet(BList *bullets, timespec *bt, BulletDirection dir)
 		cout << "create bullet..." << endl;
 		#endif
 
-		bullets->Add();
+		Bullet *b = bullets->Add();
 		
 		#ifdef PROFILE_VICTOR
 		cout << "get newly created bullet..." << endl;
 		#endif
 
-		Bullet *b = bullets->Get(bullets->Count()-1);
 		timeCopy(&b->time, bt);
 		double xdir = .5;
 		double ydir = .5;
