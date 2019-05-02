@@ -94,15 +94,15 @@ void renderHelicopter(int x, int y, GLuint helicopterID, float velocity)
 
 	// Add the sprite layer to the screen
 	glBegin(GL_QUADS);
-	/*glTexCoord2f(0.0f, 1.0f);
-	glVertex2i(-wid, -wid);
-	glTexCoord2f(0.0f, 0.0f);
-	glVertex2i(-wid, wid);
-	glTexCoord2f(1.0f, 0.0f);
-	glVertex2i(wid, wid);
-	glTexCoord2f(1.0f, 1.0f);
-	glVertex2i(wid, -wid);
-	*/
+	// glTexCoord2f(0.0f, 1.0f);
+	// glVertex2i(-wid, -wid);
+	// glTexCoord2f(0.0f, 0.0f);
+	// glVertex2i(-wid, wid);
+	// glTexCoord2f(1.0f, 0.0f);
+	// glVertex2i(wid, wid);
+	// glTexCoord2f(1.0f, 1.0f);
+	// glVertex2i(wid, -wid);
+	
 
 	if (velocity > 0.0) {
 		glTexCoord2f(1.0f, 1.0f);
@@ -128,7 +128,53 @@ void renderHelicopter(int x, int y, GLuint helicopterID, float velocity)
 	// Remove focus from the helicopter sprite to 
 	// allow the screen to render the rest of the layers
 	glBindTexture(GL_TEXTURE_2D, 0);
-	glPopMatrix();
+	//glPopMatrix();
+}
+
+void renderBomb(int x, int y, GLuint bombID, float velocity)
+{
+	// Handle sprite coordinates
+	float fx = (float)x;
+	float fy = (float)y;
+	static int wid = 100;
+	glTranslatef(fx, fy, 0);
+	glBindTexture(GL_TEXTURE_2D, bombID);
+
+	// This removes the black bacground from the image
+	// to give us a transparent sprite
+	glEnable(GL_ALPHA_TEST);
+	glAlphaFunc(GL_GREATER, 0.0f);
+	glColor4ub(255,255,255,255);
+
+
+	// Add the sprite layer to the screen
+	glBegin(GL_QUADS);
+
+	if (velocity > 0.0) {
+		glTexCoord2f(0.0f, 1.0f);
+		glVertex2i(-wid, -wid);
+		glTexCoord2f(0.0f, 0.0f);
+		glVertex2i(-wid, wid);
+		glTexCoord2f(1.0f, 0.0f);
+		glVertex2i(wid, wid);
+		glTexCoord2f(1.0f, 1.0f);
+		glVertex2i(wid, -wid);
+	} else {
+		glTexCoord2f(1.0f, 1.0f);
+		glVertex2i(-wid, -wid);
+		glTexCoord2f(1.0f, 0.0f);
+		glVertex2i(-wid, wid);
+		glTexCoord2f(0.0f, 0.0f);
+		glVertex2i(wid, wid);
+		glTexCoord2f(0.0f, 1.0f);
+		glVertex2i(wid, -wid);
+	}
+
+	glEnd();
+	// Remove focus from the bomb sprite to 
+	// allow the screen to render the rest of the layers
+	glBindTexture(GL_TEXTURE_2D, 0);
+	//glPopMatrix();
 }
 
 void setLastKnownHelicopterPos(float pos)

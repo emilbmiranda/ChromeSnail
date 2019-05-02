@@ -53,17 +53,56 @@ Platform::Platform()
 	pos[0] = 540;
 	pos[1] = 140;
 }
-void Platform::drawPlatform()
+
+Platform::Platform(int x, int y) 
 {
-	glBegin(GL_POLYGON);
-		glVertex2f(0.0f,40.0f);
-		glVertex2f(60.0f,40.0f);
-		glVertex2f(40.0f,0.0f);
+	pos[0] = x;
+	pos[1] = y;
+}
+//void Platform::drawPlatform()
+void Platform::drawPlatform(int xpos, int ypos, GLuint crateID)
+{
+	static int wid = 50;
+	float fx = (float)xpos;
+	float fy = (float)ypos;
+
+	glClear(GL_COLOR_BUFFER_BIT);
+	//glPushMatrix();
+	glTranslatef(fx,fy,0);
+	glBindTexture(GL_TEXTURE_2D, crateID);
+
+	// Transparent sprite needed?
+
+
+		//	(0,140)			(180,140)
+		//	(0,0)			(180,0)
+		/*
+		glVertex2f(0.0f,140.0f);
+		glVertex2f(180.0f,140.0f);
+		glVertex2f(180.0f,0.0f);
 		glVertex2f(0.0f,0.0f);
+		*/
+
+	glBegin(GL_QUADS);
+		glTexCoord2f(1.0f, 1.0f);
+		glVertex2i(-wid, -wid);
+		glTexCoord2f(1.0f, 0.0f);
+		glVertex2i(-wid, wid);
+		glTexCoord2f(0.0f, 0.0f);
+		glVertex2i(wid, wid);
+		glTexCoord2f(0.0f, 1.0f);
+		glVertex2i(wid, -wid);
 	glEnd();
+	glBindTexture(GL_TEXTURE_2D, 0);
 }
 
-void initializeFH()
+int Platform::getXpos()
 {
+	return pos[0];
 
+}
+
+int Platform::getYpos()
+{
+	return pos[1];
 }

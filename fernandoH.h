@@ -10,10 +10,12 @@ struct Platform {
 	float pos[2];
 
 	Platform(); 
+	Platform(int, int);
 
-	void drawPlatform();
+	void drawPlatform(int, int, GLuint);
+	int getXpos();
+	int getYpos();
 };
 
-void initializeFH();
 
 #endif
