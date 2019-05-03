@@ -133,6 +133,7 @@ BList bullets;
 // Global is using the singleton pattern
 class Global {
 public:
+	bool GoEvent = false; 
 	unsigned char keys[65536];
 	int xres, yres;
 	int movie, movieStep;
@@ -145,6 +146,8 @@ public:
 	int showCrate;
 	int showLeaderboard;
 	double delay;
+	float xc[2];
+	float yc[2];
 	Image *walkImage;
 	GLuint walkTexture;
 	GLuint creditPicsTexture[5];
@@ -157,6 +160,7 @@ public:
 	GLuint leaderboardTitleTexture;
 	// Fernando: Need to create a GLuint object for the crate texture.
 	GLuint crateTexture;
+	GLuint backgroundTexture;
 	Vec box[20];
 	Sprite exp;
 	Sprite exp44;
@@ -407,7 +411,7 @@ public:
 			unlink(ppmname);
 	}
 };
-Image img[8] = {
+Image img[9] = {
 "./images/walk.gif",
 "./images/exp.png",
 "./images/exp44.png",
@@ -415,7 +419,8 @@ Image img[8] = {
 "./images/fh.jpg",
 "./images/hasunK.jpg",
 "./images/VictorM.jpg",
-"./images/EmilM.jpeg" };
+"./images/EmilM.jpeg" ,
+"./images/mission_1.png"};
 
 Image helicopter_image = "./images/helicopter.gif";
 Image bomb_image = "./images/bomb.gif";
@@ -426,7 +431,7 @@ Image keys_image = "./images/Keys.gif";
 Image crate_image = "./images/wall.gif";
 Image leaderboard_image = "./images/Leaderboard.gif";
 Image leaderboard_title_image = "./images/LeaderboardTitle.gif";
-
+Image *backImage = &img[8];
 void show_credits(Rect x, int y);
 
 int main(void)
@@ -609,6 +614,22 @@ void initOpengl(void)
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w_bomb, h_bomb, 0,
 		GL_RGBA, GL_UNSIGNED_BYTE, bombData);
 	free(bombData);
+
+	// Background initialization 
+	glGenTextures(1, &Global::getInstance().backgroundTexture);
+	int bw = backImage->width;
+	int bh = backImage->height;
+	glBindTexture(GL_TEXTURE_2D, Global::getInstance().backgroundTexture);
+	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
+	glTexImage2D(GL_TEXTURE_2D, 0, 3, bw, bh, 0,
+		GL_RGB, GL_UNSIGNED_BYTE, backImage->data);
+	Global::getInstance().xc[0] = 0.0;
+	Global::getInstance().xc[1] = 0.25;
+	Global::getInstance().yc[0] = 0.0;
+	Global::getInstance().yc[1] = 1.0;	
+
+
 
 	// Fernando: Get a crate texture object for reasons.
 	glGenTextures(1, &Global::getInstance().crateTexture);
@@ -856,7 +877,8 @@ int checkKeys(XEvent *e)
 			// printf("helicopter.pos[0]: %f\nhelicopter.pos[1]: %f\nhelicopter.vel[0]: %f\n", helicopter.pos[0], helicopter.pos[1], helicopter.vel[0]);
 			break;
 		case XK_s:
-			screenCapture();
+			Global::getInstance().GoEvent = false;			
+			//screenCapture();
 			break;
 		case XK_m:
 			Global::getInstance().movie ^= 1;
@@ -882,6 +904,7 @@ int checkKeys(XEvent *e)
 		case XK_Left:
 			break;
 		case XK_Right:
+			Global::getInstance().GoEvent = true;
 			break;
 		case XK_c:
 			// If the credits are currently being shown, we are about to hide them/
@@ -941,6 +964,10 @@ Flt VecNormalize(Vec vec)
 
 void physics(void)
 {
+	if(Global::getInstance().GoEvent == True) { 
+		Global::getInstance().xc[0] += 0.001;
+		Global::getInstance().xc[1] += 0.001;
+	}
 	if (Global::getInstance().walk 
 		|| Global::getInstance().keys[XK_Right] 
 		|| Global::getInstance().keys[XK_Left]) {
@@ -1201,8 +1228,20 @@ void render(void)
 		} else {
 			glClearColor(0.1,0.1,0.1,1.0);
 			glClear(GL_COLOR_BUFFER_BIT);
+			//background rendering 
+			int bxres = Global::getInstance().xres;
+			int byres = Global::getInstance().yres;
+			glClear(GL_COLOR_BUFFER_BIT);
+			glColor3f(1.0, 1.0, 1.0);
+			glBindTexture(GL_TEXTURE_2D, Global::getInstance().backgroundTexture);
+			glBegin(GL_QUADS);
+				glTexCoord2f(Global::getInstance().xc[0], Global::getInstance().yc[1]); glVertex2i(0, 0);
+				glTexCoord2f(Global::getInstance().xc[0], Global::getInstance().yc[0]); glVertex2i(0, byres);
+				glTexCoord2f(Global::getInstance().xc[1], Global::getInstance().yc[0]); glVertex2i(bxres, byres);
+				glTexCoord2f(Global::getInstance().xc[1], Global::getInstance().yc[1]); glVertex2i(bxres, 0);
+			glEnd();
 			
-
+			/*
 			//show ground
 			glBegin(GL_QUADS);
 			glColor3f(0.2, 0.2, 0.2);
@@ -1227,10 +1266,12 @@ void render(void)
 				glEnd();
 				glPopMatrix();
 			}
+*/
 			//
 			//========================
 			//Render the tile system
 			//========================
+/*
 			int tx = lev.tilesize[0];
 			int ty = lev.tilesize[1];
 			Flt dd = lev.ftsz[0];
@@ -1283,7 +1324,6 @@ void render(void)
 			}
 			glColor3f(1.0, 1.0, 0.1);
 			glPushMatrix();
-
 			//put ball in its place
 			glTranslated(Global::getInstance().ball_pos[0], lev.tile_base+Global::getInstance().ball_pos[1], 0);
 			glBegin(GL_QUADS);
@@ -1293,6 +1333,7 @@ void render(void)
 				glVertex2i( 10, 0);
 			glEnd();
 			glPopMatrix();
+*/
 			//--------------------------------------END TILE SYSTEM
 			//
 
