@@ -25,54 +25,6 @@ public:
 	Texture tex;
 }g;
 
-/*
-class Image {
-public:
-	int width, height;
-	unsigned char *data;
-	~Image() { delete [] data; }
-	Image(const char *fname) {
-		if (fname[0] == '\0')
-			return;
-		//printf("fname **%s**\n", fname);
-		char name[40];
-		strcpy(name, fname);
-		int slen = strlen(name);
-		name[slen-4] = '\0';
-		//printf("name **%s**\n", name);
-		char ppmname[80];
-		sprintf(ppmname,"%s.ppm", name);
-		//printf("ppmname **%s**\n", ppmname);
-		char ts[100];
-		//system("convert eball.jpg eball.ppm");
-		sprintf(ts, "convert %s %s", fname, ppmname);
-		system(ts);
-		//sprintf(ts, "%s", name);
-		FILE *fpi = fopen(ppmname, "r");
-		if (fpi) {
-			char line[200];
-			fgets(line, 200, fpi);
-			fgets(line, 200, fpi);
-			//skip comments and blank lines
-			while (line[0] == '#' || strlen(line) < 2)
-				fgets(line, 200, fpi);
-			sscanf(line, "%i %i", &width, &height);
-			fgets(line, 200, fpi);
-			//get pixel data
-			int n = width * height * 3;			
-			data = new unsigned char[n];			
-			for (int i=0; i<n; i++)
-				data[i] = fgetc(fpi);
-			fclose(fpi);
-		} else {
-			printf("ERROR opening image: %s\n",ppmname);
-			exit(0);
-		}
-		unlink(ppmname);
-	}
-};
-*/
-
 //Prints my name to the Screen
 void printHasunName(Rect x, int y)
 {
@@ -104,8 +56,8 @@ void showHasunPicture(int x, int y, GLuint textid)
 	glEnd();
 	glPopMatrix();
 }
-
-void initBG(int xres, int yres, GLuint backgroundTexture){
+/*
+void initBG(int xres, int yres, GLuint backgroundTexture, Image *bgImage){
 	glGenTextures(1, &backgroundTexture);
 	int bxres = xres;
 	int byres = yres;
@@ -113,17 +65,17 @@ void initBG(int xres, int yres, GLuint backgroundTexture){
 	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
 	//glTexImage2D(GL_TEXTURE_2D, 0, 3, bxres, byres, 0,
-	//						GL_RGB, GL_UNSIGNED_BYTE, backgroundTexture->data);
+	//	GL_RGB, GL_UNSIGNED_BYTE, bgImage->data);
 	g.tex.xc[0] = 0.0;
 	g.tex.xc[1] = 0.25;
 	g.tex.yc[0] = 0.0;
 	g.tex.yc[1] = 1.0;
 }
-
+*/
 void renderBackground(int xres, int yres, GLuint backgroundTexture)
 {
 
-	static int wid = xres/5;
+	//static int wid = xres/5;
 	float fx = (float)xres;
 	float fy = (float)yres-300;
 	glPushMatrix();
@@ -174,5 +126,21 @@ void renderBackground(int xres, int yres, GLuint backgroundTexture)
 	glPopMatrix();
 */
 }
+/*
+	int bxres = Global::getInstance().xres;
+	int byres = Global::getInstance().yres;
+	static int wid = bxres/5;
+	glClear(GL_COLOR_BUFFER_BIT);
+	glColor3f(1.0, 1.0, 1.0);
+	glBindTexture(GL_TEXTURE_2D, Global::getInstance().backgroundTexture);
+	glBegin(GL_QUADS);
+		glTexCoord2f(Global::getInstance().xc[0], Global::getInstance().yc[1]); glVertex2i(0, 0);
+		glTexCoord2f(Global::getInstance().xc[0], Global::getInstance().yc[0]); glVertex2i(0, byres);
+		glTexCoord2f(Global::getInstance().xc[1], Global::getInstance().yc[0]); glVertex2i(bxres, byres);
+		glTexCoord2f(Global::getInstance().xc[1], Global::getInstance().yc[1]); glVertex2i(bxres, 0);
+	glEnd();
+	glBindTexture(GL_TEXTURE_2D, 0);
+	glPopMatrix();
 
+*/
 
