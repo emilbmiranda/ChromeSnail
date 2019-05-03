@@ -420,7 +420,7 @@ Image img[9] = {
 "./images/hasunK.jpg",
 "./images/VictorM.jpg",
 "./images/EmilM.jpeg" ,
-"./images/mission_1.png"};
+"./images/mission_3.png"};
 
 Image helicopter_image = "./images/helicopter.gif";
 Image bomb_image = "./images/bomb.gif";
