@@ -16,6 +16,6 @@ void create_table();
 void insert();
 #endif
 void show_leaderboard();
-static int callback(void *data, int argc, char **argv, char **azColName);
+int callback(void *data, int argc, char **argv, char **azColName);
 
 #endif

@@ -309,8 +309,11 @@ void show_leaderboard()
  	sqlite3_close(db);
 }
 
-static int callback(void *data, int argc, char **argv, char **azColName)
+int callback(void *data, int argc, char **argv, char **azColName)
 {
+	(void) data;
+	(void) argc;
+	(void) azColName;
 	Rect r;
 	r.bot = 580;
 	r.left = 550;
@@ -318,7 +321,8 @@ static int callback(void *data, int argc, char **argv, char **azColName)
 	r.height = 200;
 	r.width = 100;
 	const char *name = argv[1];
-	ggprint16(&r, 500, 0xffffff,"TESTSTSTSTSTSTSTSTST");
+	const char *time = argv[2];
+	ggprint16(&r, 500, 0xffffff, name);
 	cout << name << endl;
 	return SQLITE_OK;
 }
