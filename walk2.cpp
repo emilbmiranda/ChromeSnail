@@ -282,7 +282,7 @@ public:
 	void setTitle() {
 		//Set the window title bar.
 		XMapWindow(dpy, win);
-		XStoreName(dpy, win, "3350 - Walk Cycle");
+		XStoreName(dpy, win, "Chrome Snail");
 	}
 	void setupScreenRes(const int w, const int h) {
 		Global::getInstance().xres = w;
