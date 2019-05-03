@@ -155,6 +155,7 @@ public:
 	GLuint keysTexture;
 	GLuint leaderboardTexture;
 	GLuint leaderboardTitleTexture;
+	GLuint leaderboardBoxTexture;
 	// Fernando: Need to create a GLuint object for the crate texture.
 	GLuint crateTexture;
 	Vec box[20];
@@ -426,6 +427,7 @@ Image keys_image = "./images/Keys.gif";
 Image crate_image = "./images/wall.gif";
 Image leaderboard_image = "./images/Leaderboard.gif";
 Image leaderboard_title_image = "./images/LeaderboardTitle.gif";
+Image leaderboard_box_image = "./images/Metal.png";
 
 void show_credits(Rect x, int y);
 
@@ -704,6 +706,21 @@ void initOpengl(void)
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, ltxres, ltyres, 0,
 		GL_RGBA, GL_UNSIGNED_BYTE, leaderboardTitleData);
 	free(leaderboardTitleData);
+
+	//leaderboard box 
+	glGenTextures(1, &Global::getInstance().leaderboardBoxTexture);	
+	int lbxres = leaderboard_box_image.width;
+	int lbyres = leaderboard_box_image.height;
+	glBindTexture(GL_TEXTURE_2D, Global::getInstance().leaderboardBoxTexture);
+	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	unsigned char *leaderboardBoxData = buildAlphaData(&leaderboard_box_image);	
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, lbxres, lbyres, 0,
+		GL_RGBA, GL_UNSIGNED_BYTE, leaderboardTitleData);
+	free(leaderboardBoxData);
 }
 
 void init()
@@ -1180,17 +1197,27 @@ void render(void)
 	float cx = Global::getInstance().xres/2.0;
 	float cy = Global::getInstance().yres/2.0;
 	if (Global::getInstance().showStartMenu) {
-		start_menu(Global::getInstance().xres, Global::getInstance().yres, 
+		start_menu(Global::getInstance().xres, 
+			Global::getInstance().yres, 
 			Global::getInstance().startMenuTexture);
-		show_logo(Global::getInstance().xres, Global::getInstance().yres, 
+		show_logo(Global::getInstance().xres, 
+			Global::getInstance().yres, 
 			Global::getInstance().logoTexture);
-		show_keys(Global::getInstance().xres, Global::getInstance().yres, 
+		show_keys(Global::getInstance().xres, 
+			Global::getInstance().yres, 
 			Global::getInstance().keysTexture);
 		if (Global::getInstance().showLeaderboard) {
-			leaderboard(Global::getInstance().xres, Global::getInstance().yres, 
+			leaderboard(Global::getInstance().xres, 
+				Global::getInstance().yres, 
 				Global::getInstance().leaderboardTexture);
-			leaderboard_title(Global::getInstance().xres, Global::getInstance().yres, 
+			leaderboard_title(Global::getInstance().xres, 
+				Global::getInstance().yres, 
 				Global::getInstance().leaderboardTitleTexture);
+			leaderboard_box(Global::getInstance().xres, 
+				Global::getInstance().yres, 
+				Global::getInstance().leaderboardBoxTexture);
+			generate_leaderboard(Global::getInstance().xres, 
+				Global::getInstance().yres);
 		}
 	} else {
 		if (Global::getInstance().showCredits) {

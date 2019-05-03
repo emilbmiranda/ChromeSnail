@@ -7,6 +7,7 @@
 #include "emilM.h"
 #include "sqlite3.h"
 #include <iostream>
+#include <vector>
 
 using namespace std;
 
@@ -17,6 +18,7 @@ const char *data = "Callback function called";
 bool sql_init_flag = 1;
 Rect leaderboard_rect;
 int leaderboardY = 300;
+vector<const char*> leaderboard_vector;
 
 void showEmil(Rect r, int y)
 {
@@ -160,10 +162,6 @@ void leaderboard(int xres, int yres, GLuint leaderboardTexture)
 	glEnd();
 	glBindTexture(GL_TEXTURE_2D, 0);
 	glPopMatrix();
-	if (sql_init_flag) {
-		show_leaderboard();
-		sql_init_flag = 0;
-	}
 }
 
 void leaderboard_title(int xres, int yres, GLuint leaderboardTitleTexture)
@@ -174,6 +172,31 @@ void leaderboard_title(int xres, int yres, GLuint leaderboardTitleTexture)
 	glPushMatrix();
 	glTranslatef(fx/2,fy/2,0);
 	glBindTexture(GL_TEXTURE_2D, leaderboardTitleTexture);
+	glEnable(GL_ALPHA_TEST);
+	glAlphaFunc(GL_GREATER, 0.0f);
+	glColor4ub(255,255,255,255);
+	glBegin(GL_QUADS);
+	glTexCoord2f(0.0f, 1.0f);
+	glVertex2i(-wid,-wid);
+	glTexCoord2f(0.0f, 0.0f);
+	glVertex2i(-wid, wid);
+	glTexCoord2f(1.0f, 0.0f);
+	glVertex2i( wid, wid);
+	glTexCoord2f(1.0f, 1.0f);
+	glVertex2i( wid,-wid);
+	glEnd();
+	glBindTexture(GL_TEXTURE_2D, 0);
+	glPopMatrix();
+}
+
+void leaderboard_box(int xres, int yres, GLuint leaderboardBoxTexture)
+{
+	static int wid = xres/5;
+	float fx = (float)xres;
+	float fy = (float)yres-200;
+	glPushMatrix();
+	glTranslatef(fx/2,fy/2,0);
+	glBindTexture(GL_TEXTURE_2D, leaderboardBoxTexture);
 	glEnable(GL_ALPHA_TEST);
 	glAlphaFunc(GL_GREATER, 0.0f);
 	glColor4ub(255,255,255,255);
@@ -285,7 +308,7 @@ void insert()
 }
 #endif
 
-void show_leaderboard()
+void generate_leaderboard(int xres, int yres)
 {
  	if (init_connection()) {
 		#ifdef SQL_UNIT_TEST
@@ -294,7 +317,8 @@ void show_leaderboard()
 		#endif
 		const char *showLeaderboard = "SELECT * from Leaderboard "
 			"ORDER BY Time";
-		result = sqlite3_exec(db, showLeaderboard, callback, (void*) data, &ErrMsg);
+		result = sqlite3_exec(db, showLeaderboard, callback, 
+			(void*) data, &ErrMsg);
 		if (result != SQLITE_OK) {
 			#ifdef SQL_UNIT_TEST
 			cout << "SQL Error:" << ErrMsg << endl;
@@ -306,6 +330,7 @@ void show_leaderboard()
 			#endif
 		}
  	}
+	print_leaderboard(xres, yres);
  	sqlite3_close(db);
 }
 
@@ -314,15 +339,18 @@ int callback(void *data, int argc, char **argv, char **azColName)
 	(void) data;
 	(void) argc;
 	(void) azColName;
-	Rect r;
-	r.bot = 580;
-	r.left = 550;
-	r.center = 0;
-	r.height = 200;
-	r.width = 100;
-	const char *name = argv[1];
-	const char *time = argv[2];
-	ggprint16(&r, 500, 0xffffff, name);
-	cout << name << endl;
+	leaderboard_vector.insert(leaderboard_vector.end(), argv[1]);
+	leaderboard_vector.insert(leaderboard_vector.end(), argv[2]);
 	return SQLITE_OK;
+}
+
+void print_leaderboard(int xres, int yres) 
+{
+	Rect r;
+	r.bot = yres - 50;
+	r.left = xres/2;
+	r.center = 0;
+	r.height = 400;
+	r.width = 300;
+	ggprint16(&r, xres/2, 0xfff000, "test");
 }
