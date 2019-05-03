@@ -13,9 +13,10 @@ using namespace std;
 sqlite3 *db;
 int result;
 char *ErrMsg;
+const char *data = "Callback function called";
 bool sql_init_flag = 1;
-
-#define SQL_UNIT_TEST
+Rect leaderboard_rect;
+int leaderboardY = 300;
 
 void showEmil(Rect r, int y)
 {
@@ -160,7 +161,7 @@ void leaderboard(int xres, int yres, GLuint leaderboardTexture)
 	glBindTexture(GL_TEXTURE_2D, 0);
 	glPopMatrix();
 	if (sql_init_flag) {
-		//show_leaderboard();
+		show_leaderboard();
 		sql_init_flag = 0;
 	}
 }
@@ -193,24 +194,27 @@ void leaderboard_title(int xres, int yres, GLuint leaderboardTitleTexture)
 int init_connection()
 {
 	int connection = sqlite3_open("ChromeSnail.db",&db);
-	#ifdef SQL_UNIT_TEST
 	if (connection) {
+		#ifdef SQL_UNIT_TEST
 		cout << "Connection Unsuccessful:" <<  sqlite3_errmsg(db) << endl;
+		#endif
 		return 0;
 	} else {
+		#ifdef SQL_UNIT_TEST
 		cout << "Connection Successful" << endl;
+		#endif
 		return 1;
 	}
-	#endif
 }
 
+#ifdef SQL_UNIT_TEST
 void create_table()
 {
 	if (init_connection()) {
 		const char *query = "CREATE TABLE IF NOT EXISTS Leaderboard (" 
 			"GameId INTEGER PRIMARY KEY AUTOINCREMENT," 
 			"Name VARCHAR(50) NOT NULL," 
-			"Time VARCHAR(50) NOT NULL);";
+			"Time TIME NOT NULL);";
 		result = sqlite3_exec(db, query, 0, 0, &ErrMsg);
 		if (result != SQLITE_OK) {
 			cout << "SQL Error:" << ErrMsg << endl;
@@ -220,19 +224,101 @@ void create_table()
 		}
 	}
 }
+#endif
 
+#ifdef SQL_UNIT_TEST
 void insert()
 {
 	if (init_connection()) {
-
+		const char *emil = "INSERT INTO Leaderboard"
+			"(Name, Time)"
+			"Values ('Emil','1:00')";
+		const char *hasun = "INSERT INTO Leaderboard"
+			"(Name, Time)"
+			"Values ('Hasun','0:50')";
+		const char *mason = "INSERT INTO Leaderboard"
+			"(Name, Time)"
+			"Values ('Mason','1:05')";
+		const char *fernando = "INSERT INTO Leaderboard"
+			"(Name, Time)"
+			"Values ('Fernando','1:30')";
+		const char *victor = "INSERT INTO Leaderboard"
+			"(Name, Time)"
+			"Values ('Victor','2:00')";
+		result = sqlite3_exec(db, emil, 0, 0, &ErrMsg);
+		if (result != SQLITE_OK) {
+			cout << "SQL Error:" << ErrMsg << endl;
+			sqlite3_free(ErrMsg);
+		} else {
+			cout << "Emil added successfully" << endl;
+		}
+		result = sqlite3_exec(db, hasun, 0, 0, &ErrMsg);
+		if (result != SQLITE_OK) {
+			cout << "SQL Error:" << ErrMsg << endl;
+			sqlite3_free(ErrMsg);
+		} else {
+			cout << "Hasun added successfully" << endl;
+		}
+		result = sqlite3_exec(db, mason, 0, 0, &ErrMsg);
+		if (result != SQLITE_OK) {
+			cout << "SQL Error:" << ErrMsg << endl;
+			sqlite3_free(ErrMsg);
+		} else {
+			cout << "Mason added successfully" << endl;
+		}
+		result = sqlite3_exec(db, fernando, 0, 0, &ErrMsg);
+		if (result != SQLITE_OK) {
+			cout << "SQL Error:" << ErrMsg << endl;
+			sqlite3_free(ErrMsg);
+		} else {
+			cout << "Fernando added successfully" << endl;
+		}
+		result = sqlite3_exec(db, victor, 0, 0, &ErrMsg);
+		if (result != SQLITE_OK) {
+			cout << "SQL Error:" << ErrMsg << endl;
+			sqlite3_free(ErrMsg);
+		} else {
+			cout << "Victor added successfully" << endl;
+		}
 	}
 	sqlite3_close(db);
 }
+#endif
 
 void show_leaderboard()
 {
  	if (init_connection()) {
+		#ifdef SQL_UNIT_TEST
  		create_table();
+		insert();
+		#endif
+		const char *showLeaderboard = "SELECT * from Leaderboard "
+			"ORDER BY Time";
+		result = sqlite3_exec(db, showLeaderboard, callback, (void*) data, &ErrMsg);
+		if (result != SQLITE_OK) {
+			#ifdef SQL_UNIT_TEST
+			cout << "SQL Error:" << ErrMsg << endl;
+			#endif
+			sqlite3_free(ErrMsg);
+		} else {
+			#ifdef SQL_UNIT_TEST
+			cout << "SELECT statement successful" << endl;
+			#endif
+		}
  	}
  	sqlite3_close(db);
+}
+
+static int callback(void *data, int argc, char **argv, char **azColName)
+{
+	Rect r;
+	r.bot = 580;
+	r.left = 550;
+	r.center = 0;
+	r.height = 200;
+	r.width = 100;
+	const char *name = argv[1];
+	ggprint16(&r, 500, 0xffffff,"TESTSTSTSTSTSTSTSTST");
+	cout << name << endl;
+	return SQLITE_OK;
 }

@@ -13,7 +13,7 @@ victorMTests: victorMTests.cpp victorM.cpp
 	g++ $(CFLAGS) victorMTests.cpp victorM.cpp libggfonts.a -Wall -Wextra $(LFLAGS) -o victorMTests
 
 sqlite3.o: sqlite3.c
-	gcc -o sqlite3.o -c sqlite3.c
+	gcc -o sqlite3.o -c sqlite3.c -lpthread -ldl
 
 clean:
 	rm -f walk2Test
