@@ -392,7 +392,7 @@ int callback(void *data, int argc, char **argv, char **azColName)
 void print_leaderboard(int xres, int yres, GLuint numbersTexture[],
 	GLuint lettersTexture[]) 
 {
-	static int wid = 50;
+	static int wid = 40;
 	float fx = (float)xres/2-175;
 	float fy = (float)yres/2+50;
 	for (int i = 1; i <= 3; i++) { 
@@ -423,7 +423,7 @@ void print_leaderboard(int xres, int yres, GLuint numbersTexture[],
 void print_name(int xres, int yres, int width, string name, GLuint lettersTexture[])
 {
 	int size = name.length();
-	static int wid = width/1.2;
+	static int wid = width;
 	float fx = (float)xres;
 	float fy = (float)yres;
 	for (int i = 0; i < size; i++) {
