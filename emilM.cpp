@@ -116,29 +116,87 @@ void show_logo(int xres, int yres, GLuint logoTexture)
 	glPopMatrix();
 }
 
-void show_keys(int xres, int yres, GLuint keysTexture)
+void show_keys(int xres, int yres, GLuint lettersTexture[])
 {
-	static int wid = xres/5;
-	float fx = (float)xres;
-	float fy = (float)yres-300;
-	glPushMatrix();
-	glTranslatef(fx/2,fy/2,0);
-	glBindTexture(GL_TEXTURE_2D, keysTexture);
-	glEnable(GL_ALPHA_TEST);
-	glAlphaFunc(GL_GREATER, 0.0f);
-	glColor4ub(255,255,255,255);
-	glBegin(GL_QUADS);
-	glTexCoord2f(0.0f, 1.0f);
-	glVertex2i(-wid,-wid);
-	glTexCoord2f(0.0f, 0.0f);
-	glVertex2i(-wid, wid);
-	glTexCoord2f(1.0f, 0.0f);
-	glVertex2i( wid, wid);
-	glTexCoord2f(1.0f, 1.0f);
-	glVertex2i( wid,-wid);
-	glEnd();
-	glBindTexture(GL_TEXTURE_2D, 0);
-	glPopMatrix();
+	static int wid = 40;
+	float fx = (float)xres/2-250;
+	float fy = (float)yres/2-25;
+	const char *playGame = "P - Play Game";
+	int size = strlen(playGame);
+	for (int i = 0; i < size; i++) {
+		char letter = playGame[i];
+		glPushMatrix();
+		glTranslatef(fx,fy,0);
+		render_letter(letter, lettersTexture);
+		glEnable(GL_ALPHA_TEST);
+		glAlphaFunc(GL_GREATER, 0.0f);
+		glColor4ub(255,255,255,255);
+		glBegin(GL_QUADS);
+		glTexCoord2f(0.0f, 1.0f);
+		glVertex2i(-wid,-wid);
+		glTexCoord2f(0.0f, 0.0f);
+		glVertex2i(-wid, wid);
+		glTexCoord2f(1.0f, 0.0f);
+		glVertex2i( wid, wid);
+		glTexCoord2f(1.0f, 1.0f);
+		glVertex2i( wid,-wid);
+		glEnd();
+		glBindTexture(GL_TEXTURE_2D, 0);
+		glPopMatrix();
+		fx += 40;
+	}
+	const char *leaderboard = "L - Leaderboard";
+	size = strlen(leaderboard);
+	fy -= 50;
+	fx = (float)xres/2-250;
+	for (int i = 0; i < size; i++) {
+		char letter = leaderboard[i];
+		glPushMatrix();
+		glTranslatef(fx,fy,0);
+		render_letter(letter, lettersTexture);
+		glEnable(GL_ALPHA_TEST);
+		glAlphaFunc(GL_GREATER, 0.0f);
+		glColor4ub(255,255,255,255);
+		glBegin(GL_QUADS);
+		glTexCoord2f(0.0f, 1.0f);
+		glVertex2i(-wid,-wid);
+		glTexCoord2f(0.0f, 0.0f);
+		glVertex2i(-wid, wid);
+		glTexCoord2f(1.0f, 0.0f);
+		glVertex2i( wid, wid);
+		glTexCoord2f(1.0f, 1.0f);
+		glVertex2i( wid,-wid);
+		glEnd();
+		glBindTexture(GL_TEXTURE_2D, 0);
+		glPopMatrix();
+		fx += 40;
+	}
+	const char *credits = "C - Credits";
+	size = strlen(credits);
+	fy -= 50;
+	fx = (float)xres/2-250;
+	for (int i = 0; i < size; i++) {
+		char letter = credits[i];
+		glPushMatrix();
+		glTranslatef(fx,fy,0);
+		render_letter(letter, lettersTexture);
+		glEnable(GL_ALPHA_TEST);
+		glAlphaFunc(GL_GREATER, 0.0f);
+		glColor4ub(255,255,255,255);
+		glBegin(GL_QUADS);
+		glTexCoord2f(0.0f, 1.0f);
+		glVertex2i(-wid,-wid);
+		glTexCoord2f(0.0f, 0.0f);
+		glVertex2i(-wid, wid);
+		glTexCoord2f(1.0f, 0.0f);
+		glVertex2i( wid, wid);
+		glTexCoord2f(1.0f, 1.0f);
+		glVertex2i( wid,-wid);
+		glEnd();
+		glBindTexture(GL_TEXTURE_2D, 0);
+		glPopMatrix();
+		fx += 40;
+	}
 }
 
 void leaderboard(int xres, int yres, GLuint leaderboardTexture)
@@ -373,110 +431,7 @@ void print_name(int xres, int yres, int width, string name, GLuint lettersTextur
 		glPushMatrix();
 		glTranslatef(fx,fy,0);
 		char letter = (char)name[i];
-		switch (letter) {
-			case('A'):
-			case('a'):
-				glBindTexture(GL_TEXTURE_2D, lettersTexture[0]);
-				break;
-			case('B'):
-			case('b'):
-				glBindTexture(GL_TEXTURE_2D, lettersTexture[1]);
-				break;
-			case('C'):
-			case('c'):
-				glBindTexture(GL_TEXTURE_2D, lettersTexture[2]);
-				break;
-			case('D'):
-			case('d'):
-				glBindTexture(GL_TEXTURE_2D, lettersTexture[3]);
-				break;
-			case('E'):
-			case('e'):
-				glBindTexture(GL_TEXTURE_2D, lettersTexture[4]);
-				break;
-			case('F'):
-			case('f'):
-				glBindTexture(GL_TEXTURE_2D, lettersTexture[5]);
-				break;
-			case('G'):
-			case('g'):
-				glBindTexture(GL_TEXTURE_2D, lettersTexture[6]);
-				break;
-			case('H'):
-			case('h'):
-				glBindTexture(GL_TEXTURE_2D, lettersTexture[7]);
-				break;
-			case('I'):
-			case('i'):
-				glBindTexture(GL_TEXTURE_2D, lettersTexture[8]);
-				break;
-			case('J'):
-			case('j'):
-				glBindTexture(GL_TEXTURE_2D, lettersTexture[9]);
-				break;
-			case('K'):
-			case('k'):
-				glBindTexture(GL_TEXTURE_2D, lettersTexture[10]);
-				break;
-			case('L'):
-			case('l'):
-				glBindTexture(GL_TEXTURE_2D, lettersTexture[11]);
-				break;
-			case('M'):
-			case('m'):
-				glBindTexture(GL_TEXTURE_2D, lettersTexture[12]);
-				break;
-			case('N'):
-			case('n'):
-				glBindTexture(GL_TEXTURE_2D, lettersTexture[13]);
-				break;
-			case('O'):
-			case('o'):
-				glBindTexture(GL_TEXTURE_2D, lettersTexture[14]);
-				break;
-			case('P'):
-			case('p'):
-				glBindTexture(GL_TEXTURE_2D, lettersTexture[15]);
-				break;
-			case('Q'):
-			case('q'):
-				glBindTexture(GL_TEXTURE_2D, lettersTexture[16]);
-				break;
-			case('R'):
-			case('r'):
-				glBindTexture(GL_TEXTURE_2D, lettersTexture[17]);
-				break;
-			case('S'):
-			case('s'):
-				glBindTexture(GL_TEXTURE_2D, lettersTexture[18]);
-				break;
-			case('T'):
-			case('t'):
-				glBindTexture(GL_TEXTURE_2D, lettersTexture[19]);
-				break;
-			case('U'):
-			case('u'):
-				glBindTexture(GL_TEXTURE_2D, lettersTexture[20]);
-				break;
-			case('V'):
-			case('v'):
-				glBindTexture(GL_TEXTURE_2D, lettersTexture[21]);
-				break;
-			case('W'):
-			case('w'):
-				glBindTexture(GL_TEXTURE_2D, lettersTexture[22]);
-				break;
-			case('X'):
-			case('x'):
-				glBindTexture(GL_TEXTURE_2D, lettersTexture[23]);
-				break;
-			case('Y'):
-			case('y'):
-				glBindTexture(GL_TEXTURE_2D, lettersTexture[24]);
-				break;
-			default:
-				glBindTexture(GL_TEXTURE_2D, lettersTexture[25]);
-		}
+		render_letter(letter, lettersTexture);
 		glEnable(GL_ALPHA_TEST);
 		glAlphaFunc(GL_GREATER, 0.0f);
 		glColor4ub(255,255,255,255);
@@ -504,44 +459,8 @@ void print_time(int xres, int yres, int width, string time, GLuint numbersTextur
 		fx += 40;
 		glPushMatrix();
 		glTranslatef(fx,fy,0);
-		char letter = (char)time[i];
-		switch (letter) {
-			case('0'):
-				glBindTexture(GL_TEXTURE_2D, numbersTexture[0]);
-				break;
-			case('1'):
-				glBindTexture(GL_TEXTURE_2D, numbersTexture[1]);
-				break;
-			case('2'):
-				glBindTexture(GL_TEXTURE_2D, numbersTexture[2]);
-				break;
-			case('3'):
-				glBindTexture(GL_TEXTURE_2D, numbersTexture[3]);
-				break;
-			case('4'):
-				glBindTexture(GL_TEXTURE_2D, numbersTexture[4]);
-				break;
-			case('5'):
-				glBindTexture(GL_TEXTURE_2D, numbersTexture[5]);
-				break;
-			case('6'):
-				glBindTexture(GL_TEXTURE_2D, numbersTexture[6]);
-				break;
-			case('7'):
-				glBindTexture(GL_TEXTURE_2D, numbersTexture[7]);
-				break;
-			case('8'):
-				glBindTexture(GL_TEXTURE_2D, numbersTexture[8]);
-				break;
-			case('9'):
-				glBindTexture(GL_TEXTURE_2D, numbersTexture[9]);
-				break;
-			case(':'):
-				glBindTexture(GL_TEXTURE_2D, numbersTexture[10]);
-				break;
-			default:
-				glBindTexture(GL_TEXTURE_2D, numbersTexture[10]);
-		}
+		char char_time = (char)time[i];
+		render_number(char_time, numbersTexture);
 		glEnable(GL_ALPHA_TEST);
 		glAlphaFunc(GL_GREATER, 0.0f);
 		glColor4ub(255,255,255,255);
@@ -557,5 +476,161 @@ void print_time(int xres, int yres, int width, string time, GLuint numbersTextur
 		glEnd();
 		glBindTexture(GL_TEXTURE_2D, 0);
 		glPopMatrix();
+	}
+}
+
+void render_letter(char letter, GLuint lettersTexture[])
+{
+	switch (letter) {
+		case('A'):
+		case('a'):
+			glBindTexture(GL_TEXTURE_2D, lettersTexture[0]);
+			break;
+		case('B'):
+		case('b'):
+			glBindTexture(GL_TEXTURE_2D, lettersTexture[1]);
+			break;
+		case('C'):
+		case('c'):
+			glBindTexture(GL_TEXTURE_2D, lettersTexture[2]);
+			break;
+		case('D'):
+		case('d'):
+			glBindTexture(GL_TEXTURE_2D, lettersTexture[3]);
+			break;
+		case('E'):
+		case('e'):
+			glBindTexture(GL_TEXTURE_2D, lettersTexture[4]);
+			break;
+		case('F'):
+		case('f'):
+			glBindTexture(GL_TEXTURE_2D, lettersTexture[5]);
+			break;
+		case('G'):
+		case('g'):
+			glBindTexture(GL_TEXTURE_2D, lettersTexture[6]);
+			break;
+		case('H'):
+		case('h'):
+			glBindTexture(GL_TEXTURE_2D, lettersTexture[7]);
+			break;
+		case('I'):
+		case('i'):
+			glBindTexture(GL_TEXTURE_2D, lettersTexture[8]);
+			break;
+		case('J'):
+		case('j'):
+			glBindTexture(GL_TEXTURE_2D, lettersTexture[9]);
+			break;
+		case('K'):
+		case('k'):
+			glBindTexture(GL_TEXTURE_2D, lettersTexture[10]);
+			break;
+		case('L'):
+		case('l'):
+			glBindTexture(GL_TEXTURE_2D, lettersTexture[11]);
+			break;
+		case('M'):
+		case('m'):
+			glBindTexture(GL_TEXTURE_2D, lettersTexture[12]);
+			break;
+		case('N'):
+		case('n'):
+			glBindTexture(GL_TEXTURE_2D, lettersTexture[13]);
+			break;
+		case('O'):
+		case('o'):
+			glBindTexture(GL_TEXTURE_2D, lettersTexture[14]);
+			break;
+		case('P'):
+		case('p'):
+			glBindTexture(GL_TEXTURE_2D, lettersTexture[15]);
+			break;
+		case('Q'):
+		case('q'):
+			glBindTexture(GL_TEXTURE_2D, lettersTexture[16]);
+			break;
+		case('R'):
+		case('r'):
+			glBindTexture(GL_TEXTURE_2D, lettersTexture[17]);
+			break;
+		case('S'):
+		case('s'):
+			glBindTexture(GL_TEXTURE_2D, lettersTexture[18]);
+			break;
+		case('T'):
+		case('t'):
+			glBindTexture(GL_TEXTURE_2D, lettersTexture[19]);
+			break;
+		case('U'):
+		case('u'):
+			glBindTexture(GL_TEXTURE_2D, lettersTexture[20]);
+			break;
+		case('V'):
+		case('v'):
+			glBindTexture(GL_TEXTURE_2D, lettersTexture[21]);
+			break;
+		case('W'):
+		case('w'):
+			glBindTexture(GL_TEXTURE_2D, lettersTexture[22]);
+			break;
+		case('X'):
+		case('x'):
+			glBindTexture(GL_TEXTURE_2D, lettersTexture[23]);
+			break;
+		case('Y'):
+		case('y'):
+			glBindTexture(GL_TEXTURE_2D, lettersTexture[24]);
+			break;
+		case('Z'):
+		case('z'):
+			glBindTexture(GL_TEXTURE_2D, lettersTexture[25]);
+			break;
+		case('-'):
+			glBindTexture(GL_TEXTURE_2D, lettersTexture[26]);
+			break;
+		default:
+			glBindTexture(GL_TEXTURE_2D, lettersTexture[27]);
+	}
+}
+
+void render_number(char number, GLuint numbersTexture[])
+{ 
+	switch (number) {
+		case('0'):
+			glBindTexture(GL_TEXTURE_2D, numbersTexture[0]);
+			break;
+		case('1'):
+			glBindTexture(GL_TEXTURE_2D, numbersTexture[1]);
+			break;
+		case('2'):
+			glBindTexture(GL_TEXTURE_2D, numbersTexture[2]);
+			break;
+		case('3'):
+			glBindTexture(GL_TEXTURE_2D, numbersTexture[3]);
+			break;
+		case('4'):
+			glBindTexture(GL_TEXTURE_2D, numbersTexture[4]);
+			break;
+		case('5'):
+			glBindTexture(GL_TEXTURE_2D, numbersTexture[5]);
+			break;
+		case('6'):
+			glBindTexture(GL_TEXTURE_2D, numbersTexture[6]);
+			break;
+		case('7'):
+			glBindTexture(GL_TEXTURE_2D, numbersTexture[7]);
+			break;
+		case('8'):
+			glBindTexture(GL_TEXTURE_2D, numbersTexture[8]);
+			break;
+		case('9'):
+			glBindTexture(GL_TEXTURE_2D, numbersTexture[9]);
+			break;
+		case(':'):
+			glBindTexture(GL_TEXTURE_2D, numbersTexture[10]);
+			break;
+		default:
+			glBindTexture(GL_TEXTURE_2D, numbersTexture[10]);
 	}
 }
