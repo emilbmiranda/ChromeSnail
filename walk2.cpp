@@ -165,6 +165,8 @@ public:
 	GLuint lettersTexture[LETTERS_ARRAY];
 	// Fernando: Need to create a GLuint object for the crate texture.
 	GLuint crateTexture;
+	//Platform plat1(540,140);
+	//Platform plat1;
 	GLuint backgroundTexture;
 	Vec box[20];
 	Sprite exp;
@@ -1025,6 +1027,8 @@ void physics(void)
 		|| Global::getInstance().keys[XK_Left]) {
 		//man is walking...
 		//when time is up, advance the frame.
+		if ( Global::getInstance().keys[XK_Right]) {
+		}
 		timers.recordTime(&timers.timeCurrent);
 		double timeSpan = timers.timeDiff(&timers.walkTime, 
 			&timers.timeCurrent);
@@ -1106,6 +1110,7 @@ void physics(void)
 	//Adjust position of ball.
 	//Height of highest tile when ball is?
 	//====================================
+	/*
 	Flt dd = lev.ftsz[0];
 	int col = (int)((Global::getInstance().camera[0]
 		+Global::getInstance().ball_pos[0]) / dd);
@@ -1124,6 +1129,7 @@ void physics(void)
 		Global::getInstance().ball_vel[1] -= 0.9;
 	}
 	Global::getInstance().ball_pos[1] += Global::getInstance().ball_vel[1];
+	*/
 
 	if (Global::getInstance().keys[XK_space]) {
 		//a little time between each bullet
@@ -1251,6 +1257,7 @@ void show_credits(Rect x, int y)
 void render(void)
 {
 	Rect r;
+	//Global::getInstance().plat1(540,140);
 	Platform plat1(540,140);
 	//Clear the screen
 	glClearColor(0.1, 0.1, 0.1, 1.0);
@@ -1495,6 +1502,7 @@ void render(void)
 			float tx = (float)ix / 5.0;
 			float ty = (float)iy / 5.0;
 			glBegin(GL_QUADS);
+<<<<<<< HEAD
 			glTexCoord2f(tx, ty+0.2);
 			glVertex2i(cx-w, cy-h);
 			glTexCoord2f(tx, ty);
@@ -1503,6 +1511,28 @@ void render(void)
 			glVertex2i(cx+w, cy+h);
 			glTexCoord2f(tx+0.2, ty+0.2);
 			glVertex2i(cx+w, cy-h);
+=======
+			if (Global::getInstance().keys[XK_Left]) {
+				//printf("I'm walking to the left");
+				glTexCoord2f(fx+.125, fy+.5);
+				glVertex2i(cx-w, cy-h);
+				glTexCoord2f(fx+.125, fy);
+				glVertex2i(cx-w, cy+h);
+				glTexCoord2f(fx, fy);
+				glVertex2i(cx+w, cy+h);
+				glTexCoord2f(fx, fy+.5);
+				glVertex2i(cx+w, cy-h);
+			} else {
+				glTexCoord2f(fx, fy+.5);
+				glVertex2i(cx-w, cy-h);
+				glTexCoord2f(fx, fy);
+				glVertex2i(cx-w, cy+h);
+				glTexCoord2f(fx+.125, fy);
+				glVertex2i(cx+w, cy+h);
+				glTexCoord2f(fx+.125, fy+.5);
+				glVertex2i(cx+w, cy-h);
+			}
+>>>>>>> d2ae81861bf5ae1964cb67ac28fc334e41bd4eb9
 			glEnd();
 			glPopMatrix();
 			glBindTexture(GL_TEXTURE_2D, 0);
@@ -1539,6 +1569,107 @@ void render(void)
 			glPopMatrix();
 			glBindTexture(GL_TEXTURE_2D, 0);
 			glDisable(GL_ALPHA_TEST);
+<<<<<<< HEAD
+=======
+			//
+			//
+			if (Global::getInstance().exp.onoff) {
+				h = 80.0;
+				w = 80.0;
+				glPushMatrix();
+				glColor3f(1.0, 1.0, 1.0);
+				glBindTexture(GL_TEXTURE_2D, Global::getInstance().exp.tex);
+				glEnable(GL_ALPHA_TEST);
+				glAlphaFunc(GL_GREATER, 0.0f);
+				glColor4ub(255,255,255,255);
+				glTranslated(Global::getInstance().exp.pos[0], Global::getInstance().exp.pos[1], Global::getInstance().exp.pos[2]);
+				int ix = Global::getInstance().exp.frame % 5;
+				int iy = Global::getInstance().exp.frame / 5;
+				float tx = (float)ix / 5.0;
+				float ty = (float)iy / 5.0;
+				glBegin(GL_QUADS);
+				glTexCoord2f(tx, ty+0.2);
+				glVertex2i(cx-w, cy-h);
+				glTexCoord2f(tx, ty);
+				glVertex2i(cx-w, cy+h);
+				glTexCoord2f(tx+0.2, ty);
+				glVertex2i(cx+w, cy+h);
+				glTexCoord2f(tx+0.2, ty+0.2);
+				glVertex2i(cx+w, cy-h);
+				glEnd();
+				glPopMatrix();
+				glBindTexture(GL_TEXTURE_2D, 0);
+				glDisable(GL_ALPHA_TEST);
+			}
+			//
+			//
+			if (Global::getInstance().exp44.onoff) {
+				h = 80.0;
+				w = 80.0;
+				glPushMatrix();
+				glColor3f(1.0, 1.0, 1.0);
+				glBindTexture(GL_TEXTURE_2D, Global::getInstance().exp44.tex);
+				glEnable(GL_ALPHA_TEST);
+				glAlphaFunc(GL_GREATER, 0.0f);
+				glColor4ub(255,255,255,255);
+				glTranslated(Global::getInstance().exp44.pos[0], Global::getInstance().exp44.pos[1], Global::getInstance().exp44.pos[2]);
+				int ix = Global::getInstance().exp44.frame % 4;
+				int iy = Global::getInstance().exp44.frame / 4;
+				float tx = (float)ix / 4.0;
+				float ty = (float)iy / 4.0;
+				glBegin(GL_QUADS);
+
+				glTexCoord2f(tx, ty+0.25);
+				glVertex2i(cx-w, cy-h);
+				glTexCoord2f(tx, ty);
+				glVertex2i(cx-w, cy+h);
+				glTexCoord2f(tx+0.25, ty);
+				glVertex2i(cx+w, cy+h);
+				glTexCoord2f(tx+0.25, ty+0.25);
+				glVertex2i(cx+w, cy-h);
+
+				glEnd();
+				glPopMatrix();
+				glBindTexture(GL_TEXTURE_2D, 0);
+				glDisable(GL_ALPHA_TEST);
+			}
+			extern void create_menu_button(int gl_xres, int gl_yres);
+			create_menu_button(Global::getInstance().xres, Global::getInstance().yres);
+			
+			//will add to menu
+			unsigned int c = 0x00ffff44;
+			r.bot = Global::getInstance().yres - 20;
+			r.left = 10;
+			r.center = 0;
+			ggprint8b(&r, 16, c, "W   Walk cycle");
+			ggprint8b(&r, 16, c, "E   Explosion");
+			ggprint8b(&r, 16, c, "+   faster");
+			ggprint8b(&r, 16, c, "-   slower");
+			ggprint8b(&r, 16, c, "right arrow -> walk right");
+			ggprint8b(&r, 16, c, "left arrow  <- walk left");
+			ggprint8b(&r, 16, c, "frame: %i", Global::getInstance().walkFrame);
+			ggprint8b(&r, 16, c, "credits   c");
+			if (Global::getInstance().movie) {
+				screenCapture();
+			}
+			glPushMatrix();
+			showHelicopter(helicopter.pos[0], helicopter.pos[1], helicopter.vel[0]);
+			glPopMatrix();
+			glPushMatrix();
+			showBomb(bomb.pos[0], bomb.pos[1]-100, bomb.vel[0]);;
+			glPopMatrix();
+			//draw bullets
+			drawBullets(&bullets);
+
+			// Fernando: Adding a platform entity to the game.
+			glPushMatrix();
+			// This breaks the wall because I was translating it in the walk2
+			// file and in drawPlatform()
+			// ---> glTranslated(plat1.pos[0],plat1.pos[1],0);	
+			plat1.drawPlatform(plat1.getXpos(), plat1.getYpos(), 
+				Global::getInstance().crateTexture);
+			glPopMatrix();
+>>>>>>> d2ae81861bf5ae1964cb67ac28fc334e41bd4eb9
 		}
 		extern void create_menu_button(int gl_xres, int gl_yres);
 		create_menu_button(Global::getInstance().xres, Global::getInstance().yres);
