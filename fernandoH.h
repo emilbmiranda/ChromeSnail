@@ -15,6 +15,7 @@ struct Platform {
 	void drawPlatform(int, int, GLuint);
 	int getXpos();
 	int getYpos();
+	void decreaseXpos();
 };
 
 

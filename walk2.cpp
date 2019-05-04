@@ -160,6 +160,8 @@ public:
 	GLuint leaderboardTitleTexture;
 	// Fernando: Need to create a GLuint object for the crate texture.
 	GLuint crateTexture;
+	//Platform plat1(540,140);
+	//Platform plat1;
 	GLuint backgroundTexture;
 	Vec box[20];
 	Sprite exp;
@@ -973,6 +975,8 @@ void physics(void)
 		|| Global::getInstance().keys[XK_Left]) {
 		//man is walking...
 		//when time is up, advance the frame.
+		if ( Global::getInstance().keys[XK_Right]) {
+		}
 		timers.recordTime(&timers.timeCurrent);
 		double timeSpan = timers.timeDiff(&timers.walkTime, 
 			&timers.timeCurrent);
@@ -1054,6 +1058,7 @@ void physics(void)
 	//Adjust position of ball.
 	//Height of highest tile when ball is?
 	//====================================
+	/*
 	Flt dd = lev.ftsz[0];
 	int col = (int)((Global::getInstance().camera[0]
 		+Global::getInstance().ball_pos[0]) / dd);
@@ -1072,6 +1077,7 @@ void physics(void)
 		Global::getInstance().ball_vel[1] -= 0.9;
 	}
 	Global::getInstance().ball_pos[1] += Global::getInstance().ball_vel[1];
+	*/
 
 	if (Global::getInstance().keys[XK_space]) {
 		//a little time between each bullet
@@ -1199,6 +1205,7 @@ void show_credits(Rect x, int y)
 void render(void)
 {
 	Rect r;
+	//Global::getInstance().plat1(540,140);
 	Platform plat1(540,140);
 	//Clear the screen
 	glClearColor(0.1, 0.1, 0.1, 1.0);
@@ -1368,6 +1375,7 @@ void render(void)
 			float fy = (float)iy / 2.0;
 			glBegin(GL_QUADS);
 			if (Global::getInstance().keys[XK_Left]) {
+				//printf("I'm walking to the left");
 				glTexCoord2f(fx+.125, fy+.5);
 				glVertex2i(cx-w, cy-h);
 				glTexCoord2f(fx+.125, fy);
@@ -1510,7 +1518,7 @@ void render(void)
 			glPushMatrix();
 			// This breaks the wall because I was translating it in the walk2
 			// file and in drawPlatform()
-			//glTranslated(plat1.pos[0],plat1.pos[1],0);	
+			// ---> glTranslated(plat1.pos[0],plat1.pos[1],0);	
 			plat1.drawPlatform(plat1.getXpos(), plat1.getYpos(), 
 				Global::getInstance().crateTexture);
 			glPopMatrix();

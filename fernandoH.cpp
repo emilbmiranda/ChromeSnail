@@ -59,7 +59,6 @@ Platform::Platform(int x, int y)
 	pos[0] = x;
 	pos[1] = y;
 }
-//void Platform::drawPlatform()
 void Platform::drawPlatform(int xpos, int ypos, GLuint crateID)
 {
 	// Change the size of the sprite.
@@ -107,4 +106,9 @@ int Platform::getXpos()
 int Platform::getYpos()
 {
 	return pos[1];
+}
+
+void Platform::decreaseXpos() 
+{
+	pos[0] = pos[0]--;
 }
