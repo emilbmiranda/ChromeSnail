@@ -289,8 +289,6 @@ unsigned char *buildAlphaData(Image *img)
 }
 
 
-
-
 void init_opengl(void)
 {
 	//OpenGL initialization
@@ -435,6 +433,7 @@ void render()
 		glTexCoord2f(g.tex.xc[1], g.tex.yc[0]); glVertex2i(g.xres, g.yres);
 		glTexCoord2f(g.tex.xc[1], g.tex.yc[1]); glVertex2i(g.xres, 0);
 	glEnd();
+
 	/*if (g.exp.onoff) {
 		float h = 80.0;
 		float w = 80.0;
