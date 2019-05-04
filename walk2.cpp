@@ -57,6 +57,8 @@ const float gravity = -0.2f;
 #define HASUN 2
 #define VICTOR 3
 #define EMIL 4
+#define NUMBERS_ARRAY 11
+#define LETTERS_ARRAY 28
 
 //function prototypes
 void initOpengl();
@@ -158,6 +160,9 @@ public:
 	GLuint keysTexture;
 	GLuint leaderboardTexture;
 	GLuint leaderboardTitleTexture;
+	GLuint leaderboardBoxTexture;
+	GLuint numbersTexture[NUMBERS_ARRAY];
+	GLuint lettersTexture[LETTERS_ARRAY];
 	// Fernando: Need to create a GLuint object for the crate texture.
 	GLuint crateTexture;
 	//Platform plat1(540,140);
@@ -433,6 +438,27 @@ Image keys_image = "./images/Keys.gif";
 Image crate_image = "./images/wall.gif";
 Image leaderboard_image = "./images/Leaderboard.gif";
 Image leaderboard_title_image = "./images/LeaderboardTitle.gif";
+Sprite numbers_spritesheet;
+Image letters_image[LETTERS_ARRAY] = {"./images/A.gif", "./images/B.gif",
+	"./images/C.gif", "./images/D.gif",
+	"./images/E.gif", "./images/F.gif",
+	"./images/G.gif", "./images/H.gif",
+	"./images/I.gif", "./images/J.gif",
+	"./images/K.gif", "./images/L.gif",
+	"./images/M.gif", "./images/N.gif",
+	"./images/O.gif", "./images/P.gif",
+	"./images/Q.gif", "./images/R.gif",
+	"./images/S.gif", "./images/T.gif",
+	"./images/U.gif", "./images/V.gif",
+	"./images/W.gif", "./images/X.gif",
+	"./images/Y.gif", "./images/Z.gif",
+	"./images/hypen.gif", "./images/space.gif"};
+Image numbers_image[NUMBERS_ARRAY] = {"./images/0.gif", "./images/1.gif",
+	"./images/2.gif", "./images/3.gif",
+	"./images/4.gif", "./images/5.gif",
+	"./images/6.gif", "./images/7.gif",
+	"./images/8.gif", "./images/9.gif",
+	"./images/colon.gif"};
 Image *backImage = &img[8];
 void show_credits(Rect x, int y);
 
@@ -683,21 +709,6 @@ void initOpengl(void)
 		GL_RGBA, GL_UNSIGNED_BYTE, logoData);
 	free(logoData);
 
-	// keys on start menu texture and binding
-	glGenTextures(1, &Global::getInstance().keysTexture);	
-	int kxres = keys_image.width;
-	int kyres = keys_image.height;
-	glBindTexture(GL_TEXTURE_2D, Global::getInstance().keysTexture);
-	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-	unsigned char *keysData = buildAlphaData(&keys_image);	
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, kxres, kyres, 0,
-		GL_RGBA, GL_UNSIGNED_BYTE, keysData);
-	free(keysData);
-
 	//leaderboard
 	glGenTextures(1, &Global::getInstance().leaderboardTexture);	
 	int lexres = leaderboard_image.width;
@@ -727,6 +738,40 @@ void initOpengl(void)
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, ltxres, ltyres, 0,
 		GL_RGBA, GL_UNSIGNED_BYTE, leaderboardTitleData);
 	free(leaderboardTitleData);
+
+	//number texture
+	for (int i = 0; i < NUMBERS_ARRAY; i++) {
+		glGenTextures(1, &Global::getInstance().numbersTexture[i]);	
+		int numxres = numbers_image[i].width;
+		int numyres = numbers_image[i].height;
+		glBindTexture(GL_TEXTURE_2D, Global::getInstance().numbersTexture[i]);
+		glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+		unsigned char *numData = buildAlphaData(&numbers_image[i]);	
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, numxres, numyres, 0,
+			GL_RGBA, GL_UNSIGNED_BYTE, numData);
+		free(numData);
+	}
+
+	//letters texture
+	for (int i = 0; i < LETTERS_ARRAY; i++) {
+		glGenTextures(1, &Global::getInstance().lettersTexture[i]);	
+		int letxres = letters_image[i].width;
+		int letyres = letters_image[i].height;
+		glBindTexture(GL_TEXTURE_2D, Global::getInstance().lettersTexture[i]);
+		glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+		unsigned char *letData = buildAlphaData(&letters_image[i]);	
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, letxres, letyres, 0,
+			GL_RGBA, GL_UNSIGNED_BYTE, letData);
+		free(letData);
+	}
 }
 
 void init()
@@ -1214,17 +1259,27 @@ void render(void)
 	float cx = Global::getInstance().xres/2.0;
 	float cy = Global::getInstance().yres/2.0;
 	if (Global::getInstance().showStartMenu) {
-		start_menu(Global::getInstance().xres, Global::getInstance().yres, 
+		start_menu(Global::getInstance().xres, 
+			Global::getInstance().yres, 
 			Global::getInstance().startMenuTexture);
-		show_logo(Global::getInstance().xres, Global::getInstance().yres, 
+		show_logo(Global::getInstance().xres, 
+			Global::getInstance().yres, 
 			Global::getInstance().logoTexture);
-		show_keys(Global::getInstance().xres, Global::getInstance().yres, 
-			Global::getInstance().keysTexture);
+		show_keys(Global::getInstance().xres, 
+			Global::getInstance().yres, 
+			Global::getInstance().lettersTexture);
 		if (Global::getInstance().showLeaderboard) {
-			leaderboard(Global::getInstance().xres, Global::getInstance().yres, 
+			leaderboard(Global::getInstance().xres, 
+				Global::getInstance().yres, 
 				Global::getInstance().leaderboardTexture);
-			leaderboard_title(Global::getInstance().xres, Global::getInstance().yres, 
+			leaderboard_title(Global::getInstance().xres, 
+				Global::getInstance().yres, 
 				Global::getInstance().leaderboardTitleTexture);
+			generate_leaderboard();
+			print_leaderboard(Global::getInstance().xres, 
+				Global::getInstance().yres,
+				Global::getInstance().numbersTexture,
+				Global::getInstance().lettersTexture);
 		}
 	} else {
 		if (Global::getInstance().showCredits) {
