@@ -149,6 +149,7 @@ public:
 	int showLeaderboard;
 	int playerScore = 0;
 	int helicopterHealth = 5;
+	int startGame;
 	double delay;
 	float xc[2];
 	float yc[2];
@@ -165,6 +166,7 @@ public:
 	GLuint leaderboardBoxTexture;
 	GLuint numbersTexture[NUMBERS_ARRAY];
 	GLuint lettersTexture[LETTERS_ARRAY];
+	GLuint timeTexture;
 	// Fernando: Need to create a GLuint object for the crate texture.
 	GLuint crateTexture;
 	//Platform plat1(540,140);
@@ -214,6 +216,7 @@ private:
 		displayHelicopter = 1;
 		showStartMenu = 1;
 		showCrate = 1;
+		startGame = 0;
 		for (int i=0; i<20; i++) {
 			box[i][0] = rnd() * xres;
 			box[i][1] = rnd() * (yres-220) + 220.0;
@@ -472,6 +475,7 @@ Image numbers_image[NUMBERS_ARRAY] = {"./images/0.gif", "./images/1.gif",
 	"./images/6.gif", "./images/7.gif",
 	"./images/8.gif", "./images/9.gif",
 	"./images/colon.gif"};
+Image time_image = "./images/Time.gif";
 Image *backImage = &img[8];
 void show_credits(Rect x, int y);
 
@@ -785,6 +789,21 @@ void initOpengl(void)
 			GL_RGBA, GL_UNSIGNED_BYTE, letData);
 		free(letData);
 	}
+
+	//game time
+	glGenTextures(1, &Global::getInstance().timeTexture);	
+	int txres = time_image.width;
+	int tyres = time_image.height;
+	glBindTexture(GL_TEXTURE_2D, Global::getInstance().timeTexture);
+	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	unsigned char *timeData = buildAlphaData(&time_image);	
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, txres, tyres, 0,
+		GL_RGBA, GL_UNSIGNED_BYTE, timeData);
+	free(timeData);
 }
 
 void init()
@@ -973,7 +992,8 @@ int checkKeys(XEvent *e)
 			// if(Global::getInstance().showCredits == 1) {
 			// 	helicopter.pos[0] = lastKnownHelicopterPos();
 			// }
-			if (Global::getInstance().showStartMenu) {
+			if (!Global::getInstance().showLeaderboard &&
+				Global::getInstance().showStartMenu) {
 				setHelicopterPos(helicopter.pos[0]);
 				//Global::getInstance().showStartMenu ^=1;
 				Global::getInstance().showCredits ^= 1;
@@ -997,9 +1017,15 @@ int checkKeys(XEvent *e)
 				!Global::getInstance().showLeaderboard) {
 				Global::getInstance().showStartMenu ^= 1;
 			}
+			if (!Global::getInstance().showStartMenu &&
+				!Global::getInstance().showCredits &&
+				!Global::getInstance().showLeaderboard) {
+				start_time();
+			}
 			break;
 		case XK_l:
-			if (Global::getInstance().showStartMenu) {
+			if (!Global::getInstance().showCredits &&
+				Global::getInstance().showStartMenu) {
 				Global::getInstance().showLeaderboard ^= 1;
 			}
 			break;
@@ -1634,22 +1660,20 @@ void render(void)
 				glBindTexture(GL_TEXTURE_2D, 0);
 				glDisable(GL_ALPHA_TEST);
 			}
-			extern void create_menu_button(int gl_xres, int gl_yres);
-			create_menu_button(Global::getInstance().xres, Global::getInstance().yres);
 			
-			//will add to menu
-			unsigned int c = 0x00ffff44;
-			r.bot = Global::getInstance().yres - 20;
-			r.left = 10;
-			r.center = 0;
-			ggprint8b(&r, 16, c, "W   Walk cycle");
-			ggprint8b(&r, 16, c, "E   Explosion");
-			ggprint8b(&r, 16, c, "+   faster");
-			ggprint8b(&r, 16, c, "-   slower");
-			ggprint8b(&r, 16, c, "right arrow -> walk right");
-			ggprint8b(&r, 16, c, "left arrow  <- walk left");
-			ggprint8b(&r, 16, c, "frame: %i", Global::getInstance().walkFrame);
-			ggprint8b(&r, 16, c, "credits   c");
+			// //will add to menu
+			// unsigned int c = 0x00ffff44;
+			// r.bot = Global::getInstance().yres - 20;
+			// r.left = 10;
+			// r.center = 0;
+			// ggprint8b(&r, 16, c, "W   Walk cycle");
+			// ggprint8b(&r, 16, c, "E   Explosion");
+			// ggprint8b(&r, 16, c, "+   faster");
+			// ggprint8b(&r, 16, c, "-   slower");
+			// ggprint8b(&r, 16, c, "right arrow -> walk right");
+			// ggprint8b(&r, 16, c, "left arrow  <- walk left");
+			// ggprint8b(&r, 16, c, "frame: %i", Global::getInstance().walkFrame);
+			// ggprint8b(&r, 16, c, "credits   c");
 			if (Global::getInstance().movie) {
 				screenCapture();
 			}
@@ -1671,22 +1695,20 @@ void render(void)
 				Global::getInstance().crateTexture);
 			glPopMatrix();
 		}
-		extern void create_menu_button(int gl_xres, int gl_yres);
-		create_menu_button(Global::getInstance().xres, Global::getInstance().yres);
 		
 		//will add to menu
-		unsigned int c = 0x00ffff44;
-		r.bot = Global::getInstance().yres - 20;
-		r.left = 10;
-		r.center = 0;
-		ggprint8b(&r, 16, c, "W   Walk cycle");
-		ggprint8b(&r, 16, c, "E   Explosion");
-		ggprint8b(&r, 16, c, "+   faster");
-		ggprint8b(&r, 16, c, "-   slower");
-		ggprint8b(&r, 16, c, "right arrow -> walk right");
-		ggprint8b(&r, 16, c, "left arrow  <- walk left");
-		ggprint8b(&r, 16, c, "frame: %i", Global::getInstance().walkFrame);
-		ggprint8b(&r, 16, c, "credits   c");
+		// unsigned int c = 0x00ffff44;
+		// r.bot = Global::getInstance().yres - 20;
+		// r.left = 10;
+		// r.center = 0;
+		// ggprint8b(&r, 16, c, "W   Walk cycle");
+		// ggprint8b(&r, 16, c, "E   Explosion");
+		// ggprint8b(&r, 16, c, "+   faster");
+		// ggprint8b(&r, 16, c, "-   slower");
+		// ggprint8b(&r, 16, c, "right arrow -> walk right");
+		// ggprint8b(&r, 16, c, "left arrow  <- walk left");
+		// ggprint8b(&r, 16, c, "frame: %i", Global::getInstance().walkFrame);
+		// ggprint8b(&r, 16, c, "credits   c");
 		if (Global::getInstance().movie) {
 			screenCapture();
 		}
@@ -1716,7 +1738,14 @@ void render(void)
 	// glPopMatrix();
 
 	// If the credits are shown, we should hide the helicopter by moving it off screen
-	if(Global::getInstance().displayHelicopter == 0) {
+	if (Global::getInstance().displayHelicopter == 0) {
 		helicopter.pos[0] = -200;
+	}
+	if (!Global::getInstance().showLeaderboard &&
+		!Global::getInstance().showCredits &&
+		!Global::getInstance().showStartMenu) {
+		print_time(Global::getInstance().xres, 
+			Global::getInstance().yres, 
+			Global::getInstance().numbersTexture);
 	}
 }

@@ -3,6 +3,7 @@
 
 #include <GL/glx.h>
 #include <string>
+#include <chrono>
 
 using namespace std;
 
@@ -26,5 +27,8 @@ void print_name(int xres, int yres, int wid, string name, GLuint lettersTexture[
 void print_time(int xres, int yres, int wid, string time, GLuint numbersTexture[]);
 void render_letter(char letter, GLuint lettersTexture[]);
 void render_number(char number, GLuint numbersTexture[]);
+void render_number(int number, GLuint numbersTexture[]);
+extern void start_time();
+extern void print_time(int xres, int yres, GLuint numbersTexture[]);
 
 #endif
