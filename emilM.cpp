@@ -10,6 +10,7 @@
 #include <vector>
 #include <string>
 #include <cstring>
+#include <chrono>
 
 using namespace std;
 
@@ -22,6 +23,7 @@ Rect leaderboard_rect;
 int leaderboardY = 550;
 int leaderboardX = 300;
 vector<string> leaderboard_vector;
+auto startTime = chrono::system_clock::now();
 
 void showEmil(Rect r, int y)
 {
@@ -414,8 +416,10 @@ void print_leaderboard(int xres, int yres, GLuint numbersTexture[],
 		glEnd();
 		glBindTexture(GL_TEXTURE_2D, 0);
 		glPopMatrix();
-		print_name(fx+50, fy, wid, leaderboard_vector[i*2-2], lettersTexture);
-		print_time(fx+175, fy, wid, leaderboard_vector[i*2-1], numbersTexture);	
+		print_name(fx+50, fy, wid, leaderboard_vector[i*2-2], 
+			lettersTexture);
+		print_time(fx+175, fy, wid, leaderboard_vector[i*2-1], 
+			numbersTexture);	
 		fy -= 100;
 	}
 }
@@ -632,5 +636,83 @@ void render_number(char number, GLuint numbersTexture[])
 			break;
 		default:
 			glBindTexture(GL_TEXTURE_2D, numbersTexture[10]);
+	}
+}
+
+void render_number(int number, GLuint numbersTexture[])
+{ 
+	switch (number) {
+		case(0):
+			glBindTexture(GL_TEXTURE_2D, numbersTexture[0]);
+			break;
+		case(1):
+			glBindTexture(GL_TEXTURE_2D, numbersTexture[1]);
+			break;
+		case(2):
+			glBindTexture(GL_TEXTURE_2D, numbersTexture[2]);
+			break;
+		case(3):
+			glBindTexture(GL_TEXTURE_2D, numbersTexture[3]);
+			break;
+		case(4):
+			glBindTexture(GL_TEXTURE_2D, numbersTexture[4]);
+			break;
+		case(5):
+			glBindTexture(GL_TEXTURE_2D, numbersTexture[5]);
+			break;
+		case(6):
+			glBindTexture(GL_TEXTURE_2D, numbersTexture[6]);
+			break;
+		case(7):
+			glBindTexture(GL_TEXTURE_2D, numbersTexture[7]);
+			break;
+		case(8):
+			glBindTexture(GL_TEXTURE_2D, numbersTexture[8]);
+			break;
+		case(9):
+			glBindTexture(GL_TEXTURE_2D, numbersTexture[9]);
+			break;
+		default:
+			glBindTexture(GL_TEXTURE_2D, numbersTexture[10]);
+	}
+}
+
+void start_time()
+{
+	startTime = chrono::system_clock::now();
+}
+
+void print_time(int xres, int yres, GLuint numbersTexture[])
+{
+	auto currentTime = chrono::system_clock::now();
+	double time_minutes = chrono::duration_cast<chrono::minutes>
+		(currentTime-startTime).count();
+	double time_seconds = chrono::duration_cast<chrono::seconds>
+		(currentTime-startTime).count();
+	static int wid = 50;
+	float fx = 60;
+	float fy = (float)yres - 50;
+	int time_array[4] = {time_minutes, -1, static_cast<int>{(int)time_seconds%60)/10}, 
+		static_cast<int>{(int)time_seconds%10)}};
+	for (int i = 0; i < 4; i++) {
+		glPushMatrix();
+		glTranslatef(fx,fy,0);
+		render_number(time_array[i], numbersTexture);
+		glEnable(GL_ALPHA_TEST);
+		glAlphaFunc(GL_GREATER, 0.0f);
+		glColor4ub(255,255,255,255);
+		glBegin(GL_QUADS);
+		glTexCoord2f(0.0f, 1.0f);
+		glVertex2i(-wid,-wid);
+		glTexCoord2f(0.0f, 0.0f);
+		glVertex2i(-wid, wid);
+		glTexCoord2f(1.0f, 0.0f);
+		glVertex2i( wid, wid);
+		glTexCoord2f(1.0f, 1.0f);
+		glVertex2i( wid,-wid);
+		glEnd();
+		glBindTexture(GL_TEXTURE_2D, 0);
+		glPopMatrix();
+		fx += 40;
 	}
 }
