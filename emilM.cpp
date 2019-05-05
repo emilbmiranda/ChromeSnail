@@ -682,7 +682,7 @@ void start_time()
 	startTime = chrono::system_clock::now();
 }
 
-void print_time(int xres, int yres, GLuint numbersTexture[])
+void print_time(int yres, GLuint numbersTexture[])
 {
 	auto currentTime = chrono::system_clock::now();
 	double time_minutes = chrono::duration_cast<chrono::minutes>
@@ -692,8 +692,15 @@ void print_time(int xres, int yres, GLuint numbersTexture[])
 	static int wid = 50;
 	float fx = 60;
 	float fy = (float)yres - 50;
-	int time_array[4] = {time_minutes, -1, (int)time_seconds%60/10, 
-		(int)time_seconds%10};
+	int tens = (int)fmod(time_seconds,60.0)/10;
+	int ones = (int)fmod(time_seconds,60.0)%10;
+	//declared array as followed due to getting narrowing warning
+	//when initiliazing with {}
+	int time_array[4];
+	time_array[0] = time_minutes;
+	time_array[1] = -1;
+	time_array[2] = tens;
+	time_array[3] = ones;
 	for (int i = 0; i < 4; i++) {
 		glPushMatrix();
 		glTranslatef(fx,fy,0);

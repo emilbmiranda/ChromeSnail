@@ -1730,8 +1730,7 @@ void render(void)
 	if (!Global::getInstance().showLeaderboard &&
 		!Global::getInstance().showCredits &&
 		!Global::getInstance().showStartMenu) {
-		print_time(Global::getInstance().xres, 
-			Global::getInstance().yres, 
+		print_time(Global::getInstance().yres, 
 			Global::getInstance().numbersTexture);
 	}
 }
