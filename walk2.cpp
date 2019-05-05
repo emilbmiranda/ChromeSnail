@@ -147,6 +147,8 @@ public:
 	int dropBomb = 0;
 	int showCrate;
 	int showLeaderboard;
+	int playerScore = 0;
+	int helicopterHealth = 5;
 	double delay;
 	float xc[2];
 	float yc[2];
@@ -227,6 +229,17 @@ private:
 	// assignment operator is private
 	Global& operator=(Global const&);
 };
+
+void helicopterHit()
+{
+	if (--Global::getInstance().helicopterHealth <= 0) {
+		Global::getInstance().playerScore++;
+		Global::getInstance().helicopterHealth = 5;
+		#ifdef PROFILE_VICTOR
+		cout << "score: " << Global::getInstance().playerScore << endl;
+		#endif
+	}
+}
 
 class Level {
 public:
@@ -1135,11 +1148,6 @@ void physics(void)
 		//a little time between each bullet
 		struct timespec bt;
 		clock_gettime(CLOCK_REALTIME, &bt);
-
-		#ifdef PROFILE_VICTOR
-		cout << "getting clock time " << bt.tv_sec << endl;
-		#endif
-
 		double ts = timers.timeDiff(&bullets.bulletTimer, &bt);
 		if (ts > 0.1) {
 			timers.timeCopy(&bullets.bulletTimer, &bt);
@@ -1162,15 +1170,21 @@ void physics(void)
 				shootBullet(&bullets, &bt, Back);
 			else 
 				shootBullet(&bullets, &bt, Front);
+			
+			#ifdef PROFILE_VICTOR
+			cout << "shoot completed..." << endl;
+			#endif
 		}
-		#ifdef PROFILE_VICTOR
-		cout << "shoot completed..." << endl;
-		#endif
 	}
-	//update bullet position
+	// Update bullet position
 	updateBulletPosition(&bullets, 
 		Global::getInstance().xres, 
 		Global::getInstance().yres);
+
+	// Check for collosion
+	checkBulletHelicopterCollision(&bullets, 
+		helicopter.pos[0], 
+		helicopter.pos[1]);
 
 	// Animate the helicopter, but only if the start menu isn't showing
 	if (Global::getInstance().showStartMenu != 1) {
@@ -1502,16 +1516,6 @@ void render(void)
 			float tx = (float)ix / 5.0;
 			float ty = (float)iy / 5.0;
 			glBegin(GL_QUADS);
-<<<<<<< HEAD
-			glTexCoord2f(tx, ty+0.2);
-			glVertex2i(cx-w, cy-h);
-			glTexCoord2f(tx, ty);
-			glVertex2i(cx-w, cy+h);
-			glTexCoord2f(tx+0.2, ty);
-			glVertex2i(cx+w, cy+h);
-			glTexCoord2f(tx+0.2, ty+0.2);
-			glVertex2i(cx+w, cy-h);
-=======
 			if (Global::getInstance().keys[XK_Left]) {
 				//printf("I'm walking to the left");
 				glTexCoord2f(fx+.125, fy+.5);
@@ -1532,7 +1536,6 @@ void render(void)
 				glTexCoord2f(fx+.125, fy+.5);
 				glVertex2i(cx+w, cy-h);
 			}
->>>>>>> d2ae81861bf5ae1964cb67ac28fc334e41bd4eb9
 			glEnd();
 			glPopMatrix();
 			glBindTexture(GL_TEXTURE_2D, 0);
@@ -1569,8 +1572,6 @@ void render(void)
 			glPopMatrix();
 			glBindTexture(GL_TEXTURE_2D, 0);
 			glDisable(GL_ALPHA_TEST);
-<<<<<<< HEAD
-=======
 			//
 			//
 			if (Global::getInstance().exp.onoff) {
@@ -1669,7 +1670,6 @@ void render(void)
 			plat1.drawPlatform(plat1.getXpos(), plat1.getYpos(), 
 				Global::getInstance().crateTexture);
 			glPopMatrix();
->>>>>>> d2ae81861bf5ae1964cb67ac28fc334e41bd4eb9
 		}
 		extern void create_menu_button(int gl_xres, int gl_yres);
 		create_menu_button(Global::getInstance().xres, Global::getInstance().yres);

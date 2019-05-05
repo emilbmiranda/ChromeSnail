@@ -2,6 +2,7 @@
 #define _VICTORM_H_
 
 #include <time.h>
+#include <math.h>
 
 typedef double Vec[3];
 
@@ -17,6 +18,8 @@ typedef struct t_mouse
 
 const int MAX_BULLETS = 100;
 const double oobillion = 1.0 / 1e9;
+const int bulletXOffset = 400;
+const int bulletYOffset = 300;
 
 enum BulletDirection 
 {
@@ -60,5 +63,7 @@ void showVictorText(Rect r);
 void showVictorPicture(int x, int y, GLuint textid);
 double timeDiff(struct timespec *start, struct timespec *end);
 void timeCopy(struct timespec *dest, struct timespec *source);
+void checkBulletHelicopterCollision(BList *bullets, int x, int y);
+void helicopterHit();
 
 #endif
