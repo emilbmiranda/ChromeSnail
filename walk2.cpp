@@ -150,6 +150,7 @@ public:
 	int playerScore = 0;
 	int helicopterHealth = 5;
 	int startGame;
+	int health = 100;
 	double delay;
 	float xc[2];
 	float yc[2];
@@ -890,6 +891,7 @@ void screenCapture()
 	++fnum;
 }
 
+
 void moveHelicopter()
 {
 	if ((helicopter.pos[0] < -140.0 && helicopter.vel[0] < 0.0) ||
@@ -925,6 +927,24 @@ void moveBomb()
 		bomb.pos[1] = 575;
 		Global::getInstance().dropBomb = 0;
 	}
+
+	if(( // Check the x position
+		abs(bomb.pos[0]-((float)Global::getInstance().xres)/2) < 50)
+		&&
+		//CHeck the y position
+		abs(bomb.pos[1]-((float)Global::getInstance().yres/2) < 150)
+		)
+	{
+		// printf("bomb in zone!\n");
+		Global::getInstance().health--;
+		printf("Ouch! Health is now: %d\n", Global::getInstance().health);
+		Global::getInstance().exp44.pos[0] = 0;
+		Global::getInstance().exp44.pos[1] = 0;
+		Global::getInstance().exp44.pos[2] =   0.0;
+		Global::getInstance().exp44.onoff ^= 1;
+	}
+
+	// printf("walk.gif pos: %f, %f\n", (float)Global::getInstance().xres/2, (float)Global::getInstance().yres/2);
 }
 
 int checkKeys(XEvent *e)
