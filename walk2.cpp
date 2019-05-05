@@ -147,6 +147,8 @@ public:
 	int dropBomb = 0;
 	int showCrate;
 	int showLeaderboard;
+	int playerScore = 0;
+	int helicopterHealth = 5;
 	int startGame;
 	double delay;
 	float xc[2];
@@ -230,6 +232,17 @@ private:
 	// assignment operator is private
 	Global& operator=(Global const&);
 };
+
+void helicopterHit()
+{
+	if (--Global::getInstance().helicopterHealth <= 0) {
+		Global::getInstance().playerScore++;
+		Global::getInstance().helicopterHealth = 5;
+		#ifdef PROFILE_VICTOR
+		cout << "score: " << Global::getInstance().playerScore << endl;
+		#endif
+	}
+}
 
 class Level {
 public:
@@ -1161,11 +1174,6 @@ void physics(void)
 		//a little time between each bullet
 		struct timespec bt;
 		clock_gettime(CLOCK_REALTIME, &bt);
-
-		#ifdef PROFILE_VICTOR
-		cout << "getting clock time " << bt.tv_sec << endl;
-		#endif
-
 		double ts = timers.timeDiff(&bullets.bulletTimer, &bt);
 		if (ts > 0.1) {
 			timers.timeCopy(&bullets.bulletTimer, &bt);
@@ -1188,15 +1196,21 @@ void physics(void)
 				shootBullet(&bullets, &bt, Back);
 			else 
 				shootBullet(&bullets, &bt, Front);
+			
+			#ifdef PROFILE_VICTOR
+			cout << "shoot completed..." << endl;
+			#endif
 		}
-		#ifdef PROFILE_VICTOR
-		cout << "shoot completed..." << endl;
-		#endif
 	}
-	//update bullet position
+	// Update bullet position
 	updateBulletPosition(&bullets, 
 		Global::getInstance().xres, 
 		Global::getInstance().yres);
+
+	// Check for collosion
+	checkBulletHelicopterCollision(&bullets, 
+		helicopter.pos[0], 
+		helicopter.pos[1]);
 
 	// Animate the helicopter, but only if the start menu isn't showing
 	if (Global::getInstance().showStartMenu != 1) {
