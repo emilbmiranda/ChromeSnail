@@ -692,8 +692,8 @@ void print_time(int xres, int yres, GLuint numbersTexture[])
 	static int wid = 50;
 	float fx = 60;
 	float fy = (float)yres - 50;
-	int time_array[4] = {time_minutes, -1, static_cast<int>{(int)time_seconds%60)/10}, 
-		static_cast<int>{(int)time_seconds%10)}};
+	int time_array[4] = {time_minutes, -1, (int)time_seconds%60/10, 
+		(int)time_seconds%10};
 	for (int i = 0; i < 4; i++) {
 		glPushMatrix();
 		glTranslatef(fx,fy,0);
