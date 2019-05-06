@@ -150,6 +150,7 @@ public:
 	int playerScore = 0;
 	int helicopterHealth = 5;
 	int startGame;
+	int health = 100;
 	double delay;
 	float xc[2];
 	float yc[2];
@@ -170,7 +171,7 @@ public:
 	// Fernando: Need to create a GLuint object for the crate texture.
 	GLuint crateTexture;
 	//Platform plat1(540,140);
-	//Platform plat1;
+	Platform plat1;
 	GLuint backgroundTexture;
 	Vec box[20];
 	Sprite exp;
@@ -890,6 +891,7 @@ void screenCapture()
 	++fnum;
 }
 
+
 void moveHelicopter()
 {
 	if ((helicopter.pos[0] < -140.0 && helicopter.vel[0] < 0.0) ||
@@ -925,6 +927,24 @@ void moveBomb()
 		bomb.pos[1] = 575;
 		Global::getInstance().dropBomb = 0;
 	}
+
+	if(( // Check the x position
+		abs(bomb.pos[0]-((float)Global::getInstance().xres)/2) < 50)
+		&&
+		//CHeck the y position
+		abs(bomb.pos[1]-((float)Global::getInstance().yres/2) < 150)
+		)
+	{
+		// printf("bomb in zone!\n");
+		Global::getInstance().health--;
+		printf("Ouch! Health is now: %d\n", Global::getInstance().health);
+		Global::getInstance().exp44.pos[0] = 0;
+		Global::getInstance().exp44.pos[1] = 0;
+		Global::getInstance().exp44.pos[2] =   0.0;
+		Global::getInstance().exp44.onoff ^= 1;
+	}
+
+	// printf("walk.gif pos: %f, %f\n", (float)Global::getInstance().xres/2, (float)Global::getInstance().yres/2);
 }
 
 int checkKeys(XEvent *e)
@@ -1067,6 +1087,10 @@ void physics(void)
 		//man is walking...
 		//when time is up, advance the frame.
 		if ( Global::getInstance().keys[XK_Right]) {
+			Global::getInstance().plat1.slidePlatformBackward();
+		}
+		if ( Global::getInstance().keys[XK_Left]) {
+			Global::getInstance().plat1.slidePlatformForward();
 		}
 		timers.recordTime(&timers.timeCurrent);
 		double timeSpan = timers.timeDiff(&timers.walkTime, 
@@ -1297,8 +1321,6 @@ void show_credits(Rect x, int y)
 void render(void)
 {
 	Rect r;
-	//Global::getInstance().plat1(540,140);
-	Platform plat1(540,140);
 	//Clear the screen
 	glClearColor(0.1, 0.1, 0.1, 1.0);
 	glClear(GL_COLOR_BUFFER_BIT);
@@ -1691,24 +1713,13 @@ void render(void)
 			// This breaks the wall because I was translating it in the walk2
 			// file and in drawPlatform()
 			// ---> glTranslated(plat1.pos[0],plat1.pos[1],0);	
-			plat1.drawPlatform(plat1.getXpos(), plat1.getYpos(), 
+			Global::getInstance().plat1.drawPlatform( 
+				Global::getInstance().plat1.getXpos(),
+				Global::getInstance().plat1.getYpos(), 
 				Global::getInstance().crateTexture);
 			glPopMatrix();
 		}
 		
-		//will add to menu
-		// unsigned int c = 0x00ffff44;
-		// r.bot = Global::getInstance().yres - 20;
-		// r.left = 10;
-		// r.center = 0;
-		// ggprint8b(&r, 16, c, "W   Walk cycle");
-		// ggprint8b(&r, 16, c, "E   Explosion");
-		// ggprint8b(&r, 16, c, "+   faster");
-		// ggprint8b(&r, 16, c, "-   slower");
-		// ggprint8b(&r, 16, c, "right arrow -> walk right");
-		// ggprint8b(&r, 16, c, "left arrow  <- walk left");
-		// ggprint8b(&r, 16, c, "frame: %i", Global::getInstance().walkFrame);
-		// ggprint8b(&r, 16, c, "credits   c");
 		if (Global::getInstance().movie) {
 			screenCapture();
 		}
@@ -1726,7 +1737,9 @@ void render(void)
 		// This breaks the wall because I was translating it in the walk2
 		// file and in drawPlatform()
 		//glTranslated(plat1.pos[0],plat1.pos[1],0);	
-		plat1.drawPlatform(plat1.getXpos(), plat1.getYpos(), 
+		Global::getInstance().plat1.drawPlatform(
+			Global::getInstance().plat1.getXpos(),
+			Global::getInstance().plat1.getYpos(), 
 			Global::getInstance().crateTexture);
 		glPopMatrix();
 	}
@@ -1745,6 +1758,10 @@ void render(void)
 		!Global::getInstance().showCredits &&
 		!Global::getInstance().showStartMenu) {
 		print_time(Global::getInstance().yres, 
+			Global::getInstance().numbersTexture);
+		print_score(Global::getInstance().playerScore,
+			Global::getInstance().xres,
+			Global::getInstance().yres, 
 			Global::getInstance().numbersTexture);
 	}
 }

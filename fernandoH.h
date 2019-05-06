@@ -4,10 +4,10 @@
 #include <X11/Xlib.h>
 #include <GL/glx.h>
 
-typedef double Vec[3];
 
 struct Platform {
 	float pos[2];
+	float vel = {4.00};
 
 	Platform(); 
 	Platform(int, int);
@@ -15,7 +15,8 @@ struct Platform {
 	void drawPlatform(int, int, GLuint);
 	int getXpos();
 	int getYpos();
-	void decreaseXpos();
+	void slidePlatformBackward();
+	void slidePlatformForward();
 };
 
 

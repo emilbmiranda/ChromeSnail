@@ -30,5 +30,6 @@ void render_number(char number, GLuint numbersTexture[]);
 void render_number(int number, GLuint numbersTexture[]);
 extern void start_time();
 extern void print_time(int yres, GLuint numbersTexture[]);
+extern void print_score(int gameScore, int xres, int yres, GLuint numbersTexture[]);
 
 #endif
