@@ -147,6 +147,10 @@ public:
 	int dropBomb = 0;
 	int showCrate;
 	int showLeaderboard;
+	int playerScore = 0;
+	int helicopterHealth = 5;
+	int startGame;
+	int health = 100;
 	double delay;
 	float xc[2];
 	float yc[2];
@@ -163,6 +167,7 @@ public:
 	GLuint leaderboardBoxTexture;
 	GLuint numbersTexture[NUMBERS_ARRAY];
 	GLuint lettersTexture[LETTERS_ARRAY];
+	GLuint timeTexture;
 	// Fernando: Need to create a GLuint object for the crate texture.
 	GLuint crateTexture;
 	//Platform plat1(540,140);
@@ -212,6 +217,7 @@ private:
 		displayHelicopter = 1;
 		showStartMenu = 1;
 		showCrate = 1;
+		startGame = 0;
 		for (int i=0; i<20; i++) {
 			box[i][0] = rnd() * xres;
 			box[i][1] = rnd() * (yres-220) + 220.0;
@@ -227,6 +233,17 @@ private:
 	// assignment operator is private
 	Global& operator=(Global const&);
 };
+
+void helicopterHit()
+{
+	if (--Global::getInstance().helicopterHealth <= 0) {
+		Global::getInstance().playerScore++;
+		Global::getInstance().helicopterHealth = 5;
+		#ifdef PROFILE_VICTOR
+		cout << "score: " << Global::getInstance().playerScore << endl;
+		#endif
+	}
+}
 
 class Level {
 public:
@@ -459,6 +476,7 @@ Image numbers_image[NUMBERS_ARRAY] = {"./images/0.gif", "./images/1.gif",
 	"./images/6.gif", "./images/7.gif",
 	"./images/8.gif", "./images/9.gif",
 	"./images/colon.gif"};
+Image time_image = "./images/Time.gif";
 Image *backImage = &img[8];
 void show_credits(Rect x, int y);
 
@@ -772,6 +790,21 @@ void initOpengl(void)
 			GL_RGBA, GL_UNSIGNED_BYTE, letData);
 		free(letData);
 	}
+
+	//game time
+	glGenTextures(1, &Global::getInstance().timeTexture);	
+	int txres = time_image.width;
+	int tyres = time_image.height;
+	glBindTexture(GL_TEXTURE_2D, Global::getInstance().timeTexture);
+	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	unsigned char *timeData = buildAlphaData(&time_image);	
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, txres, tyres, 0,
+		GL_RGBA, GL_UNSIGNED_BYTE, timeData);
+	free(timeData);
 }
 
 void init()
@@ -858,6 +891,7 @@ void screenCapture()
 	++fnum;
 }
 
+
 void moveHelicopter()
 {
 	if ((helicopter.pos[0] < -140.0 && helicopter.vel[0] < 0.0) ||
@@ -893,6 +927,24 @@ void moveBomb()
 		bomb.pos[1] = 575;
 		Global::getInstance().dropBomb = 0;
 	}
+
+	if(( // Check the x position
+		abs(bomb.pos[0]-((float)Global::getInstance().xres)/2) < 50)
+		&&
+		//CHeck the y position
+		abs(bomb.pos[1]-((float)Global::getInstance().yres/2) < 150)
+		)
+	{
+		// printf("bomb in zone!\n");
+		Global::getInstance().health--;
+		printf("Ouch! Health is now: %d\n", Global::getInstance().health);
+		Global::getInstance().exp44.pos[0] = 0;
+		Global::getInstance().exp44.pos[1] = 0;
+		Global::getInstance().exp44.pos[2] =   0.0;
+		Global::getInstance().exp44.onoff ^= 1;
+	}
+
+	// printf("walk.gif pos: %f, %f\n", (float)Global::getInstance().xres/2, (float)Global::getInstance().yres/2);
 }
 
 int checkKeys(XEvent *e)
@@ -957,13 +1009,16 @@ int checkKeys(XEvent *e)
 			// If the credits are currently being shown, we are about to hide them/
 			// We load the helicopter with the last known position so it will resume
 			// where it left off.
-			if(Global::getInstance().showCredits == 1) {
-				helicopter.pos[0] = lastKnownHelicopterPos();
+			// if(Global::getInstance().showCredits == 1) {
+			// 	helicopter.pos[0] = lastKnownHelicopterPos();
+			// }
+			if (!Global::getInstance().showLeaderboard &&
+				Global::getInstance().showStartMenu) {
+				setHelicopterPos(helicopter.pos[0]);
+				//Global::getInstance().showStartMenu ^=1;
+				Global::getInstance().showCredits ^= 1;
+				//Global::getInstance().displayHelicopter ^= 1;
 			}
-			setHelicopterPos(helicopter.pos[0]);
-			//Global::getInstance().showStartMenu ^=1;
-			Global::getInstance().showCredits ^= 1;
-			Global::getInstance().displayHelicopter ^= 1;
 			break;
 		case XK_Up:
 			break;
@@ -978,10 +1033,21 @@ int checkKeys(XEvent *e)
 			Global::getInstance().delay += 0.005;
 			break;
 		case XK_p:
-			Global::getInstance().showStartMenu ^= 1;
+			if (!Global::getInstance().showCredits &&
+				!Global::getInstance().showLeaderboard) {
+				Global::getInstance().showStartMenu ^= 1;
+			}
+			if (!Global::getInstance().showStartMenu &&
+				!Global::getInstance().showCredits &&
+				!Global::getInstance().showLeaderboard) {
+				start_time();
+			}
 			break;
 		case XK_l:
-			Global::getInstance().showLeaderboard ^= 1;
+			if (!Global::getInstance().showCredits &&
+				Global::getInstance().showStartMenu) {
+				Global::getInstance().showLeaderboard ^= 1;
+			}
 			break;
 		case XK_Escape:
 			return 1;
@@ -1132,11 +1198,6 @@ void physics(void)
 		//a little time between each bullet
 		struct timespec bt;
 		clock_gettime(CLOCK_REALTIME, &bt);
-
-		#ifdef PROFILE_VICTOR
-		cout << "getting clock time " << bt.tv_sec << endl;
-		#endif
-
 		double ts = timers.timeDiff(&bullets.bulletTimer, &bt);
 		if (ts > 0.1) {
 			timers.timeCopy(&bullets.bulletTimer, &bt);
@@ -1159,15 +1220,21 @@ void physics(void)
 				shootBullet(&bullets, &bt, Back);
 			else 
 				shootBullet(&bullets, &bt, Front);
+			
+			#ifdef PROFILE_VICTOR
+			cout << "shoot completed..." << endl;
+			#endif
 		}
-		#ifdef PROFILE_VICTOR
-		cout << "shoot completed..." << endl;
-		#endif
 	}
-	//update bullet position
+	// Update bullet position
 	updateBulletPosition(&bullets, 
 		Global::getInstance().xres, 
 		Global::getInstance().yres);
+
+	// Check for collosion
+	checkBulletHelicopterCollision(&bullets, 
+		helicopter.pos[0], 
+		helicopter.pos[1]);
 
 	// Animate the helicopter, but only if the start menu isn't showing
 	if (Global::getInstance().showStartMenu != 1) {
@@ -1283,153 +1350,219 @@ void render(void)
 				Global::getInstance().numbersTexture,
 				Global::getInstance().lettersTexture);
 		}
-	} else {
 		if (Global::getInstance().showCredits) {
 			r.bot = Global::getInstance().yres - 20;
 			r.left = 10;
 			r.center = 0;
 			show_credits(r, cy);
-		} else {
-			glClearColor(0.1,0.1,0.1,1.0);
-			glClear(GL_COLOR_BUFFER_BIT);
-			//background rendering 
-			int bxres = Global::getInstance().xres;
-			int byres = Global::getInstance().yres;
-			glClear(GL_COLOR_BUFFER_BIT);
-			glColor3f(1.0, 1.0, 1.0);
-			glBindTexture(GL_TEXTURE_2D, Global::getInstance().backgroundTexture);
-			glBegin(GL_QUADS);
-				glTexCoord2f(Global::getInstance().xc[0], Global::getInstance().yc[1]); glVertex2i(0, 0);
-				glTexCoord2f(Global::getInstance().xc[0], Global::getInstance().yc[0]); glVertex2i(0, byres);
-				glTexCoord2f(Global::getInstance().xc[1], Global::getInstance().yc[0]); glVertex2i(bxres, byres);
-				glTexCoord2f(Global::getInstance().xc[1], Global::getInstance().yc[1]); glVertex2i(bxres, 0);
-			glEnd();
-			
-			/*
-			//show ground
-			glBegin(GL_QUADS);
-			glColor3f(0.2, 0.2, 0.2);
-			glVertex2i(0, 220);
-			glVertex2i(Global::getInstance().xres, 220);
-			glColor3f(0.4, 0.4, 0.4);
-			glVertex2i(Global::getInstance().xres,   0);
-			glVertex2i(0, 0);
-			glEnd();
-			
-			//
-			//show boxes as background
-			for (int i=0; i<20; i++) {
-				glPushMatrix();
-				glTranslated(Global::getInstance().box[i][0],Global::getInstance().box[i][1],Global::getInstance().box[i][2]);
-				glColor3f(0.2, 0.2, 0.2);
-				glBegin(GL_QUADS);
-					glVertex2i( 0,  0);
-					glVertex2i( 0, 30);
-					glVertex2i(20, 30);
-					glVertex2i(20,  0);
-				glEnd();
-				glPopMatrix();
-			}
-*/
-			//
-			//========================
-			//Render the tile system
-			//========================
-/*
-			int tx = lev.tilesize[0];
-			int ty = lev.tilesize[1];
-			Flt dd = lev.ftsz[0];
-			Flt offy = lev.tile_base;
-			int ncols_to_render = Global::getInstance().xres / lev.tilesize[0] + 2;
-			int col = (int)(Global::getInstance().camera[0] / dd);
-			col = col % lev.ncols;
-			//Partial tile offset must be determined here.
-			//The leftmost tile might be partially off-screen.
-			//cdd: camera position in terms of tiles.
-			Flt cdd = Global::getInstance().camera[0] / dd;
-			//flo: just the integer portion
-			Flt flo = floor(cdd);
-			//dec: just the decimal portion
-			Flt dec = (cdd - flo);
-			//offx: the offset to the left of the screen to start drawing tiles
-			Flt offx = -dec * dd;
-			//Log("Global::getInstance().camera[0]: %lf   offx: %lf\n",Global::getInstance().camera[0],offx);
-			for (int j=0; j<ncols_to_render; j++) {
-				int row = lev.nrows-1;
-				for (int i=0; i<lev.nrows; i++) {
-					if (lev.arr[row][col] == 'w') {
-						glColor3f(0.8, 0.8, 0.6);
-						glPushMatrix();
-						//put tile in its place
-						glTranslated((Flt)j*dd+offx, (Flt)i*lev.ftsz[1]+offy, 0);
-						glBegin(GL_QUADS);
-							glVertex2i(0, 0);
-							glVertex2i(0, ty);
-							glVertex2i(tx, ty);
-							glVertex2i(tx, 0);
-						glEnd();
-						glPopMatrix();
-					}
-					if (lev.arr[row][col] == 'b') {
-						glColor3f(0.9, 0.2, 0.2);
-						glPushMatrix();
-						glTranslated((Flt)j*dd+offx, (Flt)i*lev.ftsz[1]+offy, 0);
-						glBegin(GL_QUADS);
-							glVertex2i(0, 0);
-							glVertex2i(0, ty);
-							glVertex2i(tx, ty);
-							glVertex2i(tx, 0);
-						glEnd();
-						glPopMatrix();
-					}
-					--row;
-				}
-				col = (col+1) % lev.ncols;
-			}
-			glColor3f(1.0, 1.0, 0.1);
+		}
+	} else {
+		glClearColor(0.1,0.1,0.1,1.0);
+		glClear(GL_COLOR_BUFFER_BIT);
+		//background rendering 
+		int bxres = Global::getInstance().xres;
+		int byres = Global::getInstance().yres;
+		glClear(GL_COLOR_BUFFER_BIT);
+		glColor3f(1.0, 1.0, 1.0);
+		glBindTexture(GL_TEXTURE_2D, Global::getInstance().backgroundTexture);
+		glBegin(GL_QUADS);
+			glTexCoord2f(Global::getInstance().xc[0], Global::getInstance().yc[1]); glVertex2i(0, 0);
+			glTexCoord2f(Global::getInstance().xc[0], Global::getInstance().yc[0]); glVertex2i(0, byres);
+			glTexCoord2f(Global::getInstance().xc[1], Global::getInstance().yc[0]); glVertex2i(bxres, byres);
+			glTexCoord2f(Global::getInstance().xc[1], Global::getInstance().yc[1]); glVertex2i(bxres, 0);
+		glEnd();
+		
+		/*
+		//show ground
+		glBegin(GL_QUADS);
+		glColor3f(0.2, 0.2, 0.2);
+		glVertex2i(0, 220);
+		glVertex2i(Global::getInstance().xres, 220);
+		glColor3f(0.4, 0.4, 0.4);
+		glVertex2i(Global::getInstance().xres,   0);
+		glVertex2i(0, 0);
+		glEnd();
+		
+		//
+		//show boxes as background
+		for (int i=0; i<20; i++) {
 			glPushMatrix();
-			//put ball in its place
-			glTranslated(Global::getInstance().ball_pos[0], lev.tile_base+Global::getInstance().ball_pos[1], 0);
+			glTranslated(Global::getInstance().box[i][0],Global::getInstance().box[i][1],Global::getInstance().box[i][2]);
+			glColor3f(0.2, 0.2, 0.2);
 			glBegin(GL_QUADS);
-				glVertex2i(-10, 0);
-				glVertex2i(-10, 20);
-				glVertex2i( 10, 20);
-				glVertex2i( 10, 0);
+				glVertex2i( 0,  0);
+				glVertex2i( 0, 30);
+				glVertex2i(20, 30);
+				glVertex2i(20,  0);
 			glEnd();
 			glPopMatrix();
+		}
 */
-			//--------------------------------------END TILE SYSTEM
-			//
+		//
+		//========================
+		//Render the tile system
+		//========================
+/*
+		int tx = lev.tilesize[0];
+		int ty = lev.tilesize[1];
+		Flt dd = lev.ftsz[0];
+		Flt offy = lev.tile_base;
+		int ncols_to_render = Global::getInstance().xres / lev.tilesize[0] + 2;
+		int col = (int)(Global::getInstance().camera[0] / dd);
+		col = col % lev.ncols;
+		//Partial tile offset must be determined here.
+		//The leftmost tile might be partially off-screen.
+		//cdd: camera position in terms of tiles.
+		Flt cdd = Global::getInstance().camera[0] / dd;
+		//flo: just the integer portion
+		Flt flo = floor(cdd);
+		//dec: just the decimal portion
+		Flt dec = (cdd - flo);
+		//offx: the offset to the left of the screen to start drawing tiles
+		Flt offx = -dec * dd;
+		//Log("Global::getInstance().camera[0]: %lf   offx: %lf\n",Global::getInstance().camera[0],offx);
+		for (int j=0; j<ncols_to_render; j++) {
+			int row = lev.nrows-1;
+			for (int i=0; i<lev.nrows; i++) {
+				if (lev.arr[row][col] == 'w') {
+					glColor3f(0.8, 0.8, 0.6);
+					glPushMatrix();
+					//put tile in its place
+					glTranslated((Flt)j*dd+offx, (Flt)i*lev.ftsz[1]+offy, 0);
+					glBegin(GL_QUADS);
+						glVertex2i(0, 0);
+						glVertex2i(0, ty);
+						glVertex2i(tx, ty);
+						glVertex2i(tx, 0);
+					glEnd();
+					glPopMatrix();
+				}
+				if (lev.arr[row][col] == 'b') {
+					glColor3f(0.9, 0.2, 0.2);
+					glPushMatrix();
+					glTranslated((Flt)j*dd+offx, (Flt)i*lev.ftsz[1]+offy, 0);
+					glBegin(GL_QUADS);
+						glVertex2i(0, 0);
+						glVertex2i(0, ty);
+						glVertex2i(tx, ty);
+						glVertex2i(tx, 0);
+					glEnd();
+					glPopMatrix();
+				}
+				--row;
+			}
+			col = (col+1) % lev.ncols;
+		}
+		glColor3f(1.0, 1.0, 0.1);
+		glPushMatrix();
+		//put ball in its place
+		glTranslated(Global::getInstance().ball_pos[0], lev.tile_base+Global::getInstance().ball_pos[1], 0);
+		glBegin(GL_QUADS);
+			glVertex2i(-10, 0);
+			glVertex2i(-10, 20);
+			glVertex2i( 10, 20);
+			glVertex2i( 10, 0);
+		glEnd();
+		glPopMatrix();
+*/
+		//--------------------------------------END TILE SYSTEM
+		//
 
-		
+	
 
-			//#define SHOW_FAKE_SHADOW
-			#ifdef SHOW_FAKE_SHADOW
-			glColor3f(0.25, 0.25, 0.25);
-			glBegin(GL_QUADS);
-				glVertex2i(cx-60, 150);
-				glVertex2i(cx+50, 150);
-				glVertex2i(cx+50, 130);
-				glVertex2i(cx-60, 130);
-			glEnd();
-			#endif
-			//
-			// Commenting this out will make the man into a white box.
-			float h = 50.0;
-			float w = h * 0.5;
+		//#define SHOW_FAKE_SHADOW
+		#ifdef SHOW_FAKE_SHADOW
+		glColor3f(0.25, 0.25, 0.25);
+		glBegin(GL_QUADS);
+			glVertex2i(cx-60, 150);
+			glVertex2i(cx+50, 150);
+			glVertex2i(cx+50, 130);
+			glVertex2i(cx-60, 130);
+		glEnd();
+		#endif
+		//
+		// Commenting this out will make the man into a white box.
+		float h = 50.0;
+		float w = h * 0.5;
+		glPushMatrix();
+		glColor3f(1.0, 1.0, 1.0);
+		glBindTexture(GL_TEXTURE_2D, Global::getInstance().walkTexture);
+		//
+		glEnable(GL_ALPHA_TEST);
+		glAlphaFunc(GL_GREATER, 0.0f);
+		glColor4ub(255,255,255,255);
+		int ix = Global::getInstance().walkFrame % 8;
+		int iy = 0;
+		if (Global::getInstance().walkFrame >= 8)
+			iy = 1;
+		float fx = (float)ix / 8.0;
+		float fy = (float)iy / 2.0;
+		glBegin(GL_QUADS);
+		if (Global::getInstance().keys[XK_Left]) {
+			glTexCoord2f(fx+.125, fy+.5);
+			glVertex2i(cx-w, cy-h);
+			glTexCoord2f(fx+.125, fy);
+			glVertex2i(cx-w, cy+h);
+			glTexCoord2f(fx, fy);
+			glVertex2i(cx+w, cy+h);
+			glTexCoord2f(fx, fy+.5);
+			glVertex2i(cx+w, cy-h);
+		} else {
+			glTexCoord2f(fx, fy+.5);
+			glVertex2i(cx-w, cy-h);
+			glTexCoord2f(fx, fy);
+			glVertex2i(cx-w, cy+h);
+			glTexCoord2f(fx+.125, fy);
+			glVertex2i(cx+w, cy+h);
+			glTexCoord2f(fx+.125, fy+.5);
+			glVertex2i(cx+w, cy-h);
+		}
+		glEnd();
+		glPopMatrix();
+		/*float wid = 120;
+		glPushMatrix();
+		glBindTexture(GL_TEXTURE_2D, Global::getInstance().helicopterTexture);
+		glBegin(GL_QUADS);
+			if (helicopter.vel[0] > 0.0) {
+				glTexCoord2f(1.0f, 1.0f);
+				glVertex2i(-wid,-wid);
+				glTexCoord2f(1.0f, 0.0f);
+				glVertex2i(-wid, wid);
+				glTexCoord2f(0.0f, 0.0f);
+				glVertex2i( wid, wid);
+				glTexCoord2f(0.0f, 1.0f);
+				glVertex2i( wid,-wid);
+			} else {
+				glTexCoord2f(0.0f, 1.0f);
+				glVertex2i(-wid,-wid);
+				glTexCoord2f(0.0f, 0.0f);
+				glVertex2i(-wid, wid);
+				glTexCoord2f(1.0f, 0.0f);
+				glVertex2i( wid, wid);
+				glTexCoord2f(1.0f, 1.0f);
+				glVertex2i( wid,-wid);
+			}
+		glEnd();
+		glPopMatrix();
+		*/
+		glBindTexture(GL_TEXTURE_2D, 0);
+		glDisable(GL_ALPHA_TEST);
+		//
+		//
+		if (Global::getInstance().exp.onoff) {
+			h = 80.0;
+			w = 80.0;
 			glPushMatrix();
 			glColor3f(1.0, 1.0, 1.0);
-			glBindTexture(GL_TEXTURE_2D, Global::getInstance().walkTexture);
-			//
+			glBindTexture(GL_TEXTURE_2D, Global::getInstance().exp.tex);
 			glEnable(GL_ALPHA_TEST);
 			glAlphaFunc(GL_GREATER, 0.0f);
 			glColor4ub(255,255,255,255);
-			int ix = Global::getInstance().walkFrame % 8;
-			int iy = 0;
-			if (Global::getInstance().walkFrame >= 8)
-				iy = 1;
-			float fx = (float)ix / 8.0;
-			float fy = (float)iy / 2.0;
+			glTranslated(Global::getInstance().exp.pos[0], Global::getInstance().exp.pos[1], Global::getInstance().exp.pos[2]);
+			int ix = Global::getInstance().exp.frame % 5;
+			int iy = Global::getInstance().exp.frame / 5;
+			float tx = (float)ix / 5.0;
+			float ty = (float)iy / 5.0;
 			glBegin(GL_QUADS);
 			if (Global::getInstance().keys[XK_Left]) {
 				//printf("I'm walking to the left");
@@ -1453,32 +1586,38 @@ void render(void)
 			}
 			glEnd();
 			glPopMatrix();
-			/*float wid = 120;
+			glBindTexture(GL_TEXTURE_2D, 0);
+			glDisable(GL_ALPHA_TEST);
+		}
+		//
+		//
+		if (Global::getInstance().exp44.onoff) {
+			h = 80.0;
+			w = 80.0;
 			glPushMatrix();
-			glBindTexture(GL_TEXTURE_2D, Global::getInstance().helicopterTexture);
+			glColor3f(1.0, 1.0, 1.0);
+			glBindTexture(GL_TEXTURE_2D, Global::getInstance().exp44.tex);
+			glEnable(GL_ALPHA_TEST);
+			glAlphaFunc(GL_GREATER, 0.0f);
+			glColor4ub(255,255,255,255);
+			glTranslated(Global::getInstance().exp44.pos[0], Global::getInstance().exp44.pos[1], Global::getInstance().exp44.pos[2]);
+			int ix = Global::getInstance().exp44.frame % 4;
+			int iy = Global::getInstance().exp44.frame / 4;
+			float tx = (float)ix / 4.0;
+			float ty = (float)iy / 4.0;
 			glBegin(GL_QUADS);
-				if (helicopter.vel[0] > 0.0) {
-					glTexCoord2f(1.0f, 1.0f);
-					glVertex2i(-wid,-wid);
-					glTexCoord2f(1.0f, 0.0f);
-					glVertex2i(-wid, wid);
-					glTexCoord2f(0.0f, 0.0f);
-					glVertex2i( wid, wid);
-					glTexCoord2f(0.0f, 1.0f);
-					glVertex2i( wid,-wid);
-				} else {
-					glTexCoord2f(0.0f, 1.0f);
-					glVertex2i(-wid,-wid);
-					glTexCoord2f(0.0f, 0.0f);
-					glVertex2i(-wid, wid);
-					glTexCoord2f(1.0f, 0.0f);
-					glVertex2i( wid, wid);
-					glTexCoord2f(1.0f, 1.0f);
-					glVertex2i( wid,-wid);
-				}
+
+			glTexCoord2f(tx, ty+0.25);
+			glVertex2i(cx-w, cy-h);
+			glTexCoord2f(tx, ty);
+			glVertex2i(cx-w, cy+h);
+			glTexCoord2f(tx+0.25, ty);
+			glVertex2i(cx+w, cy+h);
+			glTexCoord2f(tx+0.25, ty+0.25);
+			glVertex2i(cx+w, cy-h);
+
 			glEnd();
 			glPopMatrix();
-			*/
 			glBindTexture(GL_TEXTURE_2D, 0);
 			glDisable(GL_ALPHA_TEST);
 			//
@@ -1543,22 +1682,20 @@ void render(void)
 				glBindTexture(GL_TEXTURE_2D, 0);
 				glDisable(GL_ALPHA_TEST);
 			}
-			extern void create_menu_button(int gl_xres, int gl_yres);
-			create_menu_button(Global::getInstance().xres, Global::getInstance().yres);
 			
-			//will add to menu
-			unsigned int c = 0x00ffff44;
-			r.bot = Global::getInstance().yres - 20;
-			r.left = 10;
-			r.center = 0;
-			ggprint8b(&r, 16, c, "W   Walk cycle");
-			ggprint8b(&r, 16, c, "E   Explosion");
-			ggprint8b(&r, 16, c, "+   faster");
-			ggprint8b(&r, 16, c, "-   slower");
-			ggprint8b(&r, 16, c, "right arrow -> walk right");
-			ggprint8b(&r, 16, c, "left arrow  <- walk left");
-			ggprint8b(&r, 16, c, "frame: %i", Global::getInstance().walkFrame);
-			ggprint8b(&r, 16, c, "credits   c");
+			// //will add to menu
+			// unsigned int c = 0x00ffff44;
+			// r.bot = Global::getInstance().yres - 20;
+			// r.left = 10;
+			// r.center = 0;
+			// ggprint8b(&r, 16, c, "W   Walk cycle");
+			// ggprint8b(&r, 16, c, "E   Explosion");
+			// ggprint8b(&r, 16, c, "+   faster");
+			// ggprint8b(&r, 16, c, "-   slower");
+			// ggprint8b(&r, 16, c, "right arrow -> walk right");
+			// ggprint8b(&r, 16, c, "left arrow  <- walk left");
+			// ggprint8b(&r, 16, c, "frame: %i", Global::getInstance().walkFrame);
+			// ggprint8b(&r, 16, c, "credits   c");
 			if (Global::getInstance().movie) {
 				screenCapture();
 			}
@@ -1582,7 +1719,40 @@ void render(void)
 				Global::getInstance().crateTexture);
 			glPopMatrix();
 		}
+		
+		//will add to menu
+		// unsigned int c = 0x00ffff44;
+		// r.bot = Global::getInstance().yres - 20;
+		// r.left = 10;
+		// r.center = 0;
+		// ggprint8b(&r, 16, c, "W   Walk cycle");
+		// ggprint8b(&r, 16, c, "E   Explosion");
+		// ggprint8b(&r, 16, c, "+   faster");
+		// ggprint8b(&r, 16, c, "-   slower");
+		// ggprint8b(&r, 16, c, "right arrow -> walk right");
+		// ggprint8b(&r, 16, c, "left arrow  <- walk left");
+		// ggprint8b(&r, 16, c, "frame: %i", Global::getInstance().walkFrame);
+		// ggprint8b(&r, 16, c, "credits   c");
+		if (Global::getInstance().movie) {
+			screenCapture();
+		}
+		glPushMatrix();
+		showHelicopter(helicopter.pos[0], helicopter.pos[1], helicopter.vel[0]);
+		glPopMatrix();
+		glPushMatrix();
+		showBomb(bomb.pos[0], bomb.pos[1]-100, bomb.vel[0]);;
+		glPopMatrix();
+		//draw bullets
+		drawBullets(&bullets);
 
+		// Fernando: Adding a platform entity to the game.
+		glPushMatrix();
+		// This breaks the wall because I was translating it in the walk2
+		// file and in drawPlatform()
+		//glTranslated(plat1.pos[0],plat1.pos[1],0);	
+		plat1.drawPlatform(plat1.getXpos(), plat1.getYpos(), 
+			Global::getInstance().crateTexture);
+		glPopMatrix();
 	}
 	// Render the helicopter
 	// glPushMatrix();
@@ -1592,7 +1762,13 @@ void render(void)
 	// glPopMatrix();
 
 	// If the credits are shown, we should hide the helicopter by moving it off screen
-	if(Global::getInstance().displayHelicopter == 0) {
+	if (Global::getInstance().displayHelicopter == 0) {
 		helicopter.pos[0] = -200;
+	}
+	if (!Global::getInstance().showLeaderboard &&
+		!Global::getInstance().showCredits &&
+		!Global::getInstance().showStartMenu) {
+		print_time(Global::getInstance().yres, 
+			Global::getInstance().numbersTexture);
 	}
 }

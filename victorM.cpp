@@ -127,13 +127,9 @@ void drawBullets(BList *bullets)
 		Bullet *b = bullets->Get(i);
 		if (!b)
 			break;
-		#ifdef PROFILE_VICTOR
-		cout << "# of bullets: " << bullets->Count() << endl;
-		cout << "drawing bullet i#: " << i << endl;
-		#endif
 		glColor3f(1.0, 1.0, 1.0);
 		glPushMatrix();
-		glTranslatef(400, 350, 0);
+		glTranslatef(bulletXOffset, bulletYOffset, 0);
 		glBegin(GL_POINTS);
 		glVertex2f(b->pos[0],      b->pos[1]);
 		glVertex2f(b->pos[0]-1.0f, b->pos[1]);
@@ -215,24 +211,34 @@ void updateBulletPosition(BList *bullets, int xres, int yres)
 			|| b->pos[0] <= 0.0
 			|| b->pos[1] >= (double)yres
 			|| b->pos[1] <= 0.0) {
-			#ifdef PROFILE_VICTOR
-			cout << "removing i# bound: " << i << endl;
-			#endif
 			// delete the bullet.
 			bullets->Remove(i);
 			continue;
 		}
 
 		//move the bullet
-		#ifdef PROFILE_VICTOR
-		cout << "previous x pos: " << b->pos[0] << endl;
-		#endif
 		b->pos[0] += b->vel[0];
 		b->pos[1] += b->vel[1];
-		#ifdef PROFILE_VICTOR
-		cout << "new x pos: " << b->pos[0] << endl;
-		#endif
 		i++;
+	}
+}
+
+void checkBulletHelicopterCollision(BList *bullets, int x, int y)
+{
+	for (int i = 0; i < bullets->Count(); i++) {
+		Bullet *b = bullets->Get(i);
+		if (b->pos[1]+bulletYOffset >= y) {
+			int currentPos = b->pos[0]+bulletXOffset;
+			int tempX = x - 80;
+			if (currentPos > tempX && currentPos < (tempX+100)) {
+				#ifdef PROFILE_VICTOR
+				cout << "x pos: " << x << " x+200: " << x+200 << endl;
+				cout << "collided b#: " << currentPos << endl;
+				#endif
+				bullets->Remove(i);
+				helicopterHit();
+			}
+		}
 	}
 }
 
