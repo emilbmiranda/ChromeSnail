@@ -8,6 +8,8 @@
 
 #include <iostream>
 #include "fonts.h"
+#include "masonP.h"
+#include "emilM.h"
 #include <GL/glx.h>
 #include <math.h>
 
@@ -185,4 +187,39 @@ void setLastKnownHelicopterPos(float pos)
 float getLastKnownHelicopterPos()
 {
 	return lastKnownHelicopterPos;
+}
+
+void print_health(int gameScore, int xres, int yres, GLuint numbersTexture[])
+{
+	float fx = 50.0;
+	float fy = 50.0;
+	int tens = (int)gameScore/10;
+	int ones = (int)gameScore%10;
+	int wid = 40;
+	//declared array as followed due to getting narrowing warning
+	//when initiliazing with {}
+	int score_array[2];
+	score_array[0] = tens;
+	score_array[1] = ones;
+	for (int i = 0; i < 2; i++) {
+		glPushMatrix();
+		glTranslatef(fx,fy,0);
+		render_number(score_array[i], numbersTexture);
+		glEnable(GL_ALPHA_TEST);
+		glAlphaFunc(GL_GREATER, 0.0f);
+		glColor4ub(255,255,255,255);
+		glBegin(GL_QUADS);
+		glTexCoord2f(0.0f, 1.0f);
+		glVertex2i(-wid,-wid);
+		glTexCoord2f(0.0f, 0.0f);
+		glVertex2i(-wid, wid);
+		glTexCoord2f(1.0f, 0.0f);
+		glVertex2i( wid, wid);
+		glTexCoord2f(1.0f, 1.0f);
+		glVertex2i( wid,-wid);
+		glEnd();
+		glBindTexture(GL_TEXTURE_2D, 0);
+		glPopMatrix();
+		fx += 40;
+	} 
 }

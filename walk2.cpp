@@ -30,6 +30,7 @@
 #include "victorM.h"
 #include "fernandoH.h"
 #include "emilM.h"
+#include "masonP.h"
 #include <dirent.h>
 
 using namespace std;
@@ -150,7 +151,7 @@ public:
 	int playerScore = 0;
 	int helicopterHealth = 5;
 	int startGame;
-	int health = 100;
+	int health = 99;
 	double delay;
 	float xc[2];
 	float yc[2];
@@ -1760,6 +1761,10 @@ void render(void)
 		print_time(Global::getInstance().yres, 
 			Global::getInstance().numbersTexture);
 		print_score(Global::getInstance().playerScore,
+			Global::getInstance().xres,
+			Global::getInstance().yres, 
+			Global::getInstance().numbersTexture);
+		print_health(Global::getInstance().health,
 			Global::getInstance().xres,
 			Global::getInstance().yres, 
 			Global::getInstance().numbersTexture);
