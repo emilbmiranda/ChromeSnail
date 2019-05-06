@@ -98,6 +98,13 @@ public:
 
 class Image;
 
+class Walker {
+public:
+	Vec pos = {0.00, 525.00};
+	Vec vel = {6.00};
+	int dir = 0;
+} walker;
+
 class Helicopter {
 public:
 	Vec pos = {100.00, 525.00};
@@ -136,7 +143,8 @@ BList bullets;
 // Global is using the singleton pattern
 class Global {
 public:
-	bool GoEvent = false; 
+	bool Forward = false; 
+	bool Backward = false;
 	unsigned char keys[65536];
 	int xres, yres;
 	int movie, movieStep;
@@ -951,6 +959,23 @@ void moveBomb()
 
 	// printf("walk.gif pos: %f, %f\n", (float)Global::getInstance().xres/2, (float)Global::getInstance().yres/2);
 }
+void moveWalker(int direction)
+{
+	if ((walker.pos[0] < -140.0 && walker.vel[0] < 0.0) ||
+		(walker.pos[0] >= (float)Global::getInstance().xres+140.0 &&
+		walker.vel[0] > 0.0))
+	{
+		walker.vel[0] = -walker.vel[0];
+	}
+	//right movement 
+	if (direction == 1){  
+	walker.pos[0] += walker.vel[0];
+	}
+	//left movement
+	if (direction == 2){ 
+	walker.pos[0] -= walker.vel[0];
+	}
+}
 
 int checkKeys(XEvent *e)
 {
@@ -981,7 +1006,6 @@ int checkKeys(XEvent *e)
 			// printf("helicopter.pos[0]: %f\nhelicopter.pos[1]: %f\nhelicopter.vel[0]: %f\n", helicopter.pos[0], helicopter.pos[1], helicopter.vel[0]);
 			break;
 		case XK_s:
-			Global::getInstance().GoEvent = false;			
 			//screenCapture();
 			break;
 		case XK_m:
@@ -1006,9 +1030,16 @@ int checkKeys(XEvent *e)
 			Global::getInstance().exp44.onoff ^= 1;
 			break;
 		case XK_Left:
+			walker.dir = 1;
+			moveWalker(walker.dir);
+			Global::getInstance().Forward = false;
+			Global::getInstance().Backward = true;
 			break;
 		case XK_Right:
-			Global::getInstance().GoEvent = true;
+			walker.dir = 2;
+			moveWalker(walker.dir);
+			Global::getInstance().Backward = false;
+			Global::getInstance().Forward = true;
 			break;
 		case XK_c:
 			// If the credits are currently being shown, we are about to hide them/
@@ -1082,9 +1113,15 @@ Flt VecNormalize(Vec vec)
 
 void physics(void)
 {
-	if(Global::getInstance().GoEvent == True) { 
-		Global::getInstance().xc[0] += 0.001;
-		Global::getInstance().xc[1] += 0.001;
+	if(Global::getInstance().Forward == True && Global::getInstance().Backward == False) { 
+		Global::getInstance().xc[0] += 0.002;
+		Global::getInstance().xc[1] += 0.002;
+		Global::getInstance().Forward = False;
+	}
+	if(Global::getInstance().Forward == False && Global::getInstance().Backward == True) { 
+		Global::getInstance().xc[0] -= 0.002;
+		Global::getInstance().xc[1] -= 0.002;
+		Global::getInstance().Backward = False;
 	}
 	if (Global::getInstance().walk 
 		|| Global::getInstance().keys[XK_Right] 
