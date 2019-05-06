@@ -355,21 +355,24 @@ void generate_leaderboard()
  			create_table();
 			insert();
 			sql_init_flag = 0;
+            exit(0);
 		}
 		#endif
-		const char *showLeaderboard = "SELECT * from Leaderboard "
-			"ORDER BY Score DESC, Time LIMIT 3";
+		const char *showLeaderboard = "SELECT ROW_NUMBER() OVER("
+            "ORDER BY Score DESC, Time) as Row,"
+            "Name,Score,Time FROM Leaderboard "
+            "LIMIT 3;";
 		result = sqlite3_exec(db, showLeaderboard, callback, 
 			(void*) data, &ErrMsg);
 		if (result != SQLITE_OK) {
-			#ifdef SQL_UNIT_TEST
+		    #ifdef SQL_UNIT_TEST
 			cout << "SQL Error:" << ErrMsg << endl;
-			#endif
 			sqlite3_free(ErrMsg);
+		    #endif
 		} else {
-			#ifdef SQL_UNIT_TEST
+		    #ifdef SQL_UNIT_TEST
 			cout << "SELECT statement successful" << endl;
-			#endif
+		    #endif
 		}
  	}
  	sqlite3_close(db);
