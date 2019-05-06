@@ -274,7 +274,8 @@ void create_table()
 	if (init_connection()) {
 		const char *query = "CREATE TABLE IF NOT EXISTS Leaderboard (" 
 			"GameId INTEGER PRIMARY KEY AUTOINCREMENT," 
-			"Name VARCHAR(2) NOT NULL," 
+			"Name VARCHAR(2) NOT NULL,"
+			"Score INTEGER NOT NULL," 
 			"Time TIME NOT NULL);";
 		result = sqlite3_exec(db, query, 0, 0, &ErrMsg);
 		if (result != SQLITE_OK) {
@@ -292,20 +293,20 @@ void insert()
 {
 	if (init_connection()) {
 		const char *emil = "INSERT INTO Leaderboard"
-			"(Name, Time)"
-			"Values ('EM','1:00')";
+			"(Name, Score, Time)"
+			"Values ('EM', 20, '1:00')";
 		const char *hasun = "INSERT INTO Leaderboard"
-			"(Name, Time)"
-			"Values ('HK','0:50')";
+			"(Name, Score, Time)"
+			"Values ('HK', 15, '0:50')";
 		const char *mason = "INSERT INTO Leaderboard"
-			"(Name, Time)"
-			"Values ('MP','1:05')";
+			"(Name, Score, Time)"
+			"Values ('MP', 21, '1:05')";
 		const char *fernando = "INSERT INTO Leaderboard"
-			"(Name, Time)"
-			"Values ('FH','1:30')";
+			"(Name, Score, Time)"
+			"Values ('FH',23, '1:30')";
 		const char *victor = "INSERT INTO Leaderboard"
-			"(Name, Time)"
-			"Values ('VM','2:00')";
+			"(Name, Score, Time)"
+			"Values ('VM', 21, '2:00')";
 		result = sqlite3_exec(db, emil, 0, 0, &ErrMsg);
 		if (result != SQLITE_OK) {
 			cout << "SQL Error:" << ErrMsg << endl;
@@ -357,7 +358,7 @@ void generate_leaderboard()
 		}
 		#endif
 		const char *showLeaderboard = "SELECT * from Leaderboard "
-			"ORDER BY Time LIMIT 3";
+			"ORDER BY Score DESC, Time LIMIT 3";
 		result = sqlite3_exec(db, showLeaderboard, callback, 
 			(void*) data, &ErrMsg);
 		if (result != SQLITE_OK) {
@@ -383,10 +384,14 @@ int callback(void *data, int argc, char **argv, char **azColName)
 	strcpy(argv_name, argv[1]);
 	int name_size = strlen(argv[1]);
 	string name(argv_name, name_size);
+	char* argv_score = (char*)calloc(30, sizeof(char));
+	strcpy(argv_score, argv[2]);
+	string score(argv_score, 2);
 	char* argv_time= (char*)calloc(30, sizeof(char));
-	strcpy(argv_time, argv[2]);
+	strcpy(argv_time, argv[3]);
 	string time(argv_time, 10);
 	leaderboard_vector.insert(leaderboard_vector.end(), name);
+	leaderboard_vector.insert(leaderboard_vector.end(), score);
 	leaderboard_vector.insert(leaderboard_vector.end(), time);
 	return SQLITE_OK;
 }
@@ -395,7 +400,7 @@ void print_leaderboard(int xres, int yres, GLuint numbersTexture[],
 	GLuint lettersTexture[]) 
 {
 	static int wid = 40;
-	float fx = (float)xres/2-175;
+	float fx = (float)xres/2-225;
 	float fy = (float)yres/2+50;
 	for (int i = 1; i <= 3; i++) { 
 		glPushMatrix();
@@ -416,15 +421,17 @@ void print_leaderboard(int xres, int yres, GLuint numbersTexture[],
 		glEnd();
 		glBindTexture(GL_TEXTURE_2D, 0);
 		glPopMatrix();
-		print_name(fx+50, fy, wid, leaderboard_vector[i*2-2], 
+		leaderboard_name(fx+50, fy, wid, leaderboard_vector[i*3-3], 
 			lettersTexture);
-		print_time(fx+175, fy, wid, leaderboard_vector[i*2-1], 
+		leaderboard_score(fx+170, fy, wid, leaderboard_vector[i*3-2], 
+			numbersTexture);
+		leaderboard_time(fx+275, fy, wid, leaderboard_vector[i*3-1], 
 			numbersTexture);	
 		fy -= 100;
 	}
 }
 
-void print_name(int xres, int yres, int width, string name, GLuint lettersTexture[])
+void leaderboard_name(int xres, int yres, int width, string name, GLuint lettersTexture[])
 {
 	int size = name.length();
 	static int wid = width;
@@ -454,7 +461,7 @@ void print_name(int xres, int yres, int width, string name, GLuint lettersTextur
 	}
 }
 
-void print_time(int xres, int yres, int width, string time, GLuint numbersTexture[])
+void leaderboard_time(int xres, int yres, int width, string time, GLuint numbersTexture[])
 {
 	static int wid = width;
 	float fx = (float)xres;
@@ -465,6 +472,35 @@ void print_time(int xres, int yres, int width, string time, GLuint numbersTextur
 		glTranslatef(fx,fy,0);
 		char char_time = (char)time[i];
 		render_number(char_time, numbersTexture);
+		glEnable(GL_ALPHA_TEST);
+		glAlphaFunc(GL_GREATER, 0.0f);
+		glColor4ub(255,255,255,255);
+		glBegin(GL_QUADS);
+		glTexCoord2f(0.0f, 1.0f);
+		glVertex2i(-wid,-wid);
+		glTexCoord2f(0.0f, 0.0f);
+		glVertex2i(-wid, wid);
+		glTexCoord2f(1.0f, 0.0f);
+		glVertex2i( wid, wid);
+		glTexCoord2f(1.0f, 1.0f);
+		glVertex2i( wid,-wid);
+		glEnd();
+		glBindTexture(GL_TEXTURE_2D, 0);
+		glPopMatrix();
+	}
+}
+
+void leaderboard_score(int xres, int yres, int width, string score, GLuint numbersTexture[])
+{
+	static int wid = width;
+	float fx = (float)xres;
+	float fy = (float)yres;
+	for (int i = 0; i < 2; i++) {
+		fx += 40;
+		glPushMatrix();
+		glTranslatef(fx,fy,0);
+		char char_score = (char)score[i];
+		render_number(char_score, numbersTexture);
 		glEnable(GL_ALPHA_TEST);
 		glAlphaFunc(GL_GREATER, 0.0f);
 		glColor4ub(255,255,255,255);

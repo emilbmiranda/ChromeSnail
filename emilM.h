@@ -23,8 +23,9 @@ extern void generate_leaderboard();
 int callback(void *data, int argc, char **argv, char **azColName);
 void print_leaderboard(int xres, int yres, GLuint numbersTexture[],
     GLuint lettersTexture[]);
-void print_name(int xres, int yres, int wid, string name, GLuint lettersTexture[]);
-void print_time(int xres, int yres, int wid, string time, GLuint numbersTexture[]);
+void leaderboard_name(int xres, int yres, int wid, string name, GLuint lettersTexture[]);
+void leaderboard_time(int xres, int yres, int wid, string time, GLuint numbersTexture[]);
+void leaderboard_score(int xres, int yres, int wid, string score, GLuint numbersTexture[]);
 void render_letter(char letter, GLuint lettersTexture[]);
 void render_number(char number, GLuint numbersTexture[]);
 void render_number(int number, GLuint numbersTexture[]);
