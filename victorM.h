@@ -64,6 +64,8 @@ void showVictorPicture(int x, int y, GLuint textid);
 double timeDiff(struct timespec *start, struct timespec *end);
 void timeCopy(struct timespec *dest, struct timespec *source);
 void checkBulletHelicopterCollision(BList *bullets, int x, int y);
-void helicopterHit();
+int helicopterHit();
+void playerScoreIncrease();
+void helicopterHealthReset();
 
 #endif

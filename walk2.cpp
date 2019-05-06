@@ -234,15 +234,19 @@ private:
 	Global& operator=(Global const&);
 };
 
-void helicopterHit()
+int helicopterHit()
 {
-	if (--Global::getInstance().helicopterHealth <= 0) {
-		Global::getInstance().playerScore++;
-		Global::getInstance().helicopterHealth = 5;
-		#ifdef PROFILE_VICTOR
-		cout << "score: " << Global::getInstance().playerScore << endl;
-		#endif
-	}
+	return --Global::getInstance().helicopterHealth;
+}
+
+void helicopterHealthReset()
+{
+	Global::getInstance().helicopterHealth = 5;
+}
+
+void playerScoreIncrease()
+{
+	Global::getInstance().playerScore++;
 }
 
 class Level {

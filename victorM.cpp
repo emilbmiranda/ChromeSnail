@@ -236,7 +236,10 @@ void checkBulletHelicopterCollision(BList *bullets, int x, int y)
 				cout << "collided b#: " << currentPos << endl;
 				#endif
 				bullets->Remove(i);
-				helicopterHit();
+				if(helicopterHit() == 0) {
+					helicopterHealthReset();
+				}
+				playerScoreIncrease();
 			}
 		}
 	}
