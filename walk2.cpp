@@ -1750,7 +1750,9 @@ void render(void)
 		// This breaks the wall because I was translating it in the walk2
 		// file and in drawPlatform()
 		//glTranslated(plat1.pos[0],plat1.pos[1],0);	
-		plat1.drawPlatform(plat1.getXpos(), plat1.getYpos(), 
+		Global::getInstance().plat1.drawPlatform(
+			Global::getInstance().plat1.getXpos(),
+			Global::getInstance().plat1.getYpos(), 
 			Global::getInstance().crateTexture);
 		glPopMatrix();
 	}
