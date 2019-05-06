@@ -166,7 +166,7 @@ public:
 	// Fernando: Need to create a GLuint object for the crate texture.
 	GLuint crateTexture;
 	//Platform plat1(540,140);
-	//Platform plat1;
+	Platform plat1;
 	GLuint backgroundTexture;
 	Vec box[20];
 	Sprite exp;
@@ -1021,6 +1021,10 @@ void physics(void)
 		//man is walking...
 		//when time is up, advance the frame.
 		if ( Global::getInstance().keys[XK_Right]) {
+			Global::getInstance().plat1.slidePlatformBackward();
+		}
+		if ( Global::getInstance().keys[XK_Left]) {
+			Global::getInstance().plat1.slidePlatformForward();
 		}
 		timers.recordTime(&timers.timeCurrent);
 		double timeSpan = timers.timeDiff(&timers.walkTime, 
@@ -1250,8 +1254,6 @@ void show_credits(Rect x, int y)
 void render(void)
 {
 	Rect r;
-	//Global::getInstance().plat1(540,140);
-	Platform plat1(540,140);
 	//Clear the screen
 	glClearColor(0.1, 0.1, 0.1, 1.0);
 	glClear(GL_COLOR_BUFFER_BIT);
@@ -1574,7 +1576,9 @@ void render(void)
 			// This breaks the wall because I was translating it in the walk2
 			// file and in drawPlatform()
 			// ---> glTranslated(plat1.pos[0],plat1.pos[1],0);	
-			plat1.drawPlatform(plat1.getXpos(), plat1.getYpos(), 
+			Global::getInstance().plat1.drawPlatform( 
+				Global::getInstance().plat1.getXpos(),
+				Global::getInstance().plat1.getYpos(), 
 				Global::getInstance().crateTexture);
 			glPopMatrix();
 		}
