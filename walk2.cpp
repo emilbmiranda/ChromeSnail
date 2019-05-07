@@ -6,7 +6,6 @@
 //
 //modified by: mason pawsey, Victor Merino, Fernando Herrera, Emil Miranda, Hasun Khan
 //modified date: Spring 2019
-//
 //Walk cycle using a sprite sheet.
 //images courtesy: http://games.ucla.edu/resource/walk-cycles/
 //
@@ -160,12 +159,14 @@ class Global {
         int helicopterHealth = 5;
         int startGame;
         int health = 99;
+        //int health = 0;
         int done = 0;
         double delay;
         float xc[2];
         float yc[2];
         Image *walkImage;
-        string userInitials;
+        char firstInitial;
+        char secondInitial;
         GLuint walkTexture;
         GLuint creditPicsTexture[5];
         GLuint helicopterTexture;
@@ -230,6 +231,8 @@ class Global {
             showStartMenu = 1;
             showCrate = 1;
             startGame = 0;
+            firstInitial = '\0';
+            secondInitial = '\0';
             for (int i=0; i<20; i++) {
                 box[i][0] = rnd() * xres;
                 box[i][1] = rnd() * (yres-220) + 220.0;
@@ -511,6 +514,31 @@ int main(void)
         physics();
         render();
         x11.swapBuffers();
+    }
+    while (Global::getInstance().firstInitial == '\0'){ //||
+            //Global::getInstance().secondInitial == '\0') {
+        game_over(Global::getInstance().xres,
+		    Global::getInstance().yres,
+		    Global::getInstance().gameOverTexture);
+        game_over_text(Global::getInstance().xres,
+		    Global::getInstance().yres,
+		    Global::getInstance().lettersTexture);
+    while (x11.getXPending()) {
+        XEvent e = x11.getXNextEvent();
+        if (Global::getInstance().firstInitial == '\0') {
+            Global::getInstance().firstInitial = store_initials(&e);
+            cout << Global::getInstance().firstInitial << endl;
+        }
+    }
+        x11.swapBuffers();
+    /*while (x11.getXPending()) {
+        XEvent f = x11.getXNextEvent();
+        if (Global::getInstance().secondInitial == '\0') {
+            Global::getInstance().secondInitial = store_initials(&f);
+            cout << Global::getInstance().secondInitial << endl;
+        }
+    }
+        x11.swapBuffers();*/
     }
     cleanup_fonts();
     return 0;
@@ -1414,13 +1442,7 @@ void render(void)
             show_credits(r, cy);
         }
     } else if (Global::getInstance().health <= 0) {
-        game_over(Global::getInstance().xres,
-			Global::getInstance().yres,
-			Global::getInstance().gameOverTexture);
-		get_initials(Global::getInstance().xres,
-			Global::getInstance().yres,
-			Global::getInstance().lettersTexture);
-        //Global::getInstance().done = 1;
+        Global::getInstance().done = 1;
     } else {
         glClearColor(0.1,0.1,0.1,1.0);
         glClear(GL_COLOR_BUFFER_BIT);

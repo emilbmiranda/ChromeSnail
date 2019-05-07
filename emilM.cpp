@@ -824,7 +824,7 @@ void game_over(int xres, int yres, GLuint leaderboardTexture)
 	glPopMatrix();
 }
 
-void get_initials(int xres, int yres, GLuint lettersTexture[]) 
+void game_over_text(int xres, int yres, GLuint lettersTexture[]) 
 {
 	static int wid = 20;
 	float fx = (float)xres/2-200;
@@ -880,3 +880,18 @@ void get_initials(int xres, int yres, GLuint lettersTexture[])
 		fx += 20;
 	}
 }
+
+char store_initials(XEvent *e)
+{
+    char initial;
+    int key = XLookupKeysym(&e->xkey, 0);
+    switch (key) {
+        case(XK_A):
+        case(XK_a):
+            initial = 'A';
+            break;
+        default:
+            initial = 'Z';
+    }    
+    return initial;
+} 

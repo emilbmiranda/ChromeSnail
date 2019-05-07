@@ -32,6 +32,7 @@ extern void start_time();
 extern void print_time(int yres, GLuint numbersTexture[]);
 extern void print_score(int gameScore, int xres, int yres, GLuint numbersTexture[]);
 extern void game_over(int xres, int yres, GLuint gameOverTexture);
-extern void get_initials(int xres, int yres, GLuint lettersTexture[]);
+extern void game_over_text(int xres, int yres, GLuint lettersTexture[]);
+extern char store_initials(XEvent *e);
 
 #endif
