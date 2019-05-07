@@ -465,8 +465,8 @@ Image img[9] = {
     "./images/EmilM.jpeg" ,
     "./images/mission_3.png"};
 
-Image helicopter_image = "./images/helicopter.gif";
-Image bomb_image = "./images/bomb.gif";
+Image helicopter_image = "./images/helicopter2.gif";
+Image bomb_image = "./images/bomb2.gif";
 Image start_menu_image = "./images/StartMenu.jpg";
 Image logo_image = "./images/Logo.gif";
 Image keys_image = "./images/Keys.gif"; 

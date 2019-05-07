@@ -59,7 +59,7 @@ void showMasonPicture(int x, int y, GLuint textid)
 	glBindTexture(GL_TEXTURE_2D, textid);
 
 	glBegin(GL_QUADS);
-	glTexCoord2f(0.0f, 1.0f);
+	glTexCoord2f(1.0f, 1.0f);
 	glVertex2i(-wid, -wid);
 	glTexCoord2f(0.0f, 0.0f);
 	glVertex2i(-wid, wid);
