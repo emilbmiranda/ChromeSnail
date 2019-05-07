@@ -38,14 +38,14 @@ using namespace std;
 //defined types
 typedef double Flt;
 typedef double Vec[3];
-typedef Flt	Matrix[4][4];
+typedef Flt Matrix[4][4];
 time_t start = time(0);
 //macros
 #define rnd() (((double)rand())/(double)RAND_MAX)
 #define random(a) (rand()%a)
 #define MakeVector(v, x, y, z) (v)[0]=(x),(v)[1]=(y),(v)[2]=(z)
 #define VecCopy(a,b) (b)[0]=(a)[0];(b)[1]=(a)[1];(b)[2]=(a)[2]
-#define VecDot(a,b)	((a)[0]*(b)[0]+(a)[1]*(b)[1]+(a)[2]*(b)[2])
+#define VecDot(a,b) ((a)[0]*(b)[0]+(a)[1]*(b)[1]+(a)[2]*(b)[2])
 #define VecSub(a,b,c) (c)[0]=(a)[0]-(b)[0]; \
                              (c)[1]=(a)[1]-(b)[1]; \
 (c)[2]=(a)[2]-(b)[2]
@@ -142,7 +142,7 @@ BList bullets;
 
 // Global is using the singleton pattern
 class Global {
-   public:
+    public:
         bool Forward = false; 
         bool Backward = false;
         unsigned char keys[65536];
@@ -165,6 +165,7 @@ class Global {
         float xc[2];
         float yc[2];
         Image *walkImage;
+        string userInitials;
         GLuint walkTexture;
         GLuint creditPicsTexture[5];
         GLuint helicopterTexture;
@@ -509,7 +510,6 @@ int main(void)
         render();
         x11.swapBuffers();
     }
-    cout << "Game finished" << endl;
     cleanup_fonts();
     return 0;
 }
@@ -585,7 +585,7 @@ void initOpengl(void)
     glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
     //
     //must build a new set of data...
-    unsigned char *walkData = buildAlphaData(&img[0]);	
+    unsigned char *walkData = buildAlphaData(&img[0]);  
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0,
             GL_RGBA, GL_UNSIGNED_BYTE, walkData);
     free(walkData);
@@ -600,7 +600,7 @@ void initOpengl(void)
     glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
     //must build a new set of data...
-    unsigned char *xData = buildAlphaData(&img[1]);	
+    unsigned char *xData = buildAlphaData(&img[1]); 
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0,
             GL_RGBA, GL_UNSIGNED_BYTE, xData);
     free(xData);
@@ -651,7 +651,7 @@ void initOpengl(void)
     glTexImage2D(GL_TEXTURE_2D, 0, 3, w_helicopter, h_helicopter, 0,
             GL_RGB, GL_UNSIGNED_BYTE, helicopter_image.data);
     //-------------------------------------------------------------------------
-    unsigned char *heliData = buildAlphaData(&helicopter_image);	
+    unsigned char *heliData = buildAlphaData(&helicopter_image);    
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w_helicopter, h_helicopter, 0,
             GL_RGBA, GL_UNSIGNED_BYTE, heliData);
     free(heliData);
@@ -670,7 +670,7 @@ void initOpengl(void)
     glTexImage2D(GL_TEXTURE_2D, 0, 3, w_bomb, h_bomb, 0,
             GL_RGB, GL_UNSIGNED_BYTE, bomb_image.data);
     //-------------------------------------------------------------------------
-    unsigned char *bombData = buildAlphaData(&bomb_image);	
+    unsigned char *bombData = buildAlphaData(&bomb_image);  
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w_bomb, h_bomb, 0,
             GL_RGBA, GL_UNSIGNED_BYTE, bombData);
     free(bombData);
@@ -687,7 +687,7 @@ void initOpengl(void)
     Global::getInstance().xc[0] = 0.0;
     Global::getInstance().xc[1] = 0.25;
     Global::getInstance().yc[0] = 0.0;
-    Global::getInstance().yc[1] = 1.0;	
+    Global::getInstance().yc[1] = 1.0;  
 
 
 
@@ -712,7 +712,7 @@ void initOpengl(void)
 
     //-Crate texture-END------------------------------------------------------
     // Start Menu texture and binding
-    glGenTextures(1, &Global::getInstance().startMenuTexture);	
+    glGenTextures(1, &Global::getInstance().startMenuTexture);  
     int xres = start_menu_image.width;
     int yres = start_menu_image.height;
     glBindTexture(GL_TEXTURE_2D, Global::getInstance().startMenuTexture);
@@ -721,13 +721,13 @@ void initOpengl(void)
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-    unsigned char *startScreenData = buildAlphaData(&start_menu_image);	
+    unsigned char *startScreenData = buildAlphaData(&start_menu_image); 
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, xres, yres, 0,
             GL_RGBA, GL_UNSIGNED_BYTE, startScreenData);
     free(startScreenData);
 
     // Logo texture and binding
-    glGenTextures(1, &Global::getInstance().logoTexture);	
+    glGenTextures(1, &Global::getInstance().logoTexture);   
     int lxres = logo_image.width;
     int lyres = logo_image.height;
     glBindTexture(GL_TEXTURE_2D, Global::getInstance().logoTexture);
@@ -736,13 +736,13 @@ void initOpengl(void)
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-    unsigned char *logoData = buildAlphaData(&logo_image);	
+    unsigned char *logoData = buildAlphaData(&logo_image);  
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, lxres, lyres, 0,
             GL_RGBA, GL_UNSIGNED_BYTE, logoData);
     free(logoData);
 
     //leaderboard
-    glGenTextures(1, &Global::getInstance().leaderboardTexture);	
+    glGenTextures(1, &Global::getInstance().leaderboardTexture);    
     int lexres = leaderboard_image.width;
     int leyres = leaderboard_image.height;
     glBindTexture(GL_TEXTURE_2D, Global::getInstance().leaderboardTexture);
@@ -751,13 +751,13 @@ void initOpengl(void)
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-    unsigned char *leaderboardData = buildAlphaData(&leaderboard_image);	
+    unsigned char *leaderboardData = buildAlphaData(&leaderboard_image);    
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, lexres, leyres, 0,
             GL_RGBA, GL_UNSIGNED_BYTE, leaderboardData);
     free(leaderboardData);
 
     //leaderboard title
-    glGenTextures(1, &Global::getInstance().leaderboardTitleTexture);	
+    glGenTextures(1, &Global::getInstance().leaderboardTitleTexture);   
     int ltxres = leaderboard_title_image.width;
     int ltyres = leaderboard_title_image.height;
     glBindTexture(GL_TEXTURE_2D, Global::getInstance().leaderboardTitleTexture);
@@ -766,14 +766,14 @@ void initOpengl(void)
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-    unsigned char *leaderboardTitleData = buildAlphaData(&leaderboard_title_image);	
+    unsigned char *leaderboardTitleData = buildAlphaData(&leaderboard_title_image); 
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, ltxres, ltyres, 0,
             GL_RGBA, GL_UNSIGNED_BYTE, leaderboardTitleData);
     free(leaderboardTitleData);
 
     //number texture
     for (int i = 0; i < NUMBERS_ARRAY; i++) {
-        glGenTextures(1, &Global::getInstance().numbersTexture[i]);	
+        glGenTextures(1, &Global::getInstance().numbersTexture[i]); 
         int numxres = numbers_image[i].width;
         int numyres = numbers_image[i].height;
         glBindTexture(GL_TEXTURE_2D, Global::getInstance().numbersTexture[i]);
@@ -782,7 +782,7 @@ void initOpengl(void)
         glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
         glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
         glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-        unsigned char *numData = buildAlphaData(&numbers_image[i]);	
+        unsigned char *numData = buildAlphaData(&numbers_image[i]); 
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, numxres, numyres, 0,
                 GL_RGBA, GL_UNSIGNED_BYTE, numData);
         free(numData);
@@ -790,7 +790,7 @@ void initOpengl(void)
 
     //letters texture
     for (int i = 0; i < LETTERS_ARRAY; i++) {
-        glGenTextures(1, &Global::getInstance().lettersTexture[i]);	
+        glGenTextures(1, &Global::getInstance().lettersTexture[i]); 
         int letxres = letters_image[i].width;
         int letyres = letters_image[i].height;
         glBindTexture(GL_TEXTURE_2D, Global::getInstance().lettersTexture[i]);
@@ -799,14 +799,14 @@ void initOpengl(void)
         glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
         glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
         glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-        unsigned char *letData = buildAlphaData(&letters_image[i]);	
+        unsigned char *letData = buildAlphaData(&letters_image[i]); 
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, letxres, letyres, 0,
                 GL_RGBA, GL_UNSIGNED_BYTE, letData);
         free(letData);
     }
 
     //game time
-    glGenTextures(1, &Global::getInstance().timeTexture);	
+    glGenTextures(1, &Global::getInstance().timeTexture);   
     int txres = time_image.width;
     int tyres = time_image.height;
     glBindTexture(GL_TEXTURE_2D, Global::getInstance().timeTexture);
@@ -815,7 +815,7 @@ void initOpengl(void)
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-    unsigned char *timeData = buildAlphaData(&time_image);	
+    unsigned char *timeData = buildAlphaData(&time_image);  
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, txres, tyres, 0,
             GL_RGBA, GL_UNSIGNED_BYTE, timeData);
     free(timeData);
@@ -878,7 +878,7 @@ void screenCapture()
             GL_RGB, GL_UNSIGNED_BYTE, data);
     char ts[32];
     sprintf(ts, "./vid/pic%03i.ppm", fnum);
-    FILE *fpo = fopen(ts,"w");	
+    FILE *fpo = fopen(ts,"w");  
     if (fpo) {
         fprintf(fpo, "P6\n%i %i\n255\n", 
                 Global::getInstance().xres, 
@@ -1047,7 +1047,7 @@ int checkKeys(XEvent *e)
             // We load the helicopter with the last known position so it will resume
             // where it left off.
             // if(Global::getInstance().showCredits == 1) {
-            // 	helicopter.pos[0] = lastKnownHelicopterPos();
+            //  helicopter.pos[0] = lastKnownHelicopterPos();
             // }
             if (!Global::getInstance().showLeaderboard &&
                     Global::getInstance().showStartMenu) {
@@ -1287,7 +1287,7 @@ void physics(void)
     // Helicopter
     // helicopter.pos[0] += 10.0;
     // if (helicopter.pos[0] > xres) {
-    // 	helicopter.pos[0] % xres;
+    //  helicopter.pos[0] % xres;
     // }
 }
 
@@ -1400,150 +1400,220 @@ void render(void)
             show_credits(r, cy);
         }
     } else if (Global::getInstance().health <= 0) {
-        Global::getInstance().done = 1;
+        game_over(Global::getInstance().xres,
+                Global::getInstance().yres,
+                Global::getInstance().leaderboardTexture);
+        //Global::getInstance().done = 1;
     } else {
-            glClearColor(0.1,0.1,0.1,1.0);
-            glClear(GL_COLOR_BUFFER_BIT);
-            //background rendering 
-            int bxres = Global::getInstance().xres;
-            int byres = Global::getInstance().yres;
-            glClear(GL_COLOR_BUFFER_BIT);
-            glColor3f(1.0, 1.0, 1.0);
-            glBindTexture(GL_TEXTURE_2D, Global::getInstance().backgroundTexture);
-            glBegin(GL_QUADS);
-            glTexCoord2f(Global::getInstance().xc[0], Global::getInstance().yc[1]); glVertex2i(0, 0);
-            glTexCoord2f(Global::getInstance().xc[0], Global::getInstance().yc[0]); glVertex2i(0, byres);
-            glTexCoord2f(Global::getInstance().xc[1], Global::getInstance().yc[0]); glVertex2i(bxres, byres);
-            glTexCoord2f(Global::getInstance().xc[1], Global::getInstance().yc[1]); glVertex2i(bxres, 0);
-            glEnd();
+        glClearColor(0.1,0.1,0.1,1.0);
+        glClear(GL_COLOR_BUFFER_BIT);
+        //background rendering 
+        int bxres = Global::getInstance().xres;
+        int byres = Global::getInstance().yres;
+        glClear(GL_COLOR_BUFFER_BIT);
+        glColor3f(1.0, 1.0, 1.0);
+        glBindTexture(GL_TEXTURE_2D, Global::getInstance().backgroundTexture);
+        glBegin(GL_QUADS);
+        glTexCoord2f(Global::getInstance().xc[0], Global::getInstance().yc[1]); glVertex2i(0, 0);
+        glTexCoord2f(Global::getInstance().xc[0], Global::getInstance().yc[0]); glVertex2i(0, byres);
+        glTexCoord2f(Global::getInstance().xc[1], Global::getInstance().yc[0]); glVertex2i(bxres, byres);
+        glTexCoord2f(Global::getInstance().xc[1], Global::getInstance().yc[1]); glVertex2i(bxres, 0);
+        glEnd();
 
-            /*
-            //show ground
-            glBegin(GL_QUADS);
-            glColor3f(0.2, 0.2, 0.2);
-            glVertex2i(0, 220);
-            glVertex2i(Global::getInstance().xres, 220);
-            glColor3f(0.4, 0.4, 0.4);
-            glVertex2i(Global::getInstance().xres,   0);
-            glVertex2i(0, 0);
-            glEnd();
+        /*
+        //show ground
+        glBegin(GL_QUADS);
+        glColor3f(0.2, 0.2, 0.2);
+        glVertex2i(0, 220);
+        glVertex2i(Global::getInstance().xres, 220);
+        glColor3f(0.4, 0.4, 0.4);
+        glVertex2i(Global::getInstance().xres,   0);
+        glVertex2i(0, 0);
+        glEnd();
 
-            //
-            //show boxes as background
-            for (int i=0; i<20; i++) {
-            glPushMatrix();
-            glTranslated(Global::getInstance().box[i][0],Global::getInstance().box[i][1],Global::getInstance().box[i][2]);
-            glColor3f(0.2, 0.2, 0.2);
-            glBegin(GL_QUADS);
-            glVertex2i( 0,  0);
-            glVertex2i( 0, 30);
-            glVertex2i(20, 30);
-            glVertex2i(20,  0);
-            glEnd();
-            glPopMatrix();
-            }
-            */
-            //
-            //========================
-            //Render the tile system
-            //========================
-            /*
-               int tx = lev.tilesize[0];
-               int ty = lev.tilesize[1];
-               Flt dd = lev.ftsz[0];
-               Flt offy = lev.tile_base;
-               int ncols_to_render = Global::getInstance().xres / lev.tilesize[0] + 2;
-               int col = (int)(Global::getInstance().camera[0] / dd);
-               col = col % lev.ncols;
-            //Partial tile offset must be determined here.
-            //The leftmost tile might be partially off-screen.
-            //cdd: camera position in terms of tiles.
-            Flt cdd = Global::getInstance().camera[0] / dd;
-            //flo: just the integer portion
-            Flt flo = floor(cdd);
-            //dec: just the decimal portion
-            Flt dec = (cdd - flo);
-            //offx: the offset to the left of the screen to start drawing tiles
-            Flt offx = -dec * dd;
-            //Log("Global::getInstance().camera[0]: %lf   offx: %lf\n",Global::getInstance().camera[0],offx);
-            for (int j=0; j<ncols_to_render; j++) {
-            int row = lev.nrows-1;
-            for (int i=0; i<lev.nrows; i++) {
-            if (lev.arr[row][col] == 'w') {
-            glColor3f(0.8, 0.8, 0.6);
-            glPushMatrix();
-            //put tile in its place
-            glTranslated((Flt)j*dd+offx, (Flt)i*lev.ftsz[1]+offy, 0);
-            glBegin(GL_QUADS);
-            glVertex2i(0, 0);
-            glVertex2i(0, ty);
-            glVertex2i(tx, ty);
-            glVertex2i(tx, 0);
-            glEnd();
-            glPopMatrix();
-            }
-            if (lev.arr[row][col] == 'b') {
-            glColor3f(0.9, 0.2, 0.2);
-            glPushMatrix();
-            glTranslated((Flt)j*dd+offx, (Flt)i*lev.ftsz[1]+offy, 0);
-            glBegin(GL_QUADS);
-            glVertex2i(0, 0);
-            glVertex2i(0, ty);
-            glVertex2i(tx, ty);
-            glVertex2i(tx, 0);
-            glEnd();
-            glPopMatrix();
-            }
-            --row;
-            }
-            col = (col+1) % lev.ncols;
-            }
-            glColor3f(1.0, 1.0, 0.1);
-            glPushMatrix();
-            //put ball in its place
-            glTranslated(Global::getInstance().ball_pos[0], lev.tile_base+Global::getInstance().ball_pos[1], 0);
-            glBegin(GL_QUADS);
-            glVertex2i(-10, 0);
-            glVertex2i(-10, 20);
-            glVertex2i( 10, 20);
-            glVertex2i( 10, 0);
-            glEnd();
-            glPopMatrix();
-            */
-            //--------------------------------------END TILE SYSTEM
-            //
+        //
+        //show boxes as background
+        for (int i=0; i<20; i++) {
+        glPushMatrix();
+        glTranslated(Global::getInstance().box[i][0],Global::getInstance().box[i][1],Global::getInstance().box[i][2]);
+        glColor3f(0.2, 0.2, 0.2);
+        glBegin(GL_QUADS);
+        glVertex2i( 0,  0);
+        glVertex2i( 0, 30);
+        glVertex2i(20, 30);
+        glVertex2i(20,  0);
+        glEnd();
+        PopMatrix();
+        }
+        */
+        //
+        //========================
+        //Render the tile system
+        //========================
+        /*
+           int tx = lev.tilesize[0];
+           int ty = lev.tilesize[1];
+           Flt dd = lev.ftsz[0];
+           Flt offy = lev.tile_base;
+           int ncols_to_render = Global::getInstance().xres / lev.tilesize[0] + 2;
+           int col = (int)(Global::getInstance().camera[0] / dd);
+           col = col % lev.ncols;
+        //Partial tile offset must be determined here.
+        //The leftmost tile might be partially off-screen.
+        //cdd: camera position in terms of tiles.
+        Flt cdd = Global::getInstance().camera[0] / dd;
+        //flo: just the integer portion
+        Flt flo = floor(cdd);
+        //dec: just the decimal portion
+        Flt dec = (cdd - flo);
+        //offx: the offset to the left of the screen to start drawing tiles
+        Flt offx = -dec * dd;
+        //Log("Global::getInstance().camera[0]: %lf   offx: %lf\n",Global::getInstance().camera[0],offx);
+        for (int j=0; j<ncols_to_render; j++) {
+        int row = lev.nrows-1;
+        for (int i=0; i<lev.nrows; i++) {
+        if (lev.arr[row][col] == 'w') {
+        glColor3f(0.8, 0.8, 0.6);
+        glPushMatrix();
+        //put tile in its place
+        glTranslated((Flt)j*dd+offx, (Flt)i*lev.ftsz[1]+offy, 0);
+        glBegin(GL_QUADS);
+        glVertex2i(0, 0);
+        glVertex2i(0, ty);
+        glVertex2i(tx, ty);
+        glVertex2i(tx, 0);
+        glEnd();
+        glPopMatrix();
+        }
+        if (lev.arr[row][col] == 'b') {
+        glColor3f(0.9, 0.2, 0.2);
+        glPushMatrix();
+        glTranslated((Flt)j*dd+offx, (Flt)i*lev.ftsz[1]+offy, 0);
+        glBegin(GL_QUADS);
+        glVertex2i(0, 0);
+        glVertex2i(0, ty);
+        glVertex2i(tx, ty);
+        glVertex2i(tx, 0);
+        glEnd();
+        glPopMatrix();
+        }
+        --row;
+        }
+        col = (col+1) % lev.ncols;
+        }
+        glColor3f(1.0, 1.0, 0.1);
+        glPushMatrix();
+        //put ball in its place
+        glTranslated(Global::getInstance().ball_pos[0], lev.tile_base+Global::getInstance().ball_pos[1], 0);
+        glBegin(GL_QUADS);
+        glVertex2i(-10, 0);
+        glVertex2i(-10, 20);
+        glVertex2i( 10, 20);
+        glVertex2i( 10, 0);
+        glEnd();
+        glPopMatrix();
+        */
+        //--------------------------------------END TILE SYSTEM
+        //
 
 
 
-            //#define SHOW_FAKE_SHADOW
+        //#define SHOW_FAKE_SHADOW
 #ifdef SHOW_FAKE_SHADOW
-            glColor3f(0.25, 0.25, 0.25);
-            glBegin(GL_QUADS);
-            glVertex2i(cx-60, 150);
-            glVertex2i(cx+50, 150);
-            glVertex2i(cx+50, 130);
-            glVertex2i(cx-60, 130);
-            glEnd();
+        glColor3f(0.25, 0.25, 0.25);
+        glBegin(GL_QUADS);
+        glVertex2i(cx-60, 150);
+        glVertex2i(cx+50, 150);
+        glVertex2i(cx+50, 130);
+        glVertex2i(cx-60, 130);
+        glEnd();
 #endif
-            //
-            // Commenting this out will make the man into a white box.
-            float h = 50.0;
-            float w = h * 0.5;
+        //
+        // Commenting this out will make the man into a white box.
+        float h = 50.0;
+        float w = h * 0.5;
+        glPushMatrix();
+        glColor3f(1.0, 1.0, 1.0);
+        glBindTexture(GL_TEXTURE_2D, Global::getInstance().walkTexture);
+        //
+        glEnable(GL_ALPHA_TEST);
+        glAlphaFunc(GL_GREATER, 0.0f);
+        glColor4ub(255,255,255,255);
+        int ix = Global::getInstance().walkFrame % 8;
+        int iy = 0;
+        if (Global::getInstance().walkFrame >= 8)
+            iy = 1;
+        float fx = (float)ix / 8.0;
+        float fy = (float)iy / 2.0;
+        glBegin(GL_QUADS);
+        if (Global::getInstance().keys[XK_Left]) {
+            glTexCoord2f(fx+.125, fy+.5);
+            glVertex2i(cx-w, cy-h);
+            glTexCoord2f(fx+.125, fy);
+            glVertex2i(cx-w, cy+h);
+            glTexCoord2f(fx, fy);
+            glVertex2i(cx+w, cy+h);
+            glTexCoord2f(fx, fy+.5);
+            glVertex2i(cx+w, cy-h);
+        } else {
+            glTexCoord2f(fx, fy+.5);
+            glVertex2i(cx-w, cy-h);
+            glTexCoord2f(fx, fy);
+            glVertex2i(cx-w, cy+h);
+            glTexCoord2f(fx+.125, fy);
+            glVertex2i(cx+w, cy+h);
+            glTexCoord2f(fx+.125, fy+.5);
+            glVertex2i(cx+w, cy-h);
+        }
+        glEnd();
+        glPopMatrix();
+        /*float wid = 120;
+          glPushMatrix();
+          glBindTexture(GL_TEXTURE_2D, Global::getInstance().helicopterTexture);
+          glBegin(GL_QUADS);
+          if (helicopter.vel[0] > 0.0) {
+          glTexCoord2f(1.0f, 1.0f);
+          glVertex2i(-wid,-wid);
+          glTexCoord2f(1.0f, 0.0f);
+          glVertex2i(-wid, wid);
+          glTexCoord2f(0.0f, 0.0f);
+          glVertex2i( wid, wid);
+          glTexCoord2f(0.0f, 1.0f);
+          glVertex2i( wid,-wid);
+          } else {
+          glTexCoord2f(0.0f, 1.0f);
+          glVertex2i(-wid,-wid);
+          glTexCoord2f(0.0f, 0.0f);
+          glVertex2i(-wid, wid);
+          glTexCoord2f(1.0f, 0.0f);
+          glVertex2i( wid, wid);
+          glTexCoord2f(1.0f, 1.0f);
+          glVertex2i( wid,-wid);
+          }
+          glEnd();
+          glPopMatrix();
+          */
+        glBindTexture(GL_TEXTURE_2D, 0);
+        glDisable(GL_ALPHA_TEST);
+        //
+        //
+        if (Global::getInstance().exp.onoff) {
+            h = 80.0;
+            w = 80.0;
             glPushMatrix();
             glColor3f(1.0, 1.0, 1.0);
-            glBindTexture(GL_TEXTURE_2D, Global::getInstance().walkTexture);
-            //
+            glBindTexture(GL_TEXTURE_2D, Global::getInstance().exp.tex);
             glEnable(GL_ALPHA_TEST);
             glAlphaFunc(GL_GREATER, 0.0f);
             glColor4ub(255,255,255,255);
-            int ix = Global::getInstance().walkFrame % 8;
-            int iy = 0;
-            if (Global::getInstance().walkFrame >= 8)
-                iy = 1;
-            float fx = (float)ix / 8.0;
-            float fy = (float)iy / 2.0;
+            glTranslated(Global::getInstance().exp.pos[0], Global::getInstance().exp.pos[1], Global::getInstance().exp.pos[2]);
+            int ix = Global::getInstance().exp.frame % 5;
+            int iy = Global::getInstance().exp.frame / 5;
+            float tx = (float)ix / 5.0;
+            float ty = (float)iy / 5.0;
             glBegin(GL_QUADS);
             if (Global::getInstance().keys[XK_Left]) {
+                //printf("I'm walking to the left");
                 glTexCoord2f(fx+.125, fy+.5);
                 glVertex2i(cx-w, cy-h);
                 glTexCoord2f(fx+.125, fy);
@@ -1564,32 +1634,38 @@ void render(void)
             }
             glEnd();
             glPopMatrix();
-            /*float wid = 120;
-              glPushMatrix();
-              glBindTexture(GL_TEXTURE_2D, Global::getInstance().helicopterTexture);
-              glBegin(GL_QUADS);
-              if (helicopter.vel[0] > 0.0) {
-              glTexCoord2f(1.0f, 1.0f);
-              glVertex2i(-wid,-wid);
-              glTexCoord2f(1.0f, 0.0f);
-              glVertex2i(-wid, wid);
-              glTexCoord2f(0.0f, 0.0f);
-              glVertex2i( wid, wid);
-              glTexCoord2f(0.0f, 1.0f);
-              glVertex2i( wid,-wid);
-              } else {
-              glTexCoord2f(0.0f, 1.0f);
-              glVertex2i(-wid,-wid);
-              glTexCoord2f(0.0f, 0.0f);
-              glVertex2i(-wid, wid);
-              glTexCoord2f(1.0f, 0.0f);
-              glVertex2i( wid, wid);
-              glTexCoord2f(1.0f, 1.0f);
-              glVertex2i( wid,-wid);
-              }
-              glEnd();
-              glPopMatrix();
-              */
+            glBindTexture(GL_TEXTURE_2D, 0);
+            glDisable(GL_ALPHA_TEST);
+        }
+        //
+        //
+        if (Global::getInstance().exp44.onoff) {
+            h = 80.0;
+            w = 80.0;
+            glPushMatrix();
+            glColor3f(1.0, 1.0, 1.0);
+            glBindTexture(GL_TEXTURE_2D, Global::getInstance().exp44.tex);
+            glEnable(GL_ALPHA_TEST);
+            glAlphaFunc(GL_GREATER, 0.0f);
+            glColor4ub(255,255,255,255);
+            glTranslated(Global::getInstance().exp44.pos[0], Global::getInstance().exp44.pos[1], Global::getInstance().exp44.pos[2]);
+            int ix = Global::getInstance().exp44.frame % 4;
+            int iy = Global::getInstance().exp44.frame / 4;
+            float tx = (float)ix / 4.0;
+            float ty = (float)iy / 4.0;
+            glBegin(GL_QUADS);
+
+            glTexCoord2f(tx, ty+0.25);
+            glVertex2i(cx-w, cy-h);
+            glTexCoord2f(tx, ty);
+            glVertex2i(cx-w, cy+h);
+            glTexCoord2f(tx+0.25, ty);
+            glVertex2i(cx+w, cy+h);
+            glTexCoord2f(tx+0.25, ty+0.25);
+            glVertex2i(cx+w, cy-h);
+
+            glEnd();
+            glPopMatrix();
             glBindTexture(GL_TEXTURE_2D, 0);
             glDisable(GL_ALPHA_TEST);
             //
@@ -1609,26 +1685,14 @@ void render(void)
                 float tx = (float)ix / 5.0;
                 float ty = (float)iy / 5.0;
                 glBegin(GL_QUADS);
-                if (Global::getInstance().keys[XK_Left]) {
-                    //printf("I'm walking to the left");
-                    glTexCoord2f(fx+.125, fy+.5);
-                    glVertex2i(cx-w, cy-h);
-                    glTexCoord2f(fx+.125, fy);
-                    glVertex2i(cx-w, cy+h);
-                    glTexCoord2f(fx, fy);
-                    glVertex2i(cx+w, cy+h);
-                    glTexCoord2f(fx, fy+.5);
-                    glVertex2i(cx+w, cy-h);
-                } else {
-                    glTexCoord2f(fx, fy+.5);
-                    glVertex2i(cx-w, cy-h);
-                    glTexCoord2f(fx, fy);
-                    glVertex2i(cx-w, cy+h);
-                    glTexCoord2f(fx+.125, fy);
-                    glVertex2i(cx+w, cy+h);
-                    glTexCoord2f(fx+.125, fy+.5);
-                    glVertex2i(cx+w, cy-h);
-                }
+                glTexCoord2f(tx, ty+0.2);
+                glVertex2i(cx-w, cy-h);
+                glTexCoord2f(tx, ty);
+                glVertex2i(cx-w, cy+h);
+                glTexCoord2f(tx+0.2, ty);
+                glVertex2i(cx+w, cy+h);
+                glTexCoord2f(tx+0.2, ty+0.2);
+                glVertex2i(cx+w, cy-h);
                 glEnd();
                 glPopMatrix();
                 glBindTexture(GL_TEXTURE_2D, 0);
@@ -1665,106 +1729,21 @@ void render(void)
                 glPopMatrix();
                 glBindTexture(GL_TEXTURE_2D, 0);
                 glDisable(GL_ALPHA_TEST);
-                //
-                //
-                if (Global::getInstance().exp.onoff) {
-                    h = 80.0;
-                    w = 80.0;
-                    glPushMatrix();
-                    glColor3f(1.0, 1.0, 1.0);
-                    glBindTexture(GL_TEXTURE_2D, Global::getInstance().exp.tex);
-                    glEnable(GL_ALPHA_TEST);
-                    glAlphaFunc(GL_GREATER, 0.0f);
-                    glColor4ub(255,255,255,255);
-                    glTranslated(Global::getInstance().exp.pos[0], Global::getInstance().exp.pos[1], Global::getInstance().exp.pos[2]);
-                    int ix = Global::getInstance().exp.frame % 5;
-                    int iy = Global::getInstance().exp.frame / 5;
-                    float tx = (float)ix / 5.0;
-                    float ty = (float)iy / 5.0;
-                    glBegin(GL_QUADS);
-                    glTexCoord2f(tx, ty+0.2);
-                    glVertex2i(cx-w, cy-h);
-                    glTexCoord2f(tx, ty);
-                    glVertex2i(cx-w, cy+h);
-                    glTexCoord2f(tx+0.2, ty);
-                    glVertex2i(cx+w, cy+h);
-                    glTexCoord2f(tx+0.2, ty+0.2);
-                    glVertex2i(cx+w, cy-h);
-                    glEnd();
-                    glPopMatrix();
-                    glBindTexture(GL_TEXTURE_2D, 0);
-                    glDisable(GL_ALPHA_TEST);
-                }
-                //
-                //
-                if (Global::getInstance().exp44.onoff) {
-                    h = 80.0;
-                    w = 80.0;
-                    glPushMatrix();
-                    glColor3f(1.0, 1.0, 1.0);
-                    glBindTexture(GL_TEXTURE_2D, Global::getInstance().exp44.tex);
-                    glEnable(GL_ALPHA_TEST);
-                    glAlphaFunc(GL_GREATER, 0.0f);
-                    glColor4ub(255,255,255,255);
-                    glTranslated(Global::getInstance().exp44.pos[0], Global::getInstance().exp44.pos[1], Global::getInstance().exp44.pos[2]);
-                    int ix = Global::getInstance().exp44.frame % 4;
-                    int iy = Global::getInstance().exp44.frame / 4;
-                    float tx = (float)ix / 4.0;
-                    float ty = (float)iy / 4.0;
-                    glBegin(GL_QUADS);
-
-                    glTexCoord2f(tx, ty+0.25);
-                    glVertex2i(cx-w, cy-h);
-                    glTexCoord2f(tx, ty);
-                    glVertex2i(cx-w, cy+h);
-                    glTexCoord2f(tx+0.25, ty);
-                    glVertex2i(cx+w, cy+h);
-                    glTexCoord2f(tx+0.25, ty+0.25);
-                    glVertex2i(cx+w, cy-h);
-
-                    glEnd();
-                    glPopMatrix();
-                    glBindTexture(GL_TEXTURE_2D, 0);
-                    glDisable(GL_ALPHA_TEST);
-                }
-
-                // //will add to menu
-                // unsigned int c = 0x00ffff44;
-                // r.bot = Global::getInstance().yres - 20;
-                // r.left = 10;
-                // r.center = 0;
-                // ggprint8b(&r, 16, c, "W   Walk cycle");
-                // ggprint8b(&r, 16, c, "E   Explosion");
-                // ggprint8b(&r, 16, c, "+   faster");
-                // ggprint8b(&r, 16, c, "-   slower");
-                // ggprint8b(&r, 16, c, "right arrow -> walk right");
-                // ggprint8b(&r, 16, c, "left arrow  <- walk left");
-                // ggprint8b(&r, 16, c, "frame: %i", Global::getInstance().walkFrame);
-                // ggprint8b(&r, 16, c, "credits   c");
-                if (Global::getInstance().movie) {
-                    screenCapture();
-                }
-                glPushMatrix();
-                showHelicopter(helicopter.pos[0], helicopter.pos[1], helicopter.vel[0]);
-                glPopMatrix();
-                glPushMatrix();
-                showBomb(bomb.pos[0], bomb.pos[1]-100, bomb.vel[0]);;
-                glPopMatrix();
-                //draw bullets
-                drawBullets(&bullets);
-
-                // Fernando: Adding a platform entity to the game.
-                glPushMatrix();
-                // This breaks the wall because I was translating it in the walk2
-                // file and in drawPlatform()
-                // ---> glTranslated(plat1.pos[0],plat1.pos[1],0);	
-                Global::getInstance().plat1.drawPlatform( 
-                        Global::getInstance().plat1.getXpos(),
-                        Global::getInstance().plat1.getYpos(), 
-                        Global::getInstance().crateTexture);
-                glPopMatrix();
             }
 
+            // //will add to menu
+            // unsigned int c = 0x00ffff44;
+            // r.bot = Global::getInstance().yres - 20;
+            // r.left = 10;
+            // r.center = 0;
+            // ggprint8b(&r, 16, c, "W   Walk cycle");
+            // ggprint8b(&r, 16, c, "E   Explosion");
+            // ggprint8b(&r, 16, c, "+   faster");
+            // ggprint8b(&r, 16, c, "-   slower");
+            // ggprint8b(&r, 16, c, "right arrow -> walk right");
+            // ggprint8b(&r, 16, c, "left arrow  <- walk left");
+            // ggprint8b(&r, 16, c, "frame: %i", Global::getInstance().walkFrame);
+            // ggprint8b(&r, 16, c, "credits   c");
             if (Global::getInstance().movie) {
                 screenCapture();
             }
@@ -1781,37 +1760,61 @@ void render(void)
             glPushMatrix();
             // This breaks the wall because I was translating it in the walk2
             // file and in drawPlatform()
-            //glTranslated(plat1.pos[0],plat1.pos[1],0);	
-            Global::getInstance().plat1.drawPlatform(
+            // ---> glTranslated(plat1.pos[0],plat1.pos[1],0);  
+            Global::getInstance().plat1.drawPlatform( 
                     Global::getInstance().plat1.getXpos(),
                     Global::getInstance().plat1.getYpos(), 
                     Global::getInstance().crateTexture);
             glPopMatrix();
         }
-        // Render the helicopter
-        // glPushMatrix();
-        // showHelicopter(helicopter.pos[0], helicopter.pos[1], helicopter.vel[0]);
-        // showBomb(bomb.pos[0], bomb.pos[1], bomb.vel[0]);
-        // printf("bomb.pos[0] %f, bomb.pos[1]: %f, bomb.vel[0]: %f\n", bomb.pos[0], bomb.pos[1], bomb.vel[0]);
-        // glPopMatrix();
 
-        // If the credits are shown, we should hide the helicopter by moving it off screen
-        if (Global::getInstance().displayHelicopter == 0) {
-            helicopter.pos[0] = -200;
+        if (Global::getInstance().movie) {
+            screenCapture();
         }
-        if (!Global::getInstance().showLeaderboard &&
-                !Global::getInstance().showCredits &&
-                !Global::getInstance().showStartMenu &&
-                Global::getInstance().health > 0) {
-            print_time(Global::getInstance().yres, 
-                    Global::getInstance().numbersTexture);
-            print_score(Global::getInstance().playerScore,
-                    Global::getInstance().xres,
-                    Global::getInstance().yres, 
-                    Global::getInstance().numbersTexture);
-            print_health(Global::getInstance().health,
-                    Global::getInstance().xres,
-                    Global::getInstance().yres, 
-                    Global::getInstance().numbersTexture);
-        }
+        glPushMatrix();
+        showHelicopter(helicopter.pos[0], helicopter.pos[1], helicopter.vel[0]);
+        glPopMatrix();
+        glPushMatrix();
+        showBomb(bomb.pos[0], bomb.pos[1]-100, bomb.vel[0]);;
+        glPopMatrix();
+        //draw bullets
+        drawBullets(&bullets);
+
+        // Fernando: Adding a platform entity to the game.
+        glPushMatrix();
+        // This breaks the wall because I was translating it in the walk2
+        // file and in drawPlatform()
+        //glTranslated(plat1.pos[0],plat1.pos[1],0);    
+        Global::getInstance().plat1.drawPlatform(
+                Global::getInstance().plat1.getXpos(),
+                Global::getInstance().plat1.getYpos(), 
+                Global::getInstance().crateTexture);
+        glPopMatrix();
     }
+    // Render the helicopter
+    // glPushMatrix();
+    // showHelicopter(helicopter.pos[0], helicopter.pos[1], helicopter.vel[0]);
+    // showBomb(bomb.pos[0], bomb.pos[1], bomb.vel[0]);
+    // printf("bomb.pos[0] %f, bomb.pos[1]: %f, bomb.vel[0]: %f\n", bomb.pos[0], bomb.pos[1], bomb.vel[0]);
+    // glPopMatrix();
+
+    // If the credits are shown, we should hide the helicopter by moving it off screen
+    if (Global::getInstance().displayHelicopter == 0) {
+        helicopter.pos[0] = -200;
+    }
+    if (!Global::getInstance().showLeaderboard &&
+            !Global::getInstance().showCredits &&
+            !Global::getInstance().showStartMenu &&
+            Global::getInstance().health > 0) {
+        print_time(Global::getInstance().yres, 
+                Global::getInstance().numbersTexture);
+        print_score(Global::getInstance().playerScore,
+                Global::getInstance().xres,
+                Global::getInstance().yres, 
+                Global::getInstance().numbersTexture);
+        print_health(Global::getInstance().health,
+                Global::getInstance().xres,
+                Global::getInstance().yres, 
+                Global::getInstance().numbersTexture);
+    }
+}
