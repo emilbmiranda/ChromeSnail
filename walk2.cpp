@@ -179,6 +179,7 @@ class Global {
         GLuint numbersTexture[NUMBERS_ARRAY];
         GLuint lettersTexture[LETTERS_ARRAY];
         GLuint timeTexture;
+		GLuint gameOverTexture;
         // Fernando: Need to create a GLuint object for the crate texture.
         GLuint crateTexture;
         //Platform plat1(540,140);
@@ -492,6 +493,7 @@ Image numbers_image[NUMBERS_ARRAY] = {"./images/0.gif", "./images/1.gif",
     "./images/8.gif", "./images/9.gif",
     "./images/colon.gif"};
 Image time_image = "./images/Time.gif";
+Image game_over_image = "./images/GameOver.gif";
 Image *backImage = &img[8];
 void show_credits(Rect x, int y);
 
@@ -548,13 +550,13 @@ void initOpengl(void)
 {
     //OpenGL initialization
     glViewport(0, 0, 
-            Global::getInstance().xres, Global::getInstance().yres);
+		Global::getInstance().xres, Global::getInstance().yres);
     //Initialize matrices
     glMatrixMode(GL_PROJECTION); glLoadIdentity();
     glMatrixMode(GL_MODELVIEW); glLoadIdentity();
     //This sets 2D mode (no perspective)
     glOrtho(0, Global::getInstance().xres, 
-            0, Global::getInstance().yres, -1, 1);
+		0, Global::getInstance().yres, -1, 1);
     //
     glDisable(GL_LIGHTING);
     glDisable(GL_DEPTH_TEST);
@@ -587,7 +589,7 @@ void initOpengl(void)
     //must build a new set of data...
     unsigned char *walkData = buildAlphaData(&img[0]);  
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0,
-            GL_RGBA, GL_UNSIGNED_BYTE, walkData);
+		GL_RGBA, GL_UNSIGNED_BYTE, walkData);
     free(walkData);
     //-------------------------------------------------------------------------
     //create opengl texture elements
@@ -602,7 +604,7 @@ void initOpengl(void)
     //must build a new set of data...
     unsigned char *xData = buildAlphaData(&img[1]); 
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0,
-            GL_RGBA, GL_UNSIGNED_BYTE, xData);
+		GL_RGBA, GL_UNSIGNED_BYTE, xData);
     free(xData);
     //-------------------------------------------------------------------------
     w = img[2].width;
@@ -617,7 +619,7 @@ void initOpengl(void)
     //must build a new set of data...
     xData = buildAlphaData(&img[2]);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0,
-            GL_RGBA, GL_UNSIGNED_BYTE, xData);
+		GL_RGBA, GL_UNSIGNED_BYTE, xData);
     free(xData);
 
     // Created picture image array
@@ -626,13 +628,13 @@ void initOpengl(void)
         w = img[i].width;
         h = img[i].height;
         glBindTexture(GL_TEXTURE_2D, 
-                Global::getInstance().creditPicsTexture[i - 3]);
+			Global::getInstance().creditPicsTexture[i - 3]);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 
         xData = buildAlphaData(&img[i]);
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0,
-                GL_RGBA, GL_UNSIGNED_BYTE, xData);
+			GL_RGBA, GL_UNSIGNED_BYTE, xData);
         free(xData);
     }
 
@@ -649,11 +651,11 @@ void initOpengl(void)
     glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
     glTexImage2D(GL_TEXTURE_2D, 0, 3, w_helicopter, h_helicopter, 0,
-            GL_RGB, GL_UNSIGNED_BYTE, helicopter_image.data);
+		GL_RGB, GL_UNSIGNED_BYTE, helicopter_image.data);
     //-------------------------------------------------------------------------
     unsigned char *heliData = buildAlphaData(&helicopter_image);    
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w_helicopter, h_helicopter, 0,
-            GL_RGBA, GL_UNSIGNED_BYTE, heliData);
+		GL_RGBA, GL_UNSIGNED_BYTE, heliData);
     free(heliData);
     // bomb texture
     glGenTextures(1, &Global::getInstance().bombTexture);
@@ -668,11 +670,11 @@ void initOpengl(void)
     glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
     glTexImage2D(GL_TEXTURE_2D, 0, 3, w_bomb, h_bomb, 0,
-            GL_RGB, GL_UNSIGNED_BYTE, bomb_image.data);
+		GL_RGB, GL_UNSIGNED_BYTE, bomb_image.data);
     //-------------------------------------------------------------------------
     unsigned char *bombData = buildAlphaData(&bomb_image);  
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w_bomb, h_bomb, 0,
-            GL_RGBA, GL_UNSIGNED_BYTE, bombData);
+		GL_RGBA, GL_UNSIGNED_BYTE, bombData);
     free(bombData);
 
     // Background initialization 
@@ -683,7 +685,7 @@ void initOpengl(void)
     glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
     glTexImage2D(GL_TEXTURE_2D, 0, 3, bw, bh, 0,
-            GL_RGB, GL_UNSIGNED_BYTE, backImage->data);
+		GL_RGB, GL_UNSIGNED_BYTE, backImage->data);
     Global::getInstance().xc[0] = 0.0;
     Global::getInstance().xc[1] = 0.25;
     Global::getInstance().yc[0] = 0.0;
@@ -703,11 +705,11 @@ void initOpengl(void)
     glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
     glTexImage2D(GL_TEXTURE_2D, 0, 3, crate_w, crate_h, 0, GL_RGB,
-            GL_UNSIGNED_BYTE, crate_image.data);
+		GL_UNSIGNED_BYTE, crate_image.data);
 
     unsigned char *crateData = buildAlphaData(&crate_image);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, crate_w, crate_h, 0, GL_RGBA,
-            GL_UNSIGNED_BYTE, crateData);
+		GL_UNSIGNED_BYTE, crateData);
     free(crateData);
 
     //-Crate texture-END------------------------------------------------------
@@ -723,7 +725,7 @@ void initOpengl(void)
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
     unsigned char *startScreenData = buildAlphaData(&start_menu_image); 
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, xres, yres, 0,
-            GL_RGBA, GL_UNSIGNED_BYTE, startScreenData);
+		GL_RGBA, GL_UNSIGNED_BYTE, startScreenData);
     free(startScreenData);
 
     // Logo texture and binding
@@ -738,7 +740,7 @@ void initOpengl(void)
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
     unsigned char *logoData = buildAlphaData(&logo_image);  
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, lxres, lyres, 0,
-            GL_RGBA, GL_UNSIGNED_BYTE, logoData);
+		GL_RGBA, GL_UNSIGNED_BYTE, logoData);
     free(logoData);
 
     //leaderboard
@@ -753,7 +755,7 @@ void initOpengl(void)
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
     unsigned char *leaderboardData = buildAlphaData(&leaderboard_image);    
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, lexres, leyres, 0,
-            GL_RGBA, GL_UNSIGNED_BYTE, leaderboardData);
+		GL_RGBA, GL_UNSIGNED_BYTE, leaderboardData);
     free(leaderboardData);
 
     //leaderboard title
@@ -768,7 +770,7 @@ void initOpengl(void)
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
     unsigned char *leaderboardTitleData = buildAlphaData(&leaderboard_title_image); 
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, ltxres, ltyres, 0,
-            GL_RGBA, GL_UNSIGNED_BYTE, leaderboardTitleData);
+		GL_RGBA, GL_UNSIGNED_BYTE, leaderboardTitleData);
     free(leaderboardTitleData);
 
     //number texture
@@ -784,7 +786,7 @@ void initOpengl(void)
         glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
         unsigned char *numData = buildAlphaData(&numbers_image[i]); 
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, numxres, numyres, 0,
-                GL_RGBA, GL_UNSIGNED_BYTE, numData);
+			GL_RGBA, GL_UNSIGNED_BYTE, numData);
         free(numData);
     }
 
@@ -801,7 +803,7 @@ void initOpengl(void)
         glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
         unsigned char *letData = buildAlphaData(&letters_image[i]); 
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, letxres, letyres, 0,
-                GL_RGBA, GL_UNSIGNED_BYTE, letData);
+			GL_RGBA, GL_UNSIGNED_BYTE, letData);
         free(letData);
     }
 
@@ -817,8 +819,23 @@ void initOpengl(void)
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
     unsigned char *timeData = buildAlphaData(&time_image);  
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, txres, tyres, 0,
-            GL_RGBA, GL_UNSIGNED_BYTE, timeData);
+		GL_RGBA, GL_UNSIGNED_BYTE, timeData);
     free(timeData);
+
+	//game over background
+    glGenTextures(1, &Global::getInstance().gameOverTexture);   
+    int goxres = game_over_image.width;
+    int goyres = game_over_image.height;
+    glBindTexture(GL_TEXTURE_2D, Global::getInstance().gameOverTexture);
+    glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    unsigned char *gameOverData = buildAlphaData(&game_over_image);  
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, goxres, goyres, 0,
+		GL_RGBA, GL_UNSIGNED_BYTE, gameOverData);
+    free(gameOverData);
 }
 
 void init()
@@ -871,11 +888,11 @@ void screenCapture()
         }
     }
     unsigned char *data = (unsigned char *)malloc(Global::getInstance().xres 
-            * Global::getInstance().yres * 3);
-    glReadPixels(0, 0, 
-            Global::getInstance().xres, 
-            Global::getInstance().yres, 
-            GL_RGB, GL_UNSIGNED_BYTE, data);
+		* Global::getInstance().yres * 3);
+    	glReadPixels(0, 0, 
+		Global::getInstance().xres, 
+		Global::getInstance().yres, 
+		GL_RGB, GL_UNSIGNED_BYTE, data);
     char ts[32];
     sprintf(ts, "./vid/pic%03i.ppm", fnum);
     FILE *fpo = fopen(ts,"w");  
@@ -910,11 +927,9 @@ void moveHelicopter()
 {
     if ((helicopter.pos[0] < -140.0 && helicopter.vel[0] < 0.0) ||
             (helicopter.pos[0] >= (float)Global::getInstance().xres+140.0 &&
-             helicopter.vel[0] > 0.0))
-    {
+             helicopter.vel[0] > 0.0)) {
         helicopter.vel[0] = -helicopter.vel[0];
     }
-
     helicopter.pos[0] += helicopter.vel[0];
 }
 
@@ -922,9 +937,8 @@ void moveBomb()
 {
     double seconds_since_start = difftime( time(0), start);
     if ((bomb.pos[0] < -140.0 && bomb.vel[0] < 0.0) ||
-            (bomb.pos[0] >= (float)Global::getInstance().xres+140.0 &&
-             bomb.vel[0] > 0.0))
-    {
+		(bomb.pos[0] >= (float)Global::getInstance().xres+140.0 &&
+		bomb.vel[0] > 0.0)) {
         bomb.vel[0] = -bomb.vel[0];
     }
 
@@ -943,10 +957,10 @@ void moveBomb()
     }
 
     if(( // Check the x position
-                abs(bomb.pos[0]-((float)Global::getInstance().xres)/2) < 50)
-            &&
-            //CHeck the y position
-            abs(bomb.pos[1]-((float)Global::getInstance().yres/2) < 150)
+		abs(bomb.pos[0]-((float)Global::getInstance().xres)/2) < 50)
+		&&
+		//CHeck the y position
+		abs(bomb.pos[1]-((float)Global::getInstance().yres/2) < 150)
       )
     {
         // printf("bomb in zone!\n");
@@ -954,7 +968,7 @@ void moveBomb()
         printf("Ouch! Health is now: %d\n", Global::getInstance().health);
         Global::getInstance().exp44.pos[0] = 0;
         Global::getInstance().exp44.pos[1] = 0;
-        Global::getInstance().exp44.pos[2] =   0.0;
+        Global::getInstance().exp44.pos[2] = 0.0;
         Global::getInstance().exp44.onoff ^= 1;
     }
 
@@ -1071,18 +1085,18 @@ int checkKeys(XEvent *e)
             break;
         case XK_p:
             if (!Global::getInstance().showCredits &&
-                    !Global::getInstance().showLeaderboard) {
+				!Global::getInstance().showLeaderboard) {
                 Global::getInstance().showStartMenu ^= 1;
             }
             if (!Global::getInstance().showStartMenu &&
-                    !Global::getInstance().showCredits &&
-                    !Global::getInstance().showLeaderboard) {
+				!Global::getInstance().showCredits &&
+				!Global::getInstance().showLeaderboard) {
                 start_time();
             }
             break;
         case XK_l:
             if (!Global::getInstance().showCredits &&
-                    Global::getInstance().showStartMenu) {
+				Global::getInstance().showStartMenu) {
                 Global::getInstance().showLeaderboard ^= 1;
             }
             break;
@@ -1162,7 +1176,7 @@ void physics(void)
                     * (0.05 / Global::getInstance().delay);
                 if (Global::getInstance().box[i][0] < -10.0)
                     Global::getInstance().box[i][0] += 
-                        Global::getInstance().xres + 10.0;
+						Global::getInstance().xres + 10.0;
                 Global::getInstance().camera[0] += 2.0/lev.tilesize[0] 
                     * (0.05 / Global::getInstance().delay);
                 if (Global::getInstance().camera[0] < 0.0)
@@ -1171,18 +1185,18 @@ void physics(void)
         }
         if (Global::getInstance().exp.onoff) {
             Global::getInstance().exp.pos[0] -= 2.0 
-                * (0.05 / Global::getInstance().delay);
+			* (0.05 / Global::getInstance().delay);
         }
         if (Global::getInstance().exp44.onoff) {
             Global::getInstance().exp44.pos[0] -= 2.0 
-                * (0.05 / Global::getInstance().delay);
+			* (0.05 / Global::getInstance().delay);
         }
     }
     if (Global::getInstance().exp.onoff) {
         //explosion is happening
         timers.recordTime(&timers.timeCurrent);
         double timeSpan = timers.timeDiff(&Global::getInstance().exp.time, 
-                &timers.timeCurrent);
+			&timers.timeCurrent);
         if (timeSpan > Global::getInstance().exp.delay) {
             //advance explosion frame
             ++Global::getInstance().exp.frame;
@@ -1271,13 +1285,13 @@ void physics(void)
     }
     // Update bullet position
     updateBulletPosition(&bullets, 
-            Global::getInstance().xres, 
-            Global::getInstance().yres);
+		Global::getInstance().xres, 
+		Global::getInstance().yres);
 
     // Check for collosion
     checkBulletHelicopterCollision(&bullets, 
-            helicopter.pos[0], 
-            helicopter.pos[1]);
+		helicopter.pos[0], 
+		helicopter.pos[1]);
 
     // Animate the helicopter, but only if the start menu isn't showing
     if (Global::getInstance().showStartMenu != 1) {
@@ -1294,11 +1308,11 @@ void physics(void)
 void showHelicopter(int x, int y, float velocity)
 {
     extern void renderHelicopter(int x, 
-            int y, 
-            GLuint helicopterID, 
-            float velocity);
+		int y, 
+		GLuint helicopterID, 
+		float velocity);
     renderHelicopter(x, y, 
-            Global::getInstance().helicopterTexture, velocity);
+		Global::getInstance().helicopterTexture, velocity);
 }
 
 void setHelicopterPos(float pos)
@@ -1316,11 +1330,11 @@ float lastKnownHelicopterPos()
 void showBomb(int x, int y, float velocity)
 {
     extern void renderBomb(int x, 
-            int y, 
-            GLuint bombID, 
-            float velocity);
+		int y, 
+		GLuint bombID, 
+		float velocity);
     renderBomb(x, y, 
-            Global::getInstance().bombTexture, velocity);
+		Global::getInstance().bombTexture, velocity);
 }
 
 void show_credits(Rect x, int y)
@@ -1332,33 +1346,33 @@ void show_credits(Rect x, int y)
     x.bot -= 100;
     masonP(x, y);
     showMasonPicture(500, x.bot, 
-            Global::getInstance().creditPicsTexture[MASON]);
+		Global::getInstance().creditPicsTexture[MASON]);
     // Fern
     extern void showFHText(Rect x);
     extern void showFernandoPicture(int x, int y, GLuint textid);
     x.bot -= 100; 
     showFHText(x);
     showFernandoPicture(500, x.bot, 
-            Global::getInstance().creditPicsTexture[FERNANDO]);
+		Global::getInstance().creditPicsTexture[FERNANDO]);
     // Hasun
     extern void printHasunName(Rect x, int y);
     extern void showHasunPicture(int x, int y, GLuint textid);
     x.bot -= 100;
     printHasunName(x, y);
     showHasunPicture(500, x.bot, 
-            Global::getInstance().creditPicsTexture[HASUN]);
+		Global::getInstance().creditPicsTexture[HASUN]);
     // Victor
     x.bot -= 100;
     showVictorText(x);
     showVictorPicture(500, x.bot, 
-            Global::getInstance().creditPicsTexture[VICTOR]);
+		Global::getInstance().creditPicsTexture[VICTOR]);
     // Emil
     extern void showEmil(Rect r, int y);
     extern void showEmilPicture(int x, int y, GLuint textid);
     x.bot -= 100;
     showEmil(x, y);
     showEmilPicture(500, x.bot, 
-            Global::getInstance().creditPicsTexture[EMIL]);
+		Global::getInstance().creditPicsTexture[EMIL]);
 }
 
 void render(void)
@@ -1382,16 +1396,16 @@ void render(void)
                 Global::getInstance().lettersTexture);
         if (Global::getInstance().showLeaderboard) {
             leaderboard(Global::getInstance().xres, 
-                    Global::getInstance().yres, 
-                    Global::getInstance().leaderboardTexture);
+				Global::getInstance().yres, 
+				Global::getInstance().leaderboardTexture);
             leaderboard_title(Global::getInstance().xres, 
-                    Global::getInstance().yres, 
-                    Global::getInstance().leaderboardTitleTexture);
+				Global::getInstance().yres, 
+				Global::getInstance().leaderboardTitleTexture);
             generate_leaderboard();
             print_leaderboard(Global::getInstance().xres, 
-                    Global::getInstance().yres,
-                    Global::getInstance().numbersTexture,
-                    Global::getInstance().lettersTexture);
+				Global::getInstance().yres,
+				Global::getInstance().numbersTexture,
+				Global::getInstance().lettersTexture);
         }
         if (Global::getInstance().showCredits) {
             r.bot = Global::getInstance().yres - 20;
@@ -1401,8 +1415,11 @@ void render(void)
         }
     } else if (Global::getInstance().health <= 0) {
         game_over(Global::getInstance().xres,
-                Global::getInstance().yres,
-                Global::getInstance().leaderboardTexture);
+			Global::getInstance().yres,
+			Global::getInstance().gameOverTexture);
+		get_initials(Global::getInstance().xres,
+			Global::getInstance().yres,
+			Global::getInstance().lettersTexture);
         //Global::getInstance().done = 1;
     } else {
         glClearColor(0.1,0.1,0.1,1.0);
@@ -1762,9 +1779,9 @@ void render(void)
             // file and in drawPlatform()
             // ---> glTranslated(plat1.pos[0],plat1.pos[1],0);  
             Global::getInstance().plat1.drawPlatform( 
-                    Global::getInstance().plat1.getXpos(),
-                    Global::getInstance().plat1.getYpos(), 
-                    Global::getInstance().crateTexture);
+				Global::getInstance().plat1.getXpos(),
+				Global::getInstance().plat1.getYpos(), 
+				Global::getInstance().crateTexture);
             glPopMatrix();
         }
 
@@ -1786,9 +1803,9 @@ void render(void)
         // file and in drawPlatform()
         //glTranslated(plat1.pos[0],plat1.pos[1],0);    
         Global::getInstance().plat1.drawPlatform(
-                Global::getInstance().plat1.getXpos(),
-                Global::getInstance().plat1.getYpos(), 
-                Global::getInstance().crateTexture);
+			Global::getInstance().plat1.getXpos(),
+			Global::getInstance().plat1.getYpos(), 
+			Global::getInstance().crateTexture);
         glPopMatrix();
     }
     // Render the helicopter
@@ -1807,14 +1824,14 @@ void render(void)
             !Global::getInstance().showStartMenu &&
             Global::getInstance().health > 0) {
         print_time(Global::getInstance().yres, 
-                Global::getInstance().numbersTexture);
+			Global::getInstance().numbersTexture);
         print_score(Global::getInstance().playerScore,
-                Global::getInstance().xres,
-                Global::getInstance().yres, 
-                Global::getInstance().numbersTexture);
+			Global::getInstance().xres,
+			Global::getInstance().yres, 
+			Global::getInstance().numbersTexture);
         print_health(Global::getInstance().health,
-                Global::getInstance().xres,
-                Global::getInstance().yres, 
-                Global::getInstance().numbersTexture);
+			Global::getInstance().xres,
+			Global::getInstance().yres, 
+			Global::getInstance().numbersTexture);
     }
 }

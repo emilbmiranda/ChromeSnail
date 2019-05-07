@@ -823,3 +823,60 @@ void game_over(int xres, int yres, GLuint leaderboardTexture)
 	glBindTexture(GL_TEXTURE_2D, 0);
 	glPopMatrix();
 }
+
+void get_initials(int xres, int yres, GLuint lettersTexture[]) 
+{
+	static int wid = 20;
+	float fx = (float)xres/2-200;
+	float fy = (float)yres-25;
+	const char *gameOver1stLine = "Thank you for playing.";
+	int size = strlen(gameOver1stLine);
+	for (int i = 0; i < size; i++) {
+		char letter = gameOver1stLine[i];
+		glPushMatrix();
+		glTranslatef(fx,fy,0);
+		render_letter(letter, lettersTexture);
+		glEnable(GL_ALPHA_TEST);
+		glAlphaFunc(GL_GREATER, 0.0f);
+		glColor4ub(255,255,255,255);
+		glBegin(GL_QUADS);
+		glTexCoord2f(0.0f, 1.0f);
+		glVertex2i(-wid,-wid);
+		glTexCoord2f(0.0f, 0.0f);
+		glVertex2i(-wid, wid);
+		glTexCoord2f(1.0f, 0.0f);
+		glVertex2i( wid, wid);
+		glTexCoord2f(1.0f, 1.0f);
+		glVertex2i( wid,-wid);
+		glEnd();
+		glBindTexture(GL_TEXTURE_2D, 0);
+		glPopMatrix();
+		fx += 20;
+	}
+	const char *gameOver2ndLine = "Please type your "
+		"initials";
+	size = strlen(gameOver2ndLine);
+	fx = (float)xres/2-240;
+	for (int i = 0; i < size; i++) {
+		char letter = gameOver2ndLine[i];
+		glPushMatrix();
+		glTranslatef(fx,fy-50,0);
+		render_letter(letter, lettersTexture);
+		glEnable(GL_ALPHA_TEST);
+		glAlphaFunc(GL_GREATER, 0.0f);
+		glColor4ub(255,255,255,255);
+		glBegin(GL_QUADS);
+		glTexCoord2f(0.0f, 1.0f);
+		glVertex2i(-wid,-wid);
+		glTexCoord2f(0.0f, 0.0f);
+		glVertex2i(-wid, wid);
+		glTexCoord2f(1.0f, 0.0f);
+		glVertex2i( wid, wid);
+		glTexCoord2f(1.0f, 1.0f);
+		glVertex2i( wid,-wid);
+		glEnd();
+		glBindTexture(GL_TEXTURE_2D, 0);
+		glPopMatrix();
+		fx += 20;
+	}
+}
