@@ -142,7 +142,7 @@ BList bullets;
 
 // Global is using the singleton pattern
 class Global {
-    public:
+   public:
         bool Forward = false; 
         bool Backward = false;
         unsigned char keys[65536];
@@ -160,6 +160,7 @@ class Global {
         int helicopterHealth = 5;
         int startGame;
         int health = 99;
+        int done = 0;
         double delay;
         float xc[2];
         float yc[2];
@@ -497,18 +498,18 @@ int main(void)
 {
     initOpengl();
     init();
-    int done = 0;
-    while (!done) {
+    while (!Global::getInstance().done) {
         while (x11.getXPending()) {
             XEvent e = x11.getXNextEvent();
             x11.checkResize(&e);
             checkMouse(&e);
-            done = checkKeys(&e);
+            Global::getInstance().done = checkKeys(&e);
         }
         physics();
         render();
         x11.swapBuffers();
     }
+    cout << "Game finished" << endl;
     cleanup_fonts();
     return 0;
 }
@@ -1398,9 +1399,9 @@ void render(void)
             r.center = 0;
             show_credits(r, cy);
         }
+    } else if (Global::getInstance().health <= 0) {
+        Global::getInstance().done = 1;
     } else {
-        if (Global::getInstance().health <= 0) {
-        } else {
             glClearColor(0.1,0.1,0.1,1.0);
             glClear(GL_COLOR_BUFFER_BIT);
             //background rendering 
@@ -1814,4 +1815,3 @@ void render(void)
                     Global::getInstance().numbersTexture);
         }
     }
-}
