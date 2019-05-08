@@ -11,6 +11,7 @@
 #include <string>
 #include <cstring>
 #include <chrono>
+#include <sstream>
 
 using namespace std;
 
@@ -24,6 +25,7 @@ int leaderboardY = 550;
 int leaderboardX = 300;
 vector<string> leaderboard_vector;
 auto startTime = chrono::system_clock::now();
+const char *ranking;
 
 void showEmil(Rect r, int y)
 {
@@ -824,7 +826,8 @@ void game_over(int xres, int yres, GLuint leaderboardTexture)
 	glPopMatrix();
 }
 
-void game_over_text(int xres, int yres, GLuint lettersTexture[]) 
+void game_over_text(int xres, int yres, int playerScore, string finalTime, 
+	GLuint lettersTexture[], GLuint numbersTexture[]) 
 {
 	static int wid = 20;
 	float fx = (float)xres/2-200;
@@ -833,9 +836,9 @@ void game_over_text(int xres, int yres, GLuint lettersTexture[])
 	int size = strlen(gameOver1stLine);
 	for (int i = 0; i < size; i++) {
 		char letter = gameOver1stLine[i];
+		render_letter(letter, lettersTexture);
 		glPushMatrix();
 		glTranslatef(fx,fy,0);
-		render_letter(letter, lettersTexture);
 		glEnable(GL_ALPHA_TEST);
 		glAlphaFunc(GL_GREATER, 0.0f);
 		glColor4ub(255,255,255,255);
@@ -853,14 +856,46 @@ void game_over_text(int xres, int yres, GLuint lettersTexture[])
 		glPopMatrix();
 		fx += 20;
 	}
-	const char *gameOver2ndLine = "Please type your "
-		"initials";
-	size = strlen(gameOver2ndLine);
-	fx = (float)xres/2-240;
+	string gameOver2ndLine = "You scored " + to_string(playerScore) + " in " + finalTime;
+	size = strlen(gameOver2ndLine.c_str());
+	fx = (float)xres/2-220;
 	for (int i = 0; i < size; i++) {
 		char letter = gameOver2ndLine[i];
 		glPushMatrix();
 		glTranslatef(fx,fy-50,0);
+		if (letter == '0' || letter == '1' || letter == '2' ||
+			letter == '3' || letter == '4' || letter == '5' ||
+			letter == '6' || letter == '7' || letter == '8' ||
+			letter == '9' || letter == ':') {
+			render_number(letter, numbersTexture);
+		} else {
+			render_letter(letter, lettersTexture);
+		}
+		glEnable(GL_ALPHA_TEST);
+		glAlphaFunc(GL_GREATER, 0.0f);
+		glColor4ub(255,255,255,255);
+		glBegin(GL_QUADS);
+		glTexCoord2f(0.0f, 1.0f);
+		glVertex2i(-wid,-wid);
+		glTexCoord2f(0.0f, 0.0f);
+		glVertex2i(-wid, wid);
+		glTexCoord2f(1.0f, 0.0f);
+		glVertex2i( wid, wid);
+		glTexCoord2f(1.0f, 1.0f);
+		glVertex2i( wid,-wid);
+		glEnd();
+		glBindTexture(GL_TEXTURE_2D, 0);
+		glPopMatrix();
+		fx += 20;
+	}
+	const char *gameOver3rdLine = "Please type your "
+		"initials";
+	size = strlen(gameOver3rdLine);
+	fx = (float)xres/2-240;
+	for (int i = 0; i < size; i++) {
+		char letter = gameOver3rdLine[i];
+		glPushMatrix();
+		glTranslatef(fx,fy-100,0);
 		render_letter(letter, lettersTexture);
 		glEnable(GL_ALPHA_TEST);
 		glAlphaFunc(GL_GREATER, 0.0f);
@@ -890,8 +925,238 @@ char store_initials(XEvent *e)
         case(XK_a):
             initial = 'A';
             break;
+		case(XK_B):
+        case(XK_b):
+            initial = 'B';
+            break;
+		case(XK_C):
+        case(XK_c):
+            initial = 'C';
+            break;
+		case(XK_D):
+        case(XK_d):
+            initial = 'D';
+            break;
+		case(XK_E):
+        case(XK_e):
+            initial = 'E';
+            break;
+		case(XK_F):
+        case(XK_f):
+            initial = 'F';
+            break;
+		case(XK_G):
+        case(XK_g):
+            initial = 'G';
+            break;
+		case(XK_H):
+        case(XK_h):
+            initial = 'H';
+            break;
+		case(XK_I):
+        case(XK_i):
+            initial = 'I';
+            break;
+		case(XK_L):
+        case(XK_l):
+            initial = 'L';
+            break;
+		case(XK_M):
+        case(XK_m):
+            initial = 'M';
+            break;
+		case(XK_N):
+        case(XK_n):
+            initial = 'N';
+            break;
+		case(XK_O):
+        case(XK_o):
+            initial = 'O';
+            break;
+		case(XK_P):
+        case(XK_p):
+            initial = 'P';
+            break;
+		case(XK_Q):
+        case(XK_q):
+            initial = 'Q';
+            break;
+		case(XK_R):
+        case(XK_r):
+            initial = 'R';
+            break;
+		case(XK_S):
+        case(XK_s):
+            initial = 'S';
+            break;
+		case(XK_T):
+        case(XK_t):
+            initial = 'T';
+            break;
+		case(XK_U):
+        case(XK_u):
+            initial = 'U';
+            break;
+		case(XK_V):
+        case(XK_v):
+            initial = 'V';
+            break;
+		case(XK_W):
+        case(XK_w):
+            initial = 'W';
+            break;
+		case(XK_X):
+        case(XK_x):
+            initial = 'X';
+            break;
+		case(XK_Y):
+        case(XK_y):
+            initial = 'Y';
+            break;	
         default:
             initial = 'Z';
     }    
     return initial;
-} 
+}
+
+void print_initials(int xres, int yres, GLuint lettersTexture[], char initial, bool first) {
+	static int wid = 60;
+	float fx = (first) ? (float)xres/2-60 : (float)xres/2+60;
+	float fy = (float)yres/2;
+	glPushMatrix();
+	glTranslatef(fx,fy,0);
+	render_letter(initial, lettersTexture);
+	glEnable(GL_ALPHA_TEST);
+	glAlphaFunc(GL_GREATER, 0.0f);
+	glColor4ub(255,255,255,255);
+	glBegin(GL_QUADS);
+	glTexCoord2f(0.0f, 1.0f);
+	glVertex2i(-wid,-wid);
+	glTexCoord2f(0.0f, 0.0f);
+	glVertex2i(-wid, wid);
+	glTexCoord2f(1.0f, 0.0f);
+	glVertex2i( wid, wid);
+	glTexCoord2f(1.0f, 1.0f);
+	glVertex2i( wid,-wid);
+	glEnd();
+	glBindTexture(GL_TEXTURE_2D, 0);
+	glPopMatrix();
+}
+
+string final_time() 
+{
+	string time;
+	auto currentTime = chrono::system_clock::now();
+	chrono::duration<double> finalTime = currentTime - startTime;
+	int minutes = (int)finalTime.count() / 60;
+	int seconds = (int)finalTime.count() % 60;
+	string seconds_string = (seconds < 10) 
+	? "0" + to_string(seconds) 
+	: to_string(seconds);
+	time = to_string(minutes) + ":" + seconds_string;
+	return time;
+}
+
+void insert_into_database(char firstInitial, char secondInitial, 
+	string score, string time) 
+{
+	string first, second;
+	stringstream ss,ss1;
+	ss << firstInitial;
+	ss >> first;
+	ss1 << secondInitial;
+	ss1 >> second;
+	if (init_connection()) {
+		string query = "INSERT INTO Leaderboard"
+			"(Name, Score, Time)"
+			"Values ('" + first + second + "', " + score +
+			", '" + time + "')";
+		result = sqlite3_exec(db, query.c_str(), callback, 
+			(void*) data, &ErrMsg);
+		if (result != SQLITE_OK) {
+			cout << "SQL Error:" << ErrMsg << endl;
+			sqlite3_free(ErrMsg);
+		} else {
+			cout << "Insert statement successful" << endl;
+		}
+	}
+}
+
+void get_ranking(char firstInitial, char secondInitial, 
+    string playerScore, string final_time)
+{
+	string first, second;
+	stringstream ss,ss1;
+	ss << firstInitial;
+	ss >> first;
+	ss1 << secondInitial;
+	ss1 >> second;
+	if (init_connection()) {
+		string query = "select name,score,time, 1+(select count(*) "
+			"from leaderboard l2 where l2.score > l1.score) as rank "
+			"from leaderboard l1 where name = '" + first + second + 
+			"' and score = '" + playerScore + "' and time = '" +
+			final_time + "';";
+		result = sqlite3_exec(db, query.c_str(), callback2, 
+			(void*) data, &ErrMsg);
+		if (result != SQLITE_OK) {
+			cout << "SQL Error get_ranking:" << ErrMsg << endl;
+			sqlite3_free(ErrMsg);
+		} else {
+			cout << "Retrieval statement successful" << endl;
+		}
+	}
+}
+
+void print_ranking(int xres, int yres, GLuint lettersTexture[],
+    GLuint numbersTexture[])
+{
+	static int wid = 20;
+	float fx = (float)xres/2-200;
+	float fy = (float)yres-25;
+	char rankStatement[]= "You are ranked #";
+	const char *result = strcat(rankStatement, ranking);
+	int size = strlen(result);
+	for (int i = 0; i < size; i++) {
+		char letter = result[i];
+		if (letter == '0' || letter == '1' || letter == '2' ||
+			letter == '3' || letter == '4' || letter == '5' ||
+			letter == '6' || letter == '7' || letter == '8' ||
+			letter == '9' || letter == ':') {
+			render_number(letter, numbersTexture);
+		} else {
+			render_letter(letter, lettersTexture);
+		}
+		glPushMatrix();
+		glTranslatef(fx,fy,0);
+		glEnable(GL_ALPHA_TEST);
+		glAlphaFunc(GL_GREATER, 0.0f);
+		glColor4ub(255,255,255,255);
+		glBegin(GL_QUADS);
+		glTexCoord2f(0.0f, 1.0f);
+		glVertex2i(-wid,-wid);
+		glTexCoord2f(0.0f, 0.0f);
+		glVertex2i(-wid, wid);
+		glTexCoord2f(1.0f, 0.0f);
+		glVertex2i( wid, wid);
+		glTexCoord2f(1.0f, 1.0f);
+		glVertex2i( wid,-wid);
+		glEnd();
+		glBindTexture(GL_TEXTURE_2D, 0);
+		glPopMatrix();
+		fx += 20;
+	}
+
+}
+
+int callback2(void *data, int argc, char **argv, char **azColName)
+{
+	(void) data;
+	(void) argc;
+	(void) azColName;
+	char* argv_rank = (char*)calloc(30, sizeof(char));
+	strcpy(argv_rank, argv[3]);
+	ranking = argv_rank;
+	free(argv_rank);
+	return SQLITE_OK;
+}
