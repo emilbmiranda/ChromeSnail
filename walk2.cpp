@@ -185,8 +185,9 @@ class Global {
 		GLuint gameOverTexture;
         // Fernando: Need to create a GLuint object for the crate texture.
         GLuint crateTexture;
-        //Platform plat1(540,140);
+        GLuint coverTexture;
         Platform plat1;
+        Cover cover1;
         GLuint backgroundTexture;
         Vec box[20];
         Sprite exp;
@@ -475,6 +476,7 @@ Image logo_image = "./images/Logo.gif";
 Image keys_image = "./images/Keys.gif"; 
 // Fernando: Create Image object that references .jpg
 Image crate_image = "./images/wall.gif";
+Image arch_image = "./images/arch.gif";
 Image leaderboard_image = "./images/Leaderboard.gif";
 Image leaderboard_title_image = "./images/LeaderboardTitle.gif";
 Sprite numbers_spritesheet;
@@ -776,6 +778,23 @@ void initOpengl(void)
     free(crateData);
 
     //-Crate texture-END------------------------------------------------------
+
+    // Arch(cover) texture
+    glGenTextures(1, &Global::getInstance().coverTexture);
+    int cover_h = arch_image.height;
+    int cover_w = arch_image.width;
+    // Fernando: We call this object again because...
+    glBindTexture(GL_TEXTURE_2D, Global::getInstance().coverTexture);
+    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
+    glTexImage2D(GL_TEXTURE_2D, 0, 3, cover_w, cover_h, 0, GL_RGB,
+		GL_UNSIGNED_BYTE, arch_image.data);
+
+    unsigned char *coverData = buildAlphaData(&arch_image);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, cover_w, cover_h, 0, GL_RGBA,
+		GL_UNSIGNED_BYTE, coverData);
+    free(coverData);
+
     // Start Menu texture and binding
     glGenTextures(1, &Global::getInstance().startMenuTexture);  
     int xres = start_menu_image.width;
@@ -1207,10 +1226,10 @@ void physics(void)
         //man is walking...
         //when time is up, advance the frame.
         if ( Global::getInstance().keys[XK_Right]) {
-            Global::getInstance().plat1.slidePlatformBackward();
+            Global::getInstance().cover1.slideCoverBackward();
         }
         if ( Global::getInstance().keys[XK_Left]) {
-            Global::getInstance().plat1.slidePlatformForward();
+            Global::getInstance().cover1.slideCoverForward();
         }
         timers.recordTime(&timers.timeCurrent);
         double timeSpan = timers.timeDiff(&timers.walkTime, 
@@ -1832,6 +1851,7 @@ void render(void)
             //draw bullets
             drawBullets(&bullets);
 
+/*
             // Fernando: Adding a platform entity to the game.
             glPushMatrix();
             // This breaks the wall because I was translating it in the walk2
@@ -1842,6 +1862,7 @@ void render(void)
 				Global::getInstance().plat1.getYpos(), 
 				Global::getInstance().crateTexture);
             glPopMatrix();
+            */
         }
 
         if (Global::getInstance().movie) {
@@ -1861,10 +1882,10 @@ void render(void)
         // This breaks the wall because I was translating it in the walk2
         // file and in drawPlatform()
         //glTranslated(plat1.pos[0],plat1.pos[1],0);    
-        Global::getInstance().plat1.drawPlatform(
-			Global::getInstance().plat1.getXpos(),
-			Global::getInstance().plat1.getYpos(), 
-			Global::getInstance().crateTexture);
+        Global::getInstance().cover1.drawCover(
+			Global::getInstance().cover1.getXpos(),
+			Global::getInstance().cover1.getYpos(), 
+			Global::getInstance().coverTexture);
         glPopMatrix();
     }
     // Render the helicopter
