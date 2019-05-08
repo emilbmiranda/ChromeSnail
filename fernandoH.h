@@ -32,4 +32,18 @@ struct Platform {
 	void slidePlatformForward();
 };
 
+struct Cover{
+	float pos[2];
+	float vel = {4.00};
+
+	Cover(); 
+	Cover(int, int);
+
+	void drawCover(int, int, GLuint);
+	int getXpos();
+	int getYpos();
+	void slideCoverBackward();
+	void slideCoverForward();
+};
+
 #endif

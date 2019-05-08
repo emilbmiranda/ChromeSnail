@@ -17,6 +17,67 @@ int preventPlayerProgress(int objectX)
 }
 /*----------------------------------------------------------myFunctions-END--*/
 
+
+/*----------------------------------------------------------------Cover------*/
+Cover::Cover()
+{
+	pos[0] = 1040;
+	pos[1] = 340;
+}
+
+Cover::Cover(int x, int y) 
+{
+	pos[0] = x;
+	pos[1] = y;
+}
+void Cover::drawCover(int xpos, int ypos, GLuint coverID)
+{
+	// Change the size of the sprite.
+	static int wid = 80;
+	float fx = (float)xpos;
+	float fy = (float)ypos;
+
+	//glClear(GL_COLOR_BUFFER_BIT);
+	//glPushMatrix();
+	glTranslatef(fx,fy,0);
+	glBindTexture(GL_TEXTURE_2D, coverID);
+
+
+	glBegin(GL_QUADS);
+		glTexCoord2f(1.0f, 1.0f);
+		glVertex2i(-wid, -wid);
+		glTexCoord2f(1.0f, 0.0f);
+		glVertex2i(-wid, wid);
+		glTexCoord2f(0.0f, 0.0f);
+		glVertex2i(wid, wid);
+		glTexCoord2f(0.0f, 1.0f);
+		glVertex2i(wid, -wid);
+	glEnd();
+	// This is DEFINITELY needed.
+	glBindTexture(GL_TEXTURE_2D, 0);
+}
+
+int Cover::getXpos()
+{
+	return pos[0];
+
+}
+
+int Cover::getYpos()
+{
+	return pos[1];
+}
+
+void Cover::slideCoverBackward() 
+{
+	pos[0] -= vel;
+}
+void Cover::slideCoverForward() 
+{
+	pos[0] += vel;
+}
+/*----------------------------------------------------------------Cover-END--*/
+
 /*----------------------------------------------------------------Platform---*/
 Platform::Platform()
 {
