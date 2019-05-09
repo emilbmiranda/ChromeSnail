@@ -141,8 +141,8 @@ BList bullets;
 
 // Global is using the singleton pattern
 class Global {
-<<<<<<< HEAD
     public:
+        bool leftPressed = false;
         bool Forward = false; 
         bool Backward = false;
         unsigned char keys[65536];
@@ -255,119 +255,6 @@ class Global {
         Global(Global const&){};
         // assignment operator is private
         Global& operator=(Global const&);
-=======
-	public:
-		bool leftPressed = false;
-		bool Forward = false; 
-		bool Backward = false;
-		unsigned char keys[65536];
-		int xres, yres;
-		int movie, movieStep;
-		int walk;
-		int walkFrame;
-		int showCredits;
-		int displayHelicopter;
-		int showStartMenu;
-		int dropBomb = 0;
-		int showCrate;
-		int showLeaderboard;
-		int playerScore = 0;
-		int helicopterHealth = 5;
-		int startGame;
-		int health = 99;
-		//int health = 0;
-		int done = 0;
-		double delay;
-		float xc[2];
-		float yc[2];
-		Image *walkImage;
-		char firstInitial;
-		char secondInitial;
-		int databaseInsert;
-		string final_time;
-		GLuint walkTexture;
-		GLuint creditPicsTexture[5];
-		GLuint helicopterTexture;
-		GLuint bombTexture;
-		GLuint startMenuTexture;
-		GLuint logoTexture;
-		GLuint keysTexture;
-		GLuint leaderboardTexture;
-		GLuint leaderboardTitleTexture;
-		GLuint leaderboardBoxTexture;
-		GLuint numbersTexture[NUMBERS_ARRAY];
-		GLuint lettersTexture[LETTERS_ARRAY];
-		GLuint timeTexture;
-		GLuint gameOverTexture;
-		// Fernando: Need to create a GLuint object for the crate texture.
-		GLuint crateTexture;
-		GLuint coverTexture;
-		Platform plat1;
-		Cover cover1;
-		GLuint backgroundTexture;
-		Vec box[20];
-		Sprite exp;
-		Sprite exp44;
-		Vec ball_pos;
-		Vec ball_vel;
-		//camera is centered at (0,0) lower-left of screen. 
-		Flt camera[2];
-		~Global() {
-			logClose();
-		}
-
-		static Global& getInstance() 
-		{
-			static Global _gInstance;
-			return _gInstance;
-		}
-
-	private:
-		// constructor is private
-		Global() {
-			logOpen();
-			camera[0] = camera[1] = 0.0;
-			movie=0;
-			movieStep=2;
-			xres=800;
-			yres=600;
-			walk=0;
-			walkFrame=0;
-			walkImage=NULL;
-			MakeVector(ball_pos, 520.0, 0, 0);
-			MakeVector(ball_vel, 0, 0, 0);
-			delay = 0.1;
-			exp.onoff=0;
-			exp.frame=0;
-			exp.image=NULL;
-			exp.delay = 0.02;
-			exp44.onoff=0;
-			exp44.frame=0;
-			exp44.image=NULL;
-			exp44.delay = 0.022;
-			showCredits = 0;
-			displayHelicopter = 1;
-			showStartMenu = 1;
-			showCrate = 1;
-			startGame = 0;
-			firstInitial = '\0';
-			secondInitial = '\0';
-			databaseInsert = 0;
-			for (int i=0; i<20; i++) {
-				box[i][0] = rnd() * xres;
-				box[i][1] = rnd() * (yres-220) + 220.0;
-				box[i][2] = 0.0;
-			}
-			for (int i = 0; i < 5; i++) {
-				creditPicsTexture[i] = 0;
-			}
-			memset(keys, 0, 65536);
-		};
-		// copy constructor private
-		Global(Global const&){};
-		// assignment operator is private
-		Global& operator=(Global const&);
->>>>>>> f7bbcb1c2f24df2479c38457893148faa51bd54c
 };
 
 int helicopterHit()
@@ -624,7 +511,6 @@ void show_credits(Rect x, int y);
 
 int main(void)
 {
-<<<<<<< HEAD
     initOpengl();
     init();
     while (!Global::getInstance().done) {
@@ -640,80 +526,6 @@ int main(void)
     }
     cleanup_fonts();
     return 0;
-=======
-	initOpengl();
-	init();
-	while (!Global::getInstance().done) {
-		while (x11.getXPending()) {
-			XEvent e = x11.getXNextEvent();
-			x11.checkResize(&e);
-			checkMouse(&e);
-			Global::getInstance().done = checkKeys(&e);
-		}
-		physics();
-		render();
-		x11.swapBuffers();
-	}
-	while (1){
-		while (x11.getXPending()) {
-			XEvent e = x11.getXNextEvent();
-			if (e.type == KeyPress) {
-				if (Global::getInstance().firstInitial == '\0') {
-					XEvent e = x11.getXNextEvent();
-					Global::getInstance().firstInitial = store_initials(&e);
-				}
-				if (Global::getInstance().secondInitial == '\0') {
-					XEvent e = x11.getXNextEvent();
-					Global::getInstance().secondInitial = store_initials(&e);                
-				}
-			}
-		}
-		x11.swapBuffers();
-		game_over(Global::getInstance().xres,
-			Global::getInstance().yres,
-			Global::getInstance().gameOverTexture);
-		game_over_text(Global::getInstance().xres,
-			Global::getInstance().yres,
-			Global::getInstance().playerScore,
-			Global::getInstance().final_time,
-			Global::getInstance().lettersTexture,
-			Global::getInstance().numbersTexture);
-		print_initials(Global::getInstance().xres,
-			Global::getInstance().yres,
-			Global::getInstance().lettersTexture,
-			Global::getInstance().firstInitial,
-			true);
-		print_initials(Global::getInstance().xres,
-			Global::getInstance().yres,
-			Global::getInstance().lettersTexture,
-			Global::getInstance().secondInitial,
-			false);
-		if (Global::getInstance().firstInitial != '\0' &&
-			Global::getInstance().firstInitial != '\0' &&
-			!Global::getInstance().databaseInsert) {
-			insert_into_database(Global::getInstance().firstInitial,
-				Global::getInstance().secondInitial,
-				to_string(Global::getInstance().playerScore),
-				Global::getInstance().final_time);
-			Global::getInstance().databaseInsert = 1;
-		sleep(1);
-		glClear(GL_COLOR_BUFFER_BIT);
-		game_over(Global::getInstance().xres,
-			Global::getInstance().yres,
-			Global::getInstance().gameOverTexture);
-		get_ranking(Global::getInstance().firstInitial,
-			Global::getInstance().secondInitial,
-			to_string(Global::getInstance().playerScore),
-			Global::getInstance().final_time);
-		print_ranking(Global::getInstance().xres,
-			Global::getInstance().yres,
-			Global::getInstance().lettersTexture,
-			Global::getInstance().numbersTexture);
-		}
-	}      
-	cleanup_fonts();
-	return 0;
->>>>>>> f7bbcb1c2f24df2479c38457893148faa51bd54c
 }
 
 unsigned char *buildAlphaData(Image *img)
@@ -1640,7 +1452,6 @@ setYres(Global::getInstance().yres);
 				Global::getInstance().yres,
 				Global::getInstance().numbersTexture,
 				Global::getInstance().lettersTexture);
-<<<<<<< HEAD
         }
         if (Global::getInstance().showCredits) {
             r.bot = Global::getInstance().yres - 20;
@@ -1838,134 +1649,6 @@ setYres(Global::getInstance().yres);
 
 
         //#define SHOW_FAKE_SHADOW
-=======
-		}
-		if (Global::getInstance().showCredits) {
-			r.bot = Global::getInstance().yres - 20;
-			r.left = 10;
-			r.center = 0;
-			show_credits(r, cy);
-		}
-	} else if (Global::getInstance().health <= 0 || 
-			Global::getInstance().playerScore == 99) {
-		Global::getInstance().done = 1;
-		Global::getInstance().final_time = final_time();
-	} else {
-		glClearColor(0.1,0.1,0.1,1.0);
-		glClear(GL_COLOR_BUFFER_BIT);
-		//background rendering 
-		int bxres = Global::getInstance().xres;
-		int byres = Global::getInstance().yres;
-		glClear(GL_COLOR_BUFFER_BIT);
-		glColor3f(1.0, 1.0, 1.0);
-		glBindTexture(GL_TEXTURE_2D, Global::getInstance().backgroundTexture);
-		glBegin(GL_QUADS);
-		glTexCoord2f(Global::getInstance().xc[0], Global::getInstance().yc[1]); glVertex2i(0, 0);
-		glTexCoord2f(Global::getInstance().xc[0], Global::getInstance().yc[0]); glVertex2i(0, byres);
-		glTexCoord2f(Global::getInstance().xc[1], Global::getInstance().yc[0]); glVertex2i(bxres, byres);
-		glTexCoord2f(Global::getInstance().xc[1], Global::getInstance().yc[1]); glVertex2i(bxres, 0);
-		glEnd();
-
-		/*
-		//show ground
-		glBegin(GL_QUADS);
-		glColor3f(0.2, 0.2, 0.2);
-		glVertex2i(0, 220);
-		glVertex2i(Global::getInstance().xres, 220);
-		glColor3f(0.4, 0.4, 0.4);
-		glVertex2i(Global::getInstance().xres,   0);
-		glVertex2i(0, 0);
-		glEnd();
-
-		//
-		//show boxes as background
-		for (int i=0; i<20; i++) {
-		glPushMatrix();
-		glTranslated(Global::getInstance().box[i][0],Global::getInstance().box[i][1],Global::getInstance().box[i][2]);
-		glColor3f(0.2, 0.2, 0.2);
-		glBegin(GL_QUADS);
-		glVertex2i( 0,  0);
-		glVertex2i( 0, 30);
-		glVertex2i(20, 30);
-		glVertex2i(20,  0);
-		glEnd();
-		PopMatrix();
-		}
-		*/
-		//
-		//========================
-		//Render the tile system
-		//========================
-		/*
-		   int tx = lev.tilesize[0];
-		   int ty = lev.tilesize[1];
-		   Flt dd = lev.ftsz[0];
-		   Flt offy = lev.tile_base;
-		   int ncols_to_render = Global::getInstance().xres / lev.tilesize[0] + 2;
-		   int col = (int)(Global::getInstance().camera[0] / dd);
-		   col = col % lev.ncols;
-		//Partial tile offset must be determined here.
-		//The leftmost tile might be partially off-screen.
-		//cdd: camera position in terms of tiles.
-		Flt cdd = Global::getInstance().camera[0] / dd;
-		//flo: just the integer portion
-		Flt flo = floor(cdd);
-		//dec: just the decimal portion
-		Flt dec = (cdd - flo);
-		//offx: the offset to the left of the screen to start drawing tiles
-		Flt offx = -dec * dd;
-		//Log("Global::getInstance().camera[0]: %lf   offx: %lf\n",Global::getInstance().camera[0],offx);
-		for (int j=0; j<ncols_to_render; j++) {
-		int row = lev.nrows-1;
-		for (int i=0; i<lev.nrows; i++) {
-		if (lev.arr[row][col] == 'w') {
-		glColor3f(0.8, 0.8, 0.6);
-		glPushMatrix();
-		//put tile in its place
-		glTranslated((Flt)j*dd+offx, (Flt)i*lev.ftsz[1]+offy, 0);
-		glBegin(GL_QUADS);
-		glVertex2i(0, 0);
-		glVertex2i(0, ty);
-		glVertex2i(tx, ty);
-		glVertex2i(tx, 0);
-		glEnd();
-		glPopMatrix();
-		}
-		if (lev.arr[row][col] == 'b') {
-		glColor3f(0.9, 0.2, 0.2);
-		glPushMatrix();
-		glTranslated((Flt)j*dd+offx, (Flt)i*lev.ftsz[1]+offy, 0);
-		glBegin(GL_QUADS);
-		glVertex2i(0, 0);
-		glVertex2i(0, ty);
-		glVertex2i(tx, ty);
-		glVertex2i(tx, 0);
-		glEnd();
-		glPopMatrix();
-		}
-		--row;
-		}
-		col = (col+1) % lev.ncols;
-		}
-		glColor3f(1.0, 1.0, 0.1);
-		glPushMatrix();
-		//put ball in its place
-		glTranslated(Global::getInstance().ball_pos[0], lev.tile_base+Global::getInstance().ball_pos[1], 0);
-		glBegin(GL_QUADS);
-		glVertex2i(-10, 0);
-		glVertex2i(-10, 20);
-		glVertex2i( 10, 20);
-		glVertex2i( 10, 0);
-		glEnd();
-		glPopMatrix();
-		*/
-		//--------------------------------------END TILE SYSTEM
-		//
-
-
-
-		//#define SHOW_FAKE_SHADOW
->>>>>>> f7bbcb1c2f24df2479c38457893148faa51bd54c
 #ifdef SHOW_FAKE_SHADOW
 		glColor3f(0.25, 0.25, 0.25);
 		glBegin(GL_QUADS);
