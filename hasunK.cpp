@@ -26,6 +26,7 @@ public:
 
 class Global {
 public:
+	int xres, yres;
 	bool GoEvent;
 	Texture tex;
 }g;
@@ -65,6 +66,106 @@ void showHasunPicture(int x, int y, GLuint textid)
 		glVertex2i(w,-w);
 	glEnd();
 	glPopMatrix();
+}
+
+int getXres()
+{
+	return g.xres;
+}
+void setXres(int x) 
+{
+	g.xres = x; 
+}
+
+int getYres()
+{
+	return g.yres;
+}
+
+void setYres (int y) 
+{
+	g.yres = y; 
+}
+char getKeys(char keys[]);
+/*
+void renderWalker(int x, int y, GLuint walkerID, int walkFrame, float velocity, bool leftPressed)
+*/
+void renderWalker(GLuint walkerID, int walkFrame, bool leftPressed)
+{
+    float cx = g.xres/2.0;
+    float cy = 100;
+	float h = 50.0;
+	float w = h *0.5;
+	    glPushMatrix();
+        glColor3f(1.0, 1.0, 1.0);
+        glBindTexture(GL_TEXTURE_2D, walkerID);
+        //
+        glEnable(GL_ALPHA_TEST);
+        glAlphaFunc(GL_GREATER, 0.0f);
+        glColor4ub(255,255,255,255);
+        int ix = walkFrame % 8;
+        int iy = 0;
+        if (walkFrame >= 8)
+            iy = 1;
+        float fx = (float)ix / 8.0;
+        float fy = (float)iy / 2.0;
+        glBegin(GL_QUADS);
+        if (leftPressed == true) {
+            glTexCoord2f(fx+.125, fy+.5);
+            glVertex2i(cx-w, cy-h);
+            glTexCoord2f(fx+.125, fy);
+            glVertex2i(cx-w, cy+h);
+            glTexCoord2f(fx, fy);
+            glVertex2i(cx+w, cy+h);
+            glTexCoord2f(fx, fy+.5);
+            glVertex2i(cx+w, cy-h);
+        } else {
+            glTexCoord2f(fx, fy+.5);
+            glVertex2i(cx-w, cy-h);
+            glTexCoord2f(fx, fy);
+            glVertex2i(cx-w, cy+h);
+            glTexCoord2f(fx+.125, fy);
+            glVertex2i(cx+w, cy+h);
+            glTexCoord2f(fx+.125, fy+.5);
+            glVertex2i(cx+w, cy-h);
+        }
+        glEnd();
+        glPopMatrix();
+	// Handle sprite coordinates
+
+/*
+	fx = (float)x;
+	fy = (float)y;
+	static int wid = 100;
+	glTranslatef(fx, fy, 0);
+	glBindTexture(GL_TEXTURE_2D, walkerID);
+	
+	glEnable(GL_ALPHA_TEST);
+	glAlphaFunc(GL_GREATER, 0.0f);
+	glColor4ub(255,255,255,255);
+	
+	if (velocity > 0.0) {
+		glTexCoord2f(1.0f, 1.0f);
+		glVertex2i(-wid, -wid);
+		glTexCoord2f(1.0f, 0.0f);
+		glVertex2i(-wid, wid);
+		glTexCoord2f(0.0f, 0.0f);
+		glVertex2i(wid, wid);
+		glTexCoord2f(0.0f, 1.0f);
+		glVertex2i(wid, -wid);
+	} else {
+		glTexCoord2f(0.0f, 1.0f);
+		glVertex2i(-wid, -wid);
+		glTexCoord2f(0.0f, 0.0f);
+		glVertex2i(-wid, wid);
+		glTexCoord2f(1.0f, 0.0f);
+		glVertex2i(wid, wid);
+		glTexCoord2f(1.0f, 1.0f);
+		glVertex2i(wid, -wid);
+	}
+	glEnd();	
+	glBindTexture(GL_TEXTURE_2D, 0);
+*/
 }
 
 /*
