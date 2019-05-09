@@ -19,7 +19,7 @@ typedef struct t_mouse
 const int MAX_BULLETS = 100;
 const double oobillion = 1.0 / 1e9;
 const int bulletXOffset = 400;
-const int bulletYOffset = 300;
+const int bulletYOffset = 100;//300;
 
 enum BulletDirection 
 {
