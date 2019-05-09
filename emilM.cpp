@@ -24,6 +24,7 @@ Rect leaderboard_rect;
 int leaderboardY = 550;
 int leaderboardX = 300;
 vector<string> leaderboard_vector;
+vector<char> ranking_vector;
 auto startTime = chrono::system_clock::now();
 const char *ranking;
 
@@ -398,6 +399,9 @@ int callback(void *data, int argc, char **argv, char **azColName)
 	leaderboard_vector.insert(leaderboard_vector.end(), name);
 	leaderboard_vector.insert(leaderboard_vector.end(), score);
 	leaderboard_vector.insert(leaderboard_vector.end(), time);
+	free(argv_name);
+	free(argv_score);
+	free(argv_time);
 	return SQLITE_OK;
 }
 
@@ -802,7 +806,6 @@ void print_score(int gameScore, int xres, int yres, GLuint numbersTexture[])
 
 void game_over(int xres, int yres, GLuint leaderboardTexture)
 {
-	glClear(GL_COLOR_BUFFER_BIT);
 	static int wid = xres/2;
 	float fx = (float)xres;
 	float fy = (float)yres;
@@ -1073,12 +1076,14 @@ void insert_into_database(char firstInitial, char secondInitial,
 			", '" + time + "')";
 		result = sqlite3_exec(db, query.c_str(), callback, 
 			(void*) data, &ErrMsg);
+		//#ifdef SQL_UNIT_TEST
 		if (result != SQLITE_OK) {
 			cout << "SQL Error:" << ErrMsg << endl;
 			sqlite3_free(ErrMsg);
 		} else {
 			cout << "Insert statement successful" << endl;
 		}
+		//#endif
 	}
 }
 
@@ -1099,34 +1104,27 @@ void get_ranking(char firstInitial, char secondInitial,
 			final_time + "';";
 		result = sqlite3_exec(db, query.c_str(), callback2, 
 			(void*) data, &ErrMsg);
+		//#ifdef SQL_UNIT_TEST
 		if (result != SQLITE_OK) {
 			cout << "SQL Error get_ranking:" << ErrMsg << endl;
 			sqlite3_free(ErrMsg);
 		} else {
 			cout << "Retrieval statement successful" << endl;
 		}
+		//#endif
 	}
 }
 
-void print_ranking(int xres, int yres, GLuint lettersTexture[],
-    GLuint numbersTexture[])
+void ranking_text(int xres, int yres, GLuint lettersTexture[])
 {
 	static int wid = 20;
 	float fx = (float)xres/2-200;
-	float fy = (float)yres-25;
-	char rankStatement[]= "You are ranked #";
-	const char *result = strcat(rankStatement, ranking);
-	int size = strlen(result);
+	float fy = (float)yres/2+100;
+	string rankStatement = "You are ranked number";
+	int size = rankStatement.length();
 	for (int i = 0; i < size; i++) {
-		char letter = result[i];
-		if (letter == '0' || letter == '1' || letter == '2' ||
-			letter == '3' || letter == '4' || letter == '5' ||
-			letter == '6' || letter == '7' || letter == '8' ||
-			letter == '9' || letter == ':') {
-			render_number(letter, numbersTexture);
-		} else {
-			render_letter(letter, lettersTexture);
-		}
+		char letter = rankStatement[i];
+		render_letter(letter, lettersTexture);
 		glPushMatrix();
 		glTranslatef(fx,fy,0);
 		glEnable(GL_ALPHA_TEST);
@@ -1146,7 +1144,6 @@ void print_ranking(int xres, int yres, GLuint lettersTexture[],
 		glPopMatrix();
 		fx += 20;
 	}
-
 }
 
 int callback2(void *data, int argc, char **argv, char **azColName)
@@ -1154,9 +1151,84 @@ int callback2(void *data, int argc, char **argv, char **azColName)
 	(void) data;
 	(void) argc;
 	(void) azColName;
-	char* argv_rank = (char*)calloc(30, sizeof(char));
+	char* argv_rank= (char*)calloc(30, sizeof(char));
 	strcpy(argv_rank, argv[3]);
-	ranking = argv_rank;
+	int size = strlen(argv_rank);
+	for (int i = 0; i < size; i++) {
+		ranking_vector.insert(ranking_vector.end(),argv_rank[i]);
+	}
 	free(argv_rank);
 	return SQLITE_OK;
+}
+
+void print_ranking(int xres, int yres, GLuint numbersTexture[])
+{
+	static int wid = 100;
+	int size = ranking_vector.size();
+	float fx;
+	float fy = (float)yres/2;
+	if (size == 2) {
+		fx = (float)xres/2-50;
+	} else if (size == 3) {
+		fx = (float)xres/2-75;
+	} else if (size == 4) {
+		fx = (float)xres/2-100;
+	} else {
+		fx = (float)xres/2;
+	}
+	for (int i = 0; i < size; i++) {
+		char number = ranking_vector[i];
+		render_number(number, numbersTexture);
+		glPushMatrix();
+		glTranslatef(fx,fy,0);
+		glEnable(GL_ALPHA_TEST);
+		glAlphaFunc(GL_GREATER, 0.0f);
+		glColor4ub(255,255,255,255);
+		glBegin(GL_QUADS);
+		glTexCoord2f(0.0f, 1.0f);
+		glVertex2i(-wid,-wid);
+		glTexCoord2f(0.0f, 0.0f);
+		glVertex2i(-wid, wid);
+		glTexCoord2f(1.0f, 0.0f);
+		glVertex2i( wid, wid);
+		glTexCoord2f(1.0f, 1.0f);
+		glVertex2i( wid,-wid);
+		glEnd();
+		glBindTexture(GL_TEXTURE_2D, 0);
+		glPopMatrix();
+		fx += 100;
+	}
+}
+
+extern void print_game_over_input(int xres, int yres, GLuint lettersTexture[]) 
+{
+static int wid = 20;
+	float fx = (float)xres/2-150;
+	float fy = (float)yres/2-200;
+	int size;
+	string gameOver2ndLine = "ESC - Quit Game";
+	size = strlen(gameOver2ndLine.c_str());
+	fx = (float)xres/2-150;
+	for (int i = 0; i < size; i++) {
+		char letter = gameOver2ndLine[i];
+		glPushMatrix();
+		glTranslatef(fx,fy-50,0);
+		render_letter(letter, lettersTexture);
+		glEnable(GL_ALPHA_TEST);
+		glAlphaFunc(GL_GREATER, 0.0f);
+		glColor4ub(255,255,255,255);
+		glBegin(GL_QUADS);
+		glTexCoord2f(0.0f, 1.0f);
+		glVertex2i(-wid,-wid);
+		glTexCoord2f(0.0f, 0.0f);
+		glVertex2i(-wid, wid);
+		glTexCoord2f(1.0f, 0.0f);
+		glVertex2i( wid, wid);
+		glTexCoord2f(1.0f, 1.0f);
+		glVertex2i( wid,-wid);
+		glEnd();
+		glBindTexture(GL_TEXTURE_2D, 0);
+		glPopMatrix();
+		fx += 20;
+	}	
 }

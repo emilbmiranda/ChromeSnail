@@ -48,7 +48,8 @@ extern void insert_into_database(char firstInitial, char secondInitial,
     string score, string time);
 extern void get_ranking(char firstInitial, char secondInitial, 
     string playerScore, string final_time);
-extern void print_ranking(int xres, int yres, GLuint lettersTexture[],
-    GLuint numbersTexture[]);
+extern void ranking_text(int xres, int yres, GLuint lettersTexture[]);
+extern void print_ranking(int xres, int yres, GLuint numbersTexture[]);
+extern void print_game_over_input(int xres, int yres, GLuint lettersTexture[]);
 
 #endif

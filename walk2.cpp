@@ -159,7 +159,6 @@ class Global {
         int helicopterHealth = 5;
         int startGame;
         int health = 99;
-        //int health = 0;
         int done = 0;
         double delay;
         float xc[2];
@@ -168,6 +167,8 @@ class Global {
         char firstInitial;
         char secondInitial;
         int databaseInsert;
+        int printRank;
+        int getRank;
         string final_time;
         GLuint walkTexture;
         GLuint creditPicsTexture[5];
@@ -237,6 +238,8 @@ class Global {
             firstInitial = '\0';
             secondInitial = '\0';
             databaseInsert = 0;
+            printRank = 1;
+            getRank = 1;
             for (int i=0; i<20; i++) {
                 box[i][0] = rnd() * xres;
                 box[i][1] = rnd() * (yres-220) + 220.0;
@@ -520,63 +523,6 @@ int main(void)
         render();
         x11.swapBuffers();
     }
-    while (1){
-        while (x11.getXPending()) {
-            XEvent e = x11.getXNextEvent();
-            if (e.type == KeyPress) {
-                if (Global::getInstance().firstInitial == '\0') {
-                    XEvent e = x11.getXNextEvent();
-                    Global::getInstance().firstInitial = store_initials(&e);
-                }
-                if (Global::getInstance().secondInitial == '\0') {
-                    XEvent e = x11.getXNextEvent();
-                    Global::getInstance().secondInitial = store_initials(&e);                
-                }
-            }
-        }
-        x11.swapBuffers();
-        game_over(Global::getInstance().xres,
-            Global::getInstance().yres,
-            Global::getInstance().gameOverTexture);
-        game_over_text(Global::getInstance().xres,
-            Global::getInstance().yres,
-            Global::getInstance().playerScore,
-            Global::getInstance().final_time,
-            Global::getInstance().lettersTexture,
-            Global::getInstance().numbersTexture);
-        print_initials(Global::getInstance().xres,
-            Global::getInstance().yres,
-            Global::getInstance().lettersTexture,
-            Global::getInstance().firstInitial,
-            true);
-        print_initials(Global::getInstance().xres,
-            Global::getInstance().yres,
-            Global::getInstance().lettersTexture,
-            Global::getInstance().secondInitial,
-            false);
-        if (Global::getInstance().firstInitial != '\0' &&
-            Global::getInstance().firstInitial != '\0' &&
-            !Global::getInstance().databaseInsert) {
-            insert_into_database(Global::getInstance().firstInitial,
-                Global::getInstance().secondInitial,
-                to_string(Global::getInstance().playerScore),
-                Global::getInstance().final_time);
-            Global::getInstance().databaseInsert = 1;
-        sleep(1);
-        glClear(GL_COLOR_BUFFER_BIT);
-        game_over(Global::getInstance().xres,
-            Global::getInstance().yres,
-            Global::getInstance().gameOverTexture);
-        get_ranking(Global::getInstance().firstInitial,
-            Global::getInstance().secondInitial,
-            to_string(Global::getInstance().playerScore),
-            Global::getInstance().final_time);
-        print_ranking(Global::getInstance().xres,
-            Global::getInstance().yres,
-            Global::getInstance().lettersTexture,
-            Global::getInstance().numbersTexture);
-        }
-    }      
     cleanup_fonts();
     return 0;
 }
@@ -1496,9 +1442,80 @@ void render(void)
             show_credits(r, cy);
         }
     } else if (Global::getInstance().health <= 0 || 
-            Global::getInstance().playerScore == 99) {
-        Global::getInstance().done = 1;
-        Global::getInstance().final_time = final_time();
+        Global::getInstance().playerScore == 99) {
+        //Global::getInstance().done = 1;
+        while (Global::getInstance().firstInitial == '\0' &&
+            Global::getInstance().secondInitial == '\0') {
+            if (Global::getInstance().final_time.length() == 0) {
+                Global::getInstance().final_time = final_time();
+            }
+            if (Global::getInstance().firstInitial == '\0' ||
+                Global::getInstance().secondInitial == '\0') {
+                while (x11.getXPending()) {
+                    XEvent e = x11.getXNextEvent();
+                    if (e.type == KeyPress) {
+                        if (Global::getInstance().firstInitial == '\0') {
+                            XEvent e = x11.getXNextEvent();
+                            Global::getInstance().firstInitial = store_initials(&e);
+                            cout << Global::getInstance().firstInitial << endl;
+                        }
+                        if (Global::getInstance().secondInitial == '\0') {
+                            XEvent e = x11.getXNextEvent();
+                            Global::getInstance().secondInitial = store_initials(&e);
+                            cout << Global::getInstance().secondInitial << endl;               
+                        }
+                    }
+                }
+            }
+            x11.swapBuffers();
+            if (Global::getInstance().firstInitial != '\0' &&
+                Global::getInstance().secondInitial != '\0') {
+                insert_into_database(Global::getInstance().firstInitial,
+                    Global::getInstance().secondInitial,
+                    to_string(Global::getInstance().playerScore),
+                    Global::getInstance().final_time);
+                Global::getInstance().databaseInsert = 1;
+                sleep(2);
+            }
+            game_over(Global::getInstance().xres,
+                Global::getInstance().yres,
+                Global::getInstance().gameOverTexture);
+            game_over_text(Global::getInstance().xres,
+                Global::getInstance().yres,
+                Global::getInstance().playerScore,
+                Global::getInstance().final_time,
+                Global::getInstance().lettersTexture,
+                Global::getInstance().numbersTexture);
+            print_initials(Global::getInstance().xres,
+                Global::getInstance().yres,
+                Global::getInstance().lettersTexture,
+                Global::getInstance().firstInitial,
+                true);
+            print_initials(Global::getInstance().xres,
+                Global::getInstance().yres,
+                Global::getInstance().lettersTexture,
+                Global::getInstance().secondInitial,
+                false);
+        }
+        if (Global::getInstance().getRank) {
+        get_ranking(Global::getInstance().firstInitial,
+            Global::getInstance().secondInitial,
+            to_string(Global::getInstance().playerScore),
+            Global::getInstance().final_time);
+            Global::getInstance().getRank = 0;
+        }
+        game_over(Global::getInstance().xres,
+            Global::getInstance().yres,
+            Global::getInstance().gameOverTexture);
+        ranking_text(Global::getInstance().xres,
+            Global::getInstance().yres,
+            Global::getInstance().lettersTexture);
+        print_ranking(Global::getInstance().xres,
+            Global::getInstance().yres,
+            Global::getInstance().numbersTexture);
+        print_game_over_input(Global::getInstance().xres,
+            Global::getInstance().yres,
+            Global::getInstance().lettersTexture);
     } else {
         glClearColor(0.1,0.1,0.1,1.0);
         glClear(GL_COLOR_BUFFER_BIT);
