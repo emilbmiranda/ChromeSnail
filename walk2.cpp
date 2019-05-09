@@ -142,6 +142,7 @@ BList bullets;
 // Global is using the singleton pattern
 class Global {
 	public:
+		bool leftPressed = false;
 		bool Forward = false; 
 		bool Backward = false;
 		unsigned char keys[65536];
@@ -1054,22 +1055,25 @@ void moveBomb()
 }
 void moveWalker(int direction)
 {
-	if ((walker.pos[0] < -140.0 && walker.vel[0] < 0.0) ||
-			(walker.pos[0] >= (float)Global::getInstance().xres+140.0 &&
-			 walker.vel[0] > 0.0))
-	{
-		walker.vel[0] = -walker.vel[0];
-	}
-	//right movement 
-	if (direction == 1){  
-		walker.pos[0] += walker.vel[0];
-	}
-	//left movement
-	if (direction == 2){ 
-		walker.pos[0] -= walker.vel[0];
+    if ((walker.pos[0] < -140.0 && walker.vel[0] < 0.0) ||
+            (walker.pos[0] >= (float)Global::getInstance().xres+140.0 &&
+             walker.vel[0] > 0.0))
+    {
+        walker.vel[0] = -walker.vel[0];
+    }
+
+    //right movement 
+    if (direction == 1){  
+        walker.pos[0] += walker.vel[0];
+    }
+    //left movement
+    if (direction == 2){ 
+        walker.pos[0] -= walker.vel[0];
+    }
+	if (direction == 3){
+		walker.pos[1] += walker.vel[0];
 	}
 }
-
 int checkKeys(XEvent *e)
 {
 	//keyboard input?
@@ -1123,16 +1127,18 @@ int checkKeys(XEvent *e)
 			Global::getInstance().exp44.onoff ^= 1;
 			break;
 		case XK_Left:
-			walker.dir = 1;
-			moveWalker(walker.dir);
-			Global::getInstance().Forward = false;
-			Global::getInstance().Backward = true;
+			Global::getInstance().leftPressed = true;
+            walker.dir = 1;
+            moveWalker(walker.dir);
+            Global::getInstance().Forward = false;
+            Global::getInstance().Backward = true;
 			break;
 		case XK_Right:
-			walker.dir = 2;
-			moveWalker(walker.dir);
-			Global::getInstance().Backward = false;
-			Global::getInstance().Forward = true;
+			Global::getInstance().leftPressed = false;
+            walker.dir = 2;
+            moveWalker(walker.dir);
+            Global::getInstance().Backward = false;
+            Global::getInstance().Forward = true;
 			break;
 		case XK_c:
 			// If the credits are currently being shown, we are about to hide them/
@@ -1150,6 +1156,8 @@ int checkKeys(XEvent *e)
 			}
 			break;
 		case XK_Up:
+			walker.dir = 3;
+            moveWalker(walker.dir);
 			break;
 		case XK_Down:
 			break;
@@ -1206,16 +1214,17 @@ Flt VecNormalize(Vec vec)
 
 void physics(void)
 {
-	if(Global::getInstance().Forward == True && Global::getInstance().Backward == False) { 
-		Global::getInstance().xc[0] += 0.002;
-		Global::getInstance().xc[1] += 0.002;
-		Global::getInstance().Forward = False;
-	}
-	if(Global::getInstance().Forward == False && Global::getInstance().Backward == True) { 
-		Global::getInstance().xc[0] -= 0.002;
-		Global::getInstance().xc[1] -= 0.002;
-		Global::getInstance().Backward = False;
-	}
+
+    if(Global::getInstance().keys[XK_Right]) { 
+        Global::getInstance().xc[0] += 0.002;
+        Global::getInstance().xc[1] += 0.002;
+        Global::getInstance().Forward = False;
+    }
+    if(Global::getInstance().keys[XK_Left]) { 
+        Global::getInstance().xc[0] -= 0.002;
+        Global::getInstance().xc[1] -= 0.002;
+        Global::getInstance().Backward = False;
+    }
 	if (Global::getInstance().walk 
 			|| Global::getInstance().keys[XK_Right] 
 			|| Global::getInstance().keys[XK_Left]) {
@@ -1383,6 +1392,13 @@ void physics(void)
 	// }
 }
 
+void showWalker()
+{
+	extern void renderWalker(GLuint walkerID, int walkFrame, bool leftPressed);
+	renderWalker(Global::getInstance().walkTexture, Global::getInstance().walkFrame, Global::getInstance().leftPressed); 
+}
+
+
 void showHelicopter(int x, int y, float velocity)
 {
 	extern void renderHelicopter(int x, 
@@ -1459,6 +1475,12 @@ void render(void)
 	//Clear the screen
 	glClearColor(0.1, 0.1, 0.1, 1.0);
 	glClear(GL_COLOR_BUFFER_BIT);
+
+extern void setXres(int x);
+extern void setYres(int y);
+setXres(Global::getInstance().xres);
+setYres(Global::getInstance().yres);
+
 
 	float cx = Global::getInstance().xres/2.0;
 	float cy = Global::getInstance().yres/2.0;
@@ -1623,6 +1645,7 @@ void render(void)
 		// Commenting this out will make the man into a white box.
 		float h = 50.0;
 		float w = h * 0.5;
+		/*
 		glPushMatrix();
 		glColor3f(1.0, 1.0, 1.0);
 		glBindTexture(GL_TEXTURE_2D, Global::getInstance().walkTexture);
@@ -1658,6 +1681,7 @@ void render(void)
 		}
 		glEnd();
 		glPopMatrix();
+		*/
 		/*float wid = 120;
 		  glPushMatrix();
 		  glBindTexture(GL_TEXTURE_2D, Global::getInstance().helicopterTexture);
@@ -1688,46 +1712,6 @@ void render(void)
 		glDisable(GL_ALPHA_TEST);
 		//
 		//
-		if (Global::getInstance().exp.onoff) {
-			h = 80.0;
-			w = 80.0;
-			glPushMatrix();
-			glColor3f(1.0, 1.0, 1.0);
-			glBindTexture(GL_TEXTURE_2D, Global::getInstance().exp.tex);
-			glEnable(GL_ALPHA_TEST);
-			glAlphaFunc(GL_GREATER, 0.0f);
-			glColor4ub(255,255,255,255);
-			glTranslated(Global::getInstance().exp.pos[0], Global::getInstance().exp.pos[1], Global::getInstance().exp.pos[2]);
-			int ix = Global::getInstance().exp.frame % 5;
-			int iy = Global::getInstance().exp.frame / 5;
-			float tx = (float)ix / 5.0;
-			float ty = (float)iy / 5.0;
-			glBegin(GL_QUADS);
-			if (Global::getInstance().keys[XK_Left]) {
-				//printf("I'm walking to the left");
-				glTexCoord2f(fx+.125, fy+.5);
-				glVertex2i(cx-w, cy-h);
-				glTexCoord2f(fx+.125, fy);
-				glVertex2i(cx-w, cy+h);
-				glTexCoord2f(fx, fy);
-				glVertex2i(cx+w, cy+h);
-				glTexCoord2f(fx, fy+.5);
-				glVertex2i(cx+w, cy-h);
-			} else {
-				glTexCoord2f(fx, fy+.5);
-				glVertex2i(cx-w, cy-h);
-				glTexCoord2f(fx, fy);
-				glVertex2i(cx-w, cy+h);
-				glTexCoord2f(fx+.125, fy);
-				glVertex2i(cx+w, cy+h);
-				glTexCoord2f(fx+.125, fy+.5);
-				glVertex2i(cx+w, cy-h);
-			}
-			glEnd();
-			glPopMatrix();
-			glBindTexture(GL_TEXTURE_2D, 0);
-			glDisable(GL_ALPHA_TEST);
-		}
 		//
 		//
 		if (Global::getInstance().exp44.onoff) {
@@ -1890,6 +1874,9 @@ void render(void)
 	// showBomb(bomb.pos[0], bomb.pos[1], bomb.vel[0]);
 	// printf("bomb.pos[0] %f, bomb.pos[1]: %f, bomb.vel[0]: %f\n", bomb.pos[0], bomb.pos[1], bomb.vel[0]);
 	// glPopMatrix();
+    glPushMatrix();
+	showWalker();
+	glPopMatrix();
 
 	// If the credits are shown, we should hide the helicopter by moving it off screen
 	if (Global::getInstance().displayHelicopter == 0) {
