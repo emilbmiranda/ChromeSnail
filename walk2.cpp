@@ -1033,8 +1033,6 @@ void moveBomb()
 		bomb.pos[1] -= bomb.vel[1];
 	}
 
-	printf("bomb.pos[0]: %f, bomb.pos[1]: %f\n", bomb.pos[0], bomb.pos[1]);
-
 	if(bomb.pos[1] < 200) {
 		bomb.pos[1] = 575;
 		Global::getInstance().dropBomb = 0;
