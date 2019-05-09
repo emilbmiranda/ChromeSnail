@@ -170,6 +170,7 @@ class Global {
         int databaseInsert;
         int printRank;
         int getRank;
+		int showMenu;
         string final_time;
         GLuint walkTexture;
         GLuint creditPicsTexture[5];
@@ -185,6 +186,7 @@ class Global {
         GLuint lettersTexture[LETTERS_ARRAY];
         GLuint timeTexture;
 		GLuint gameOverTexture;
+		GLuint menuTexture;
         // Fernando: Need to create a GLuint object for the crate texture.
         GLuint crateTexture;
         GLuint coverTexture;
@@ -241,6 +243,7 @@ class Global {
             databaseInsert = 0;
             printRank = 1;
             getRank = 1;
+			showMenu = 0;
             for (int i=0; i<20; i++) {
                 box[i][0] = rnd() * xres;
                 box[i][1] = rnd() * (yres-220) + 220.0;
@@ -506,6 +509,7 @@ Image numbers_image[NUMBERS_ARRAY] = {"./images/0.gif", "./images/1.gif",
 	"./images/colon.gif"};
 Image time_image = "./images/Time.gif";
 Image game_over_image = "./images/GameOver.gif";
+Image menu_image = "./images/Menu.gif";
 Image *backImage = &img[8];
 void show_credits(Rect x, int y);
 
@@ -865,6 +869,21 @@ void initOpengl(void)
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, goxres, goyres, 0,
 		GL_RGBA, GL_UNSIGNED_BYTE, gameOverData);
 	free(gameOverData);
+
+	//menu background
+	glGenTextures(1, &Global::getInstance().menuTexture);   
+	int mxres = menu_image.width;
+	int myres = menu_image.height;
+	glBindTexture(GL_TEXTURE_2D, Global::getInstance().menuTexture);
+	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	unsigned char *menuData = buildAlphaData(&menu_image);  
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, mxres, myres, 0,
+		GL_RGBA, GL_UNSIGNED_BYTE, menuData);
+	free(menuData);
 }
 
 void init()
@@ -1130,6 +1149,13 @@ int checkKeys(XEvent *e)
 			if (!Global::getInstance().showCredits &&
 				Global::getInstance().showStartMenu) {
 				Global::getInstance().showLeaderboard ^= 1;
+			}
+			break;
+		case XK_Control_L:
+			if (!Global::getInstance().showCredits &&
+				!Global::getInstance().showStartMenu &&
+				!Global::getInstance().showLeaderboard) {
+					Global::getInstance().showMenu ^= 1;
 			}
 			break;
 		case XK_Escape:
@@ -1911,5 +1937,16 @@ setYres(Global::getInstance().yres);
 			Global::getInstance().numbersTexture);
 		print_health(Global::getInstance().health, 
 			Global::getInstance().numbersTexture);
+		print_menu(Global::getInstance().xres,
+			Global::getInstance().yres, 
+			Global::getInstance().lettersTexture);
+		if (Global::getInstance().showMenu) {
+			menu(Global::getInstance().xres,
+				Global::getInstance().yres,
+				Global::getInstance().menuTexture);
+			menu_text(Global::getInstance().xres,
+                Global::getInstance().yres,
+                Global::getInstance().lettersTexture);
+		}
 	}
 }

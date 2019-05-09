@@ -51,5 +51,8 @@ extern void get_ranking(char firstInitial, char secondInitial,
 extern void ranking_text(int xres, int yres, GLuint lettersTexture[]);
 extern void print_ranking(int xres, int yres, GLuint numbersTexture[]);
 extern void print_game_over_input(int xres, int yres, GLuint lettersTexture[]);
+extern void menu(int xres, int yres, GLuint menuTexture);
+extern void menu_text(int xres, int yres, GLuint lettersTexture[]);
+extern void print_menu(int xres, int yres, GLuint lettersTexture[]);
 
 #endif

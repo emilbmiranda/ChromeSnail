@@ -1232,3 +1232,274 @@ static int wid = 20;
 		fx += 20;
 	}	
 }
+
+void menu(int xres, int yres, GLuint menuTexture) 
+{
+	static int wid = xres/2;
+	float fx = (float)xres/2;
+	float fy = (float)yres/2;
+	glPushMatrix();
+	glTranslatef(fx,fy,0);
+	glBindTexture(GL_TEXTURE_2D, menuTexture);
+	glEnable(GL_ALPHA_TEST);
+	glAlphaFunc(GL_GREATER, 0.0f);
+	glColor4ub(255,255,255,255);
+	glBegin(GL_QUADS);
+	glTexCoord2f(0.0f, 1.0f);
+	glVertex2i(-wid,-wid);
+	glTexCoord2f(0.0f, 0.0f);
+	glVertex2i(-wid, wid);
+	glTexCoord2f(1.0f, 0.0f);
+	glVertex2i( wid, wid);
+	glTexCoord2f(1.0f, 1.0f);
+	glVertex2i( wid,-wid);
+	glEnd();
+	glBindTexture(GL_TEXTURE_2D, 0);
+	glPopMatrix();	
+}
+
+void menu_text(int xres, int yres, GLuint lettersTexture[]) 
+{
+	int wid = 50;	
+	float fx = (float)xres/2-300;
+	float fy = (float)yres-50;
+	const char *menu1stLine = "Game Controls";
+	int size = strlen(menu1stLine);
+	for (int i = 0; i < size; i++) {
+		char letter = menu1stLine[i];
+		render_letter(letter, lettersTexture);
+		glPushMatrix();
+		glTranslatef(fx,fy,0);
+		glEnable(GL_ALPHA_TEST);
+		glAlphaFunc(GL_GREATER, 0.0f);
+		glColor4ub(255,255,255,255);
+		glBegin(GL_QUADS);
+		glTexCoord2f(0.0f, 1.0f);
+		glVertex2i(-wid,-wid);
+		glTexCoord2f(0.0f, 0.0f);
+		glVertex2i(-wid, wid);
+		glTexCoord2f(1.0f, 0.0f);
+		glVertex2i( wid, wid);
+		glTexCoord2f(1.0f, 1.0f);
+		glVertex2i( wid,-wid);
+		glEnd();
+		glBindTexture(GL_TEXTURE_2D, 0);
+		glPopMatrix();
+		fx += 50;
+	}
+	wid = 20;
+	fy -= 50;
+	string game_control = "left arrow - move character left";
+	size = strlen(game_control.c_str());
+	fx = (float)xres/2-300;
+	fy -= 50;
+	for (int i = 0; i < size; i++) {
+		char letter = game_control[i];
+		glPushMatrix();
+		glTranslatef(fx,fy,0);
+		render_letter(letter, lettersTexture);
+		glEnable(GL_ALPHA_TEST);
+		glAlphaFunc(GL_GREATER, 0.0f);
+		glColor4ub(255,255,255,255);
+		glBegin(GL_QUADS);
+		glTexCoord2f(0.0f, 1.0f);
+		glVertex2i(-wid,-wid);
+		glTexCoord2f(0.0f, 0.0f);
+		glVertex2i(-wid, wid);
+		glTexCoord2f(1.0f, 0.0f);
+		glVertex2i( wid, wid);
+		glTexCoord2f(1.0f, 1.0f);
+		glVertex2i( wid,-wid);
+		glEnd();
+		glBindTexture(GL_TEXTURE_2D, 0);
+		glPopMatrix();
+		fx += 20;
+	}
+	game_control = "right arrow - move character right";
+	size = strlen(game_control.c_str());
+	fx = (float)xres/2-300;
+	fy -= 50;
+	for (int i = 0; i < size; i++) {
+		char letter = game_control[i];
+		glPushMatrix();
+		glTranslatef(fx,fy,0);
+		render_letter(letter, lettersTexture);
+		glEnable(GL_ALPHA_TEST);
+		glAlphaFunc(GL_GREATER, 0.0f);
+		glColor4ub(255,255,255,255);
+		glBegin(GL_QUADS);
+		glTexCoord2f(0.0f, 1.0f);
+		glVertex2i(-wid,-wid);
+		glTexCoord2f(0.0f, 0.0f);
+		glVertex2i(-wid, wid);
+		glTexCoord2f(1.0f, 0.0f);
+		glVertex2i( wid, wid);
+		glTexCoord2f(1.0f, 1.0f);
+		glVertex2i( wid,-wid);
+		glEnd();
+		glBindTexture(GL_TEXTURE_2D, 0);
+		glPopMatrix();
+		fx += 20;
+	}
+	game_control = "r - shoot up";
+	size = strlen(game_control.c_str());
+	fx = (float)xres/2-300;
+	fy -= 50;
+	for (int i = 0; i < size; i++) {
+		char letter = game_control[i];
+		glPushMatrix();
+		glTranslatef(fx,fy,0);
+		render_letter(letter, lettersTexture);
+		glEnable(GL_ALPHA_TEST);
+		glAlphaFunc(GL_GREATER, 0.0f);
+		glColor4ub(255,255,255,255);
+		glBegin(GL_QUADS);
+		glTexCoord2f(0.0f, 1.0f);
+		glVertex2i(-wid,-wid);
+		glTexCoord2f(0.0f, 0.0f);
+		glVertex2i(-wid, wid);
+		glTexCoord2f(1.0f, 0.0f);
+		glVertex2i( wid, wid);
+		glTexCoord2f(1.0f, 1.0f);
+		glVertex2i( wid,-wid);
+		glEnd();
+		glBindTexture(GL_TEXTURE_2D, 0);
+		glPopMatrix();
+		fx += 20;
+	}
+	game_control = "g - shoot right";
+	size = strlen(game_control.c_str());
+	fx = (float)xres/2-300;
+	fy -= 50;
+	for (int i = 0; i < size; i++) {
+		char letter = game_control[i];
+		glPushMatrix();
+		glTranslatef(fx,fy,0);
+		render_letter(letter, lettersTexture);
+		glEnable(GL_ALPHA_TEST);
+		glAlphaFunc(GL_GREATER, 0.0f);
+		glColor4ub(255,255,255,255);
+		glBegin(GL_QUADS);
+		glTexCoord2f(0.0f, 1.0f);
+		glVertex2i(-wid,-wid);
+		glTexCoord2f(0.0f, 0.0f);
+		glVertex2i(-wid, wid);
+		glTexCoord2f(1.0f, 0.0f);
+		glVertex2i( wid, wid);
+		glTexCoord2f(1.0f, 1.0f);
+		glVertex2i( wid,-wid);
+		glEnd();
+		glBindTexture(GL_TEXTURE_2D, 0);
+		glPopMatrix();
+		fx += 20;
+	}
+	game_control = "v - shoot down";
+	size = strlen(game_control.c_str());
+	fx = (float)xres/2-300;
+	fy -= 50;
+	for (int i = 0; i < size; i++) {
+		char letter = game_control[i];
+		glPushMatrix();
+		glTranslatef(fx,fy,0);
+		render_letter(letter, lettersTexture);
+		glEnable(GL_ALPHA_TEST);
+		glAlphaFunc(GL_GREATER, 0.0f);
+		glColor4ub(255,255,255,255);
+		glBegin(GL_QUADS);
+		glTexCoord2f(0.0f, 1.0f);
+		glVertex2i(-wid,-wid);
+		glTexCoord2f(0.0f, 0.0f);
+		glVertex2i(-wid, wid);
+		glTexCoord2f(1.0f, 0.0f);
+		glVertex2i( wid, wid);
+		glTexCoord2f(1.0f, 1.0f);
+		glVertex2i( wid,-wid);
+		glEnd();
+		glBindTexture(GL_TEXTURE_2D, 0);
+		glPopMatrix();
+		fx += 20;
+	}
+	game_control = "d - shoot left";
+	size = strlen(game_control.c_str());
+	fx = (float)xres/2-300;
+	fy -= 50;
+	for (int i = 0; i < size; i++) {
+		char letter = game_control[i];
+		glPushMatrix();
+		glTranslatef(fx,fy,0);
+		render_letter(letter, lettersTexture);
+		glEnable(GL_ALPHA_TEST);
+		glAlphaFunc(GL_GREATER, 0.0f);
+		glColor4ub(255,255,255,255);
+		glBegin(GL_QUADS);
+		glTexCoord2f(0.0f, 1.0f);
+		glVertex2i(-wid,-wid);
+		glTexCoord2f(0.0f, 0.0f);
+		glVertex2i(-wid, wid);
+		glTexCoord2f(1.0f, 0.0f);
+		glVertex2i( wid, wid);
+		glTexCoord2f(1.0f, 1.0f);
+		glVertex2i( wid,-wid);
+		glEnd();
+		glBindTexture(GL_TEXTURE_2D, 0);
+		glPopMatrix();
+		fx += 20;
+	}
+
+	game_control = "r and g - shoot diag right";
+	size = strlen(game_control.c_str());
+	fx = (float)xres/2-300;
+	fy -= 50;
+	for (int i = 0; i < size; i++) {
+		char letter = game_control[i];
+		glPushMatrix();
+		glTranslatef(fx,fy,0);
+		render_letter(letter, lettersTexture);
+		glEnable(GL_ALPHA_TEST);
+		glAlphaFunc(GL_GREATER, 0.0f);
+		glColor4ub(255,255,255,255);
+		glBegin(GL_QUADS);
+		glTexCoord2f(0.0f, 1.0f);
+		glVertex2i(-wid,-wid);
+		glTexCoord2f(0.0f, 0.0f);
+		glVertex2i(-wid, wid);
+		glTexCoord2f(1.0f, 0.0f);
+		glVertex2i( wid, wid);
+		glTexCoord2f(1.0f, 1.0f);
+		glVertex2i( wid,-wid);
+		glEnd();
+		glBindTexture(GL_TEXTURE_2D, 0);
+		glPopMatrix();
+		fx += 20;
+	}
+}
+
+void print_menu(int xres, int yres, GLuint lettersTexture[]) 
+{
+	float fx = (float)xres-280;
+	float fy = (float)yres-550;
+	int wid = 20;
+	string menu = "CTRL-L - Menu";
+	int size = strlen(menu.c_str());
+	for (int i = 0; i < size; i++) {
+		glPushMatrix();
+		glTranslatef(fx,fy,0);
+		render_letter(menu[i], lettersTexture);
+		glEnable(GL_ALPHA_TEST);
+		glAlphaFunc(GL_GREATER, 0.0f);
+		glColor4ub(255,255,255,255);
+		glBegin(GL_QUADS);
+		glTexCoord2f(0.0f, 1.0f);
+		glVertex2i(-wid,-wid);
+		glTexCoord2f(0.0f, 0.0f);
+		glVertex2i(-wid, wid);
+		glTexCoord2f(1.0f, 0.0f);
+		glVertex2i( wid, wid);
+		glTexCoord2f(1.0f, 1.0f);
+		glVertex2i( wid,-wid);
+		glEnd();
+		glBindTexture(GL_TEXTURE_2D, 0);
+		glPopMatrix();
+		fx += 20;
+	} 
+}
