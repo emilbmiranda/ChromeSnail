@@ -96,15 +96,6 @@ void renderHelicopter(int x, int y, GLuint helicopterID, float velocity)
 
 	// Add the sprite layer to the screen
 	glBegin(GL_QUADS);
-	// glTexCoord2f(0.0f, 1.0f);
-	// glVertex2i(-wid, -wid);
-	// glTexCoord2f(0.0f, 0.0f);
-	// glVertex2i(-wid, wid);
-	// glTexCoord2f(1.0f, 0.0f);
-	// glVertex2i(wid, wid);
-	// glTexCoord2f(1.0f, 1.0f);
-	// glVertex2i(wid, -wid);
-	
 
 	if (velocity > 0.0) {
 		glTexCoord2f(1.0f, 1.0f);
@@ -188,6 +179,9 @@ float getLastKnownHelicopterPos()
 {
 	return lastKnownHelicopterPos;
 }
+
+
+/* Credit: Emil */
 
 void print_health(int gameScore, int xres, int yres, GLuint numbersTexture[])
 {
