@@ -45,5 +45,5 @@ struct Cover{
 	void slideCoverBackward();
 	void slideCoverForward();
 };
-
+bool checkCoverBombCollision(int, int, Cover);
 #endif

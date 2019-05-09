@@ -13,8 +13,16 @@
 int preventPlayerProgress(int objectX)
 {
 	return objectX - 15;
-
 }
+bool checkCoverBombCollision(int bombX, int bombY, Cover cover) 
+{   
+	if ((abs(bombX-cover.getXpos()) < 60) &&
+		(abs(bombY-cover.getYpos()+60) < 60) ) {
+			return true;
+		}
+	return false;
+}
+
 /*----------------------------------------------------------myFunctions-END--*/
 
 
@@ -22,7 +30,7 @@ int preventPlayerProgress(int objectX)
 Cover::Cover()
 {
 	pos[0] = 1040;
-	pos[1] = 340;
+	pos[1] = 145;
 }
 
 Cover::Cover(int x, int y) 
