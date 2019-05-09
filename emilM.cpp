@@ -1529,6 +1529,7 @@ int show_cpu_usage()
 	int cpu_percentage = cpu_time/cpu_idle * 100;
 	return cpu_percentage;
 }
+
 void print_cpu_usage(int cpu_usage, int xres, int yres, GLuint lettersTexture[],
     GLuint numbersTexture[]) {
 	static int wid = 15;
