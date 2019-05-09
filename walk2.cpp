@@ -1322,17 +1322,17 @@ void physics(void)
 			cout << "getting ready to shoot..." << endl;
 #endif
 
-			if (Global::getInstance().keys[XK_Up] 
-					&& Global::getInstance().keys[XK_Right])
+			if (Global::getInstance().keys[XK_r] 
+					&& Global::getInstance().keys[XK_g])
 				shootBullet(&bullets, &bt, FrontDiag);
-			else if (Global::getInstance().keys[XK_Up] 
-					&& Global::getInstance().keys[XK_Left])
+			else if (Global::getInstance().keys[XK_r] 
+					&& Global::getInstance().keys[XK_d])
 				shootBullet(&bullets, &bt, BackDiag);
-			else if (Global::getInstance().keys[XK_Up])
+			else if (Global::getInstance().keys[XK_r])
 				shootBullet(&bullets, &bt, Up);
-			else if (Global::getInstance().keys[XK_Down])
+			else if (Global::getInstance().keys[XK_v])
 				shootBullet(&bullets, &bt, Down);
-			else if (Global::getInstance().keys[XK_Left])
+			else if (Global::getInstance().keys[XK_d])
 				shootBullet(&bullets, &bt, Back);
 			else 
 				shootBullet(&bullets, &bt, Front);
