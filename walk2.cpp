@@ -113,7 +113,7 @@ class Helicopter {
 class Bomb {
 	public:
 		Vec pos = {100.00, 570.00};
-		Vec vel = {4.00, 3.00};
+		Vec vel = {4.00, 4.00};
 } bomb;
 
 class Sprite {
@@ -1033,7 +1033,9 @@ void moveBomb()
 		bomb.pos[1] -= bomb.vel[1];
 	}
 
-	if(bomb.pos[1] < 325) {
+	printf("bomb.pos[0]: %f, bomb.pos[1]: %f\n", bomb.pos[0], bomb.pos[1]);
+
+	if(bomb.pos[1] < 200) {
 		bomb.pos[1] = 575;
 		Global::getInstance().dropBomb = 0;
 	}
@@ -1042,13 +1044,13 @@ void moveBomb()
 		abs(bomb.pos[0]-((float)Global::getInstance().xres)/2) < 50)
 		&&
 		// Check the y position
-		abs(bomb.pos[1]-((float)Global::getInstance().yres/2) < 150)
+		abs(bomb.pos[1]-((float)Global::getInstance().yres/2) < 5)
 	  )
 	{
 		Global::getInstance().health--;
 		printf("Ouch! Health is now: %d\n", Global::getInstance().health);
 		Global::getInstance().exp44.pos[0] = 0;
-		Global::getInstance().exp44.pos[1] = 0;
+		Global::getInstance().exp44.pos[1] = -175;
 		Global::getInstance().exp44.pos[2] = 0.0;
 		Global::getInstance().exp44.onoff ^= 1;
 	}
