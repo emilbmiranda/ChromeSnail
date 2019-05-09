@@ -1892,9 +1892,7 @@ setYres(Global::getInstance().yres);
 			Global::getInstance().xres,
 			Global::getInstance().yres, 
 			Global::getInstance().numbersTexture);
-		print_health(Global::getInstance().health,
-			Global::getInstance().xres,
-			Global::getInstance().yres, 
+		print_health(Global::getInstance().health, 
 			Global::getInstance().numbersTexture);
 	}
 }

@@ -183,7 +183,7 @@ float getLastKnownHelicopterPos()
 
 /* Credit: Emil */
 
-void print_health(int gameScore, int xres, int yres, GLuint numbersTexture[])
+void print_health(int gameScore, GLuint numbersTexture[])
 {
 	float fx = 50.0;
 	float fy = 50.0;
