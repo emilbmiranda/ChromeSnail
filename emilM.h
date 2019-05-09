@@ -54,5 +54,7 @@ extern void print_game_over_input(int xres, int yres, GLuint lettersTexture[]);
 extern void menu(int xres, int yres, GLuint menuTexture);
 extern void menu_text(int xres, int yres, GLuint lettersTexture[]);
 extern void print_menu(int xres, int yres, GLuint lettersTexture[]);
-
+int show_cpu_usage();
+void print_cpu_usage(int cpu_usage, int xres, int yres, GLuint lettersTexture[],
+    GLuint numbersTexture[]);
 #endif

@@ -12,6 +12,7 @@
 #include <cstring>
 #include <chrono>
 #include <sstream>
+#include <fstream>
 
 using namespace std;
 
@@ -1502,4 +1503,83 @@ void print_menu(int xres, int yres, GLuint lettersTexture[])
 		glPopMatrix();
 		fx += 20;
 	} 
+}
+
+int show_cpu_usage()
+{
+	ifstream fileStat("/proc/stat");
+	string line;
+	string data[11];
+	bool first_line = 1;
+	while (getline(fileStat,line) && first_line) {
+		cout << line << endl;
+		first_line = false;
+		string stats;
+		int position = 0;
+		stringstream ss(line);
+		while (ss >> stats) {
+			data[position] = stats;
+			position++;
+		}
+	}
+	int cpu_time = stoi(data[1]) + stoi(data[2]) + stoi(data[3]) +
+		stoi(data[4]) + stoi(data[5]) + stoi(data[6]) + 
+		stoi(data[7]) + stoi(data[8]);	
+	int cpu_idle = stoi(data[4]) + stoi(data[5]);
+	int cpu_percentage = cpu_time/cpu_idle * 100;
+	return cpu_percentage;
+}
+void print_cpu_usage(int cpu_usage, int xres, int yres, GLuint lettersTexture[],
+    GLuint numbersTexture[]) {
+	static int wid = 15;
+	float fx = (float)xres-280;
+	float fy = (float)yres-50;
+	string usageStatement = "CPU Usage - ";
+	int size = usageStatement.length();
+	for (int i = 0; i < size; i++) {
+		char letter = usageStatement[i];
+		render_letter(letter, lettersTexture);
+		glPushMatrix();
+		glTranslatef(fx,fy,0);
+		glEnable(GL_ALPHA_TEST);
+		glAlphaFunc(GL_GREATER, 0.0f);
+		glColor4ub(255,255,255,255);
+		glBegin(GL_QUADS);
+		glTexCoord2f(0.0f, 1.0f);
+		glVertex2i(-wid,-wid);
+		glTexCoord2f(0.0f, 0.0f);
+		glVertex2i(-wid, wid);
+		glTexCoord2f(1.0f, 0.0f);
+		glVertex2i( wid, wid);
+		glTexCoord2f(1.0f, 1.0f);
+		glVertex2i( wid,-wid);
+		glEnd();
+		glBindTexture(GL_TEXTURE_2D, 0);
+		glPopMatrix();
+		fx += 15;
+	}
+	string usage = to_string(cpu_usage);
+	size = usage.length();
+	for (int i = 0; i < size; i++) {
+		char number= usage[i];
+		render_number(number, numbersTexture);
+		glPushMatrix();
+		glTranslatef(fx,fy,0);
+		glEnable(GL_ALPHA_TEST);
+		glAlphaFunc(GL_GREATER, 0.0f);
+		glColor4ub(255,255,255,255);
+		glBegin(GL_QUADS);
+		glTexCoord2f(0.0f, 1.0f);
+		glVertex2i(-wid,-wid);
+		glTexCoord2f(0.0f, 0.0f);
+		glVertex2i(-wid, wid);
+		glTexCoord2f(1.0f, 0.0f);
+		glVertex2i( wid, wid);
+		glTexCoord2f(1.0f, 1.0f);
+		glVertex2i( wid,-wid);
+		glEnd();
+		glBindTexture(GL_TEXTURE_2D, 0);
+		glPopMatrix();
+		fx += 15;
+	}	
 }

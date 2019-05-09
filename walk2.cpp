@@ -1948,5 +1948,13 @@ setYres(Global::getInstance().yres);
                 Global::getInstance().yres,
                 Global::getInstance().lettersTexture);
 		}
+		int cpu_usage = show_cpu_usage();
+		if (!Global::getInstance().showMenu) {
+			print_cpu_usage(cpu_usage,
+				Global::getInstance().xres,
+				Global::getInstance().yres, 
+				Global::getInstance().lettersTexture,
+				Global::getInstance().numbersTexture);
+		}
 	}
 }
