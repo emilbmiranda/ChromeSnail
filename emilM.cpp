@@ -1,5 +1,5 @@
 /*Created by: Emil Miranda
-* Created on: February 14, 2019
+ * Created on: February 14, 2019
  */
 
 #include <math.h>
@@ -260,14 +260,14 @@ int init_connection()
 {
 	int connection = sqlite3_open("ChromeSnail.db",&db);
 	if (connection) {
-		#ifdef SQL_UNIT_TEST
+#ifdef SQL_UNIT_TEST
 		cout << "Connection Unsuccessful:" <<  sqlite3_errmsg(db) << endl;
-		#endif
+#endif
 		return 0;
 	} else {
-		#ifdef SQL_UNIT_TEST
+#ifdef SQL_UNIT_TEST
 		cout << "Connection Successful" << endl;
-		#endif
+#endif
 		return 1;
 	}
 }
@@ -353,33 +353,33 @@ void insert()
 
 void generate_leaderboard()
 {
- 	if (init_connection()) {
-		#ifdef SQL_UNIT_TEST
+	if (init_connection()) {
+#ifdef SQL_UNIT_TEST
 		if (sql_init_flag) {
- 			create_table();
+			create_table();
 			insert();
 			sql_init_flag = 0;
-            exit(0);
+			exit(0);
 		}
-		#endif
+#endif
 		const char *showLeaderboard = "SELECT ROW_NUMBER() OVER("
-            "ORDER BY Score DESC, Time) as Row,"
-            "Name,Score,Time FROM Leaderboard "
-            "LIMIT 3;";
+			"ORDER BY Score DESC, Time) as Row,"
+			"Name,Score,Time FROM Leaderboard "
+			"LIMIT 3;";
 		result = sqlite3_exec(db, showLeaderboard, callback, 
-			(void*) data, &ErrMsg);
+				(void*) data, &ErrMsg);
 		if (result != SQLITE_OK) {
-		    #ifdef SQL_UNIT_TEST
+#ifdef SQL_UNIT_TEST
 			cout << "SQL Error:" << ErrMsg << endl;
 			sqlite3_free(ErrMsg);
-		    #endif
+#endif
 		} else {
-		    #ifdef SQL_UNIT_TEST
+#ifdef SQL_UNIT_TEST
 			cout << "SELECT statement successful" << endl;
-		    #endif
+#endif
 		}
- 	}
- 	sqlite3_close(db);
+	}
+	sqlite3_close(db);
 }
 
 int callback(void *data, int argc, char **argv, char **azColName)
@@ -407,7 +407,7 @@ int callback(void *data, int argc, char **argv, char **azColName)
 }
 
 void print_leaderboard(int xres, int yres, GLuint numbersTexture[],
-	GLuint lettersTexture[]) 
+		GLuint lettersTexture[]) 
 {
 	static int wid = 40;
 	float fx = (float)xres/2-225;
@@ -432,11 +432,11 @@ void print_leaderboard(int xres, int yres, GLuint numbersTexture[],
 		glBindTexture(GL_TEXTURE_2D, 0);
 		glPopMatrix();
 		leaderboard_name(fx+50, fy, wid, leaderboard_vector[i*3-3], 
-			lettersTexture);
+				lettersTexture);
 		leaderboard_score(fx+170, fy, wid, leaderboard_vector[i*3-2], 
-			numbersTexture);
+				numbersTexture);
 		leaderboard_time(fx+275, fy, wid, leaderboard_vector[i*3-1], 
-			numbersTexture);	
+				numbersTexture);	
 		fy -= 100;
 	}
 }
@@ -831,7 +831,7 @@ void game_over(int xres, int yres, GLuint leaderboardTexture)
 }
 
 void game_over_text(int xres, int yres, int playerScore, string finalTime, 
-	GLuint lettersTexture[], GLuint numbersTexture[]) 
+		GLuint lettersTexture[], GLuint numbersTexture[]) 
 {
 	static int wid = 20;
 	float fx = (float)xres/2-200;
@@ -868,9 +868,9 @@ void game_over_text(int xres, int yres, int playerScore, string finalTime,
 		glPushMatrix();
 		glTranslatef(fx,fy-50,0);
 		if (letter == '0' || letter == '1' || letter == '2' ||
-			letter == '3' || letter == '4' || letter == '5' ||
-			letter == '6' || letter == '7' || letter == '8' ||
-			letter == '9' || letter == ':') {
+				letter == '3' || letter == '4' || letter == '5' ||
+				letter == '6' || letter == '7' || letter == '8' ||
+				letter == '9' || letter == ':') {
 			render_number(letter, numbersTexture);
 		} else {
 			render_letter(letter, lettersTexture);
@@ -922,105 +922,105 @@ void game_over_text(int xres, int yres, int playerScore, string finalTime,
 
 char store_initials(XEvent *e)
 {
-    char initial;
-    int key = XLookupKeysym(&e->xkey, 0);
-    switch (key) {
-        case(XK_A):
-        case(XK_a):
-            initial = 'A';
-            break;
+	char initial;
+	int key = XLookupKeysym(&e->xkey, 0);
+	switch (key) {
+		case(XK_A):
+		case(XK_a):
+			initial = 'A';
+			break;
 		case(XK_B):
-        case(XK_b):
-            initial = 'B';
-            break;
+		case(XK_b):
+			initial = 'B';
+			break;
 		case(XK_C):
-        case(XK_c):
-            initial = 'C';
-            break;
+		case(XK_c):
+			initial = 'C';
+			break;
 		case(XK_D):
-        case(XK_d):
-            initial = 'D';
-            break;
+		case(XK_d):
+			initial = 'D';
+			break;
 		case(XK_E):
-        case(XK_e):
-            initial = 'E';
-            break;
+		case(XK_e):
+			initial = 'E';
+			break;
 		case(XK_F):
-        case(XK_f):
-            initial = 'F';
-            break;
+		case(XK_f):
+			initial = 'F';
+			break;
 		case(XK_G):
-        case(XK_g):
-            initial = 'G';
-            break;
+		case(XK_g):
+			initial = 'G';
+			break;
 		case(XK_H):
-        case(XK_h):
-            initial = 'H';
-            break;
+		case(XK_h):
+			initial = 'H';
+			break;
 		case(XK_I):
-        case(XK_i):
-            initial = 'I';
-            break;
+		case(XK_i):
+			initial = 'I';
+			break;
 		case(XK_L):
-        case(XK_l):
-            initial = 'L';
-            break;
+		case(XK_l):
+			initial = 'L';
+			break;
 		case(XK_M):
-        case(XK_m):
-            initial = 'M';
-            break;
+		case(XK_m):
+			initial = 'M';
+			break;
 		case(XK_N):
-        case(XK_n):
-            initial = 'N';
-            break;
+		case(XK_n):
+			initial = 'N';
+			break;
 		case(XK_O):
-        case(XK_o):
-            initial = 'O';
-            break;
+		case(XK_o):
+			initial = 'O';
+			break;
 		case(XK_P):
-        case(XK_p):
-            initial = 'P';
-            break;
+		case(XK_p):
+			initial = 'P';
+			break;
 		case(XK_Q):
-        case(XK_q):
-            initial = 'Q';
-            break;
+		case(XK_q):
+			initial = 'Q';
+			break;
 		case(XK_R):
-        case(XK_r):
-            initial = 'R';
-            break;
+		case(XK_r):
+			initial = 'R';
+			break;
 		case(XK_S):
-        case(XK_s):
-            initial = 'S';
-            break;
+		case(XK_s):
+			initial = 'S';
+			break;
 		case(XK_T):
-        case(XK_t):
-            initial = 'T';
-            break;
+		case(XK_t):
+			initial = 'T';
+			break;
 		case(XK_U):
-        case(XK_u):
-            initial = 'U';
-            break;
+		case(XK_u):
+			initial = 'U';
+			break;
 		case(XK_V):
-        case(XK_v):
-            initial = 'V';
-            break;
+		case(XK_v):
+			initial = 'V';
+			break;
 		case(XK_W):
-        case(XK_w):
-            initial = 'W';
-            break;
+		case(XK_w):
+			initial = 'W';
+			break;
 		case(XK_X):
-        case(XK_x):
-            initial = 'X';
-            break;
+		case(XK_x):
+			initial = 'X';
+			break;
 		case(XK_Y):
-        case(XK_y):
-            initial = 'Y';
-            break;	
-        default:
-            initial = 'Z';
-    }    
-    return initial;
+		case(XK_y):
+			initial = 'Y';
+			break;	
+		default:
+			initial = 'Z';
+	}	 
+	return initial;
 }
 
 void print_initials(int xres, int yres, GLuint lettersTexture[], char initial, bool first) {
@@ -1055,14 +1055,14 @@ string final_time()
 	int minutes = (int)finalTime.count() / 60;
 	int seconds = (int)finalTime.count() % 60;
 	string seconds_string = (seconds < 10) 
-	? "0" + to_string(seconds) 
-	: to_string(seconds);
+		? "0" + to_string(seconds) 
+		: to_string(seconds);
 	time = to_string(minutes) + ":" + seconds_string;
 	return time;
 }
 
 void insert_into_database(char firstInitial, char secondInitial, 
-	string score, string time) 
+		string score, string time) 
 {
 	string first, second;
 	stringstream ss,ss1;
@@ -1076,7 +1076,7 @@ void insert_into_database(char firstInitial, char secondInitial,
 			"Values ('" + first + second + "', " + score +
 			", '" + time + "')";
 		result = sqlite3_exec(db, query.c_str(), callback, 
-			(void*) data, &ErrMsg);
+				(void*) data, &ErrMsg);
 		//#ifdef SQL_UNIT_TEST
 		if (result != SQLITE_OK) {
 			cout << "SQL Error:" << ErrMsg << endl;
@@ -1089,7 +1089,7 @@ void insert_into_database(char firstInitial, char secondInitial,
 }
 
 void get_ranking(char firstInitial, char secondInitial, 
-    string playerScore, string final_time)
+		string playerScore, string final_time)
 {
 	string first, second;
 	stringstream ss,ss1;
@@ -1104,7 +1104,7 @@ void get_ranking(char firstInitial, char secondInitial,
 			"' and score = '" + playerScore + "' and time = '" +
 			final_time + "';";
 		result = sqlite3_exec(db, query.c_str(), callback2, 
-			(void*) data, &ErrMsg);
+				(void*) data, &ErrMsg);
 		//#ifdef SQL_UNIT_TEST
 		if (result != SQLITE_OK) {
 			cout << "SQL Error get_ranking:" << ErrMsg << endl;
@@ -1203,7 +1203,7 @@ void print_ranking(int xres, int yres, GLuint numbersTexture[])
 
 extern void print_game_over_input(int xres, int yres, GLuint lettersTexture[]) 
 {
-static int wid = 20;
+	static int wid = 20;
 	float fx = (float)xres/2-150;
 	float fy = (float)yres/2-200;
 	int size;
@@ -1525,14 +1525,14 @@ int show_cpu_usage()
 		stoll(data[4]) + stoll(data[5]) + stoll(data[6]) + 
 		stoll(data[7]) + stoll(data[8]);	
 	int cpu_idle = stoll(data[4]) + stoll(data[5]);
-    int cpu_usage = cpu_time - cpu_idle;
+	int cpu_usage = cpu_time - cpu_idle;
 	double cpu_percentage = (double)cpu_usage/cpu_time * 100;
-    cout << cpu_percentage << endl;
-    return cpu_percentage;
+	cout << cpu_percentage << endl;
+	return cpu_percentage;
 }
 
 void print_cpu_usage(int cpu_usage, int xres, int yres, GLuint lettersTexture[],
-    GLuint numbersTexture[]) {
+		GLuint numbersTexture[]) {
 	static int wid = 15;
 	float fx = (float)xres-280;
 	float fy = (float)yres-50;
