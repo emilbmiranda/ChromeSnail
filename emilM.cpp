@@ -1512,7 +1512,6 @@ int show_cpu_usage()
 	string data[11];
 	bool first_line = 1;
 	while (getline(fileStat,line) && first_line) {
-		cout << line << endl;
 		first_line = false;
 		string stats;
 		int position = 0;
@@ -1522,12 +1521,14 @@ int show_cpu_usage()
 			position++;
 		}
 	}
-	int cpu_time = stoi(data[1]) + stoi(data[2]) + stoi(data[3]) +
-		stoi(data[4]) + stoi(data[5]) + stoi(data[6]) + 
-		stoi(data[7]) + stoi(data[8]);	
-	int cpu_idle = stoi(data[4]) + stoi(data[5]);
-	int cpu_percentage = cpu_time/cpu_idle * 100;
-	return cpu_percentage;
+	int cpu_time = stoll(data[1]) + stoll(data[2]) + stoll(data[3]) +
+		stoll(data[4]) + stoll(data[5]) + stoll(data[6]) + 
+		stoll(data[7]) + stoll(data[8]);	
+	int cpu_idle = stoll(data[4]) + stoll(data[5]);
+    int cpu_usage = cpu_time - cpu_idle;
+	double cpu_percentage = (double)cpu_usage/cpu_time * 100;
+    cout << cpu_percentage << endl;
+    return cpu_percentage;
 }
 
 void print_cpu_usage(int cpu_usage, int xres, int yres, GLuint lettersTexture[],
