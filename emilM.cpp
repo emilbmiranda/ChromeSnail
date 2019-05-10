@@ -1527,7 +1527,6 @@ int show_cpu_usage()
 	int cpu_idle = stoll(data[4]) + stoll(data[5]);
 	int cpu_usage = cpu_time - cpu_idle;
 	double cpu_percentage = (double)cpu_usage/cpu_time * 100;
-	cout << cpu_percentage << endl;
 	return cpu_percentage;
 }
 
