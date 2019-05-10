@@ -16,8 +16,8 @@ int preventPlayerProgress(int objectX)
 }
 bool checkCoverBombCollision(int bombX, int bombY, Cover cover) 
 {   
-	if ((abs(bombX-cover.getXpos()) < 60) &&
-		(abs(bombY-cover.getYpos()+60) < 60) ) {
+	if ((abs(bombX-cover.getXpos()) < 80) &&
+		(abs(bombY-cover.getYpos()) < 60)) {
 			return true;
 		}
 	return false;

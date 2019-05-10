@@ -1015,7 +1015,7 @@ void moveBomb()
 		Global::getInstance().exp44.pos[0] = 0;
 		Global::getInstance().exp44.pos[1] = -175;
 		Global::getInstance().exp44.pos[2] = 0.0;
-		Global::getInstance().exp44.onoff ^= 1;
+		Global::getInstance().exp44.onoff = 1;
 	}
 }
 void moveWalker(int direction)
@@ -1351,6 +1351,18 @@ void physics(void)
 	checkBulletHelicopterCollision(&bullets, 
 		helicopter.pos[0], 
 		helicopter.pos[1]);
+
+	printf("cover1 Xpos: %i\n", Global::getInstance().cover1.getXpos());
+	if (checkCoverBombCollision(bomb.pos[0], bomb.pos[1],
+		Global::getInstance().cover1)) {
+			int coverX = (Global::getInstance().cover1.getXpos()) - 
+				(Global::getInstance().xres/2);
+			printf("The bomb was hit in the cover zone!\n");
+			Global::getInstance().exp.pos[0] = Global::getInstance().xres/coverX;
+			Global::getInstance().exp.pos[1] = -100;
+			Global::getInstance().exp.pos[2] = 0.0;
+			Global::getInstance().exp.onoff ^= 1;
+		}
 
 	// Animate the helicopter, but only if the start menu isn't showing
 	if (Global::getInstance().showStartMenu != 1) {
