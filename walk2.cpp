@@ -1085,8 +1085,10 @@ int checkKeys(XEvent *e)
 			Global::getInstance().exp.onoff ^= 1;
 			break;
 		case XK_f:
-			Global::getInstance().exp44.pos[0] = 200.0;
-			Global::getInstance().exp44.pos[1] = -60.0;
+			Global::getInstance().exp44.pos[0] = (Global::getInstance().cover1.getXpos() > Global::getInstance().xres/2)
+                ? abs(Global::getInstance().cover1.getXpos() -  Global::getInstance().xres/2)
+                : (Global::getInstance().xres/2) - abs(Global::getInstance().cover1.getXpos() -  Global::getInstance().xres);
+			Global::getInstance().exp44.pos[1] = -155;
 			Global::getInstance().exp44.pos[2] =   0.0;
 			timers.recordTime(&Global::getInstance().exp44.time);
 			Global::getInstance().exp44.onoff ^= 1;
@@ -1354,15 +1356,17 @@ void physics(void)
 
 	printf("cover1 Xpos: %i\n", Global::getInstance().cover1.getXpos());
 	if (checkCoverBombCollision(bomb.pos[0], bomb.pos[1],
-		Global::getInstance().cover1)) {
-			int coverX = (Global::getInstance().cover1.getXpos()) - 
-				(Global::getInstance().xres/2);
-			printf("The bomb was hit in the cover zone!\n");
-			Global::getInstance().exp.pos[0] = Global::getInstance().xres/coverX;
-			Global::getInstance().exp.pos[1] = -100;
-			Global::getInstance().exp.pos[2] = 0.0;
-			Global::getInstance().exp.onoff ^= 1;
-		}
+                Global::getInstance().cover1)) {
+			Global::getInstance().exp44.pos[0] = (Global::getInstance().cover1.getXpos() > Global::getInstance().xres/2)
+                ? abs(Global::getInstance().cover1.getXpos() -  Global::getInstance().xres/2)
+                : (Global::getInstance().xres/2) - abs(Global::getInstance().cover1.getXpos() -  Global::getInstance().xres);
+			Global::getInstance().exp44.pos[1] = -155;
+			Global::getInstance().exp44.pos[2] =   0.0;
+			timers.recordTime(&Global::getInstance().exp44.time);
+			Global::getInstance().exp.onoff = 1;
+		} else {
+			Global::getInstance().exp.onoff = 0; 
+        }
 
 	// Animate the helicopter, but only if the start menu isn't showing
 	if (Global::getInstance().showStartMenu != 1) {

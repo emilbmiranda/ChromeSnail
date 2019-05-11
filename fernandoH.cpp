@@ -17,7 +17,7 @@ int preventPlayerProgress(int objectX)
 bool checkCoverBombCollision(int bombX, int bombY, Cover cover) 
 {   
 	if ((abs(bombX-cover.getXpos()) < 80) &&
-		(abs(bombY-cover.getYpos()) < 60)) {
+		(bombY < (cover.getYpos()-100))) {
 			return true;
 		}
 	return false;
@@ -30,7 +30,7 @@ bool checkCoverBombCollision(int bombX, int bombY, Cover cover)
 Cover::Cover()
 {
 	pos[0] = 1040;
-	pos[1] = 145;
+	pos[1] = 455;
 }
 
 Cover::Cover(int x, int y) 
@@ -44,10 +44,10 @@ void Cover::drawCover(int xpos, int ypos, GLuint coverID)
 	static int wid = 80;
 	float fx = (float)xpos;
 	float fy = (float)ypos;
-
+    //need to add yres
 	//glClear(GL_COLOR_BUFFER_BIT);
 	//glPushMatrix();
-	glTranslatef(fx,fy,0);
+	glTranslatef(fx,600-fy,0);
 	glBindTexture(GL_TEXTURE_2D, coverID);
 
 
